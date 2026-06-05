@@ -236,7 +236,7 @@ const LoginPage = () => {
           {/* Logo */}
           <div className="login-logo-area">
             <img
-              src="/logo.png"
+              src={`${import.meta.env.BASE_URL}logo.png`}
               alt="Jhoraji Tours"
               className="login-logo-img"
             />

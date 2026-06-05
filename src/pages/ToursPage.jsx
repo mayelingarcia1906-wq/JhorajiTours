@@ -57,7 +57,7 @@ const ToursPage = () => {
       if (tour.image && tour.image.includes('unsplash.com')) {
         needsUpdate = true;
         const initial = initialTours.find(t => t.id === tour.id);
-        return { ...tour, image: initial ? initial.image : '/images/tours/saona.png' };
+        return { ...tour, image: initial ? initial.image : `${import.meta.env.BASE_URL}images/tours/saona.png` };
       }
       return tour;
     });
