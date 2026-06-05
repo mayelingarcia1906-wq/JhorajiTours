@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -24,7 +24,7 @@ function App() {
     <ThemeProvider>
       <LanguageProvider>
         <ToastProvider>
-          <BrowserRouter>
+          <HashRouter>
             <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/" element={<DashboardLayout />}>
@@ -45,7 +45,7 @@ function App() {
               <Route path="settings" element={<SettingsPage />} />
             </Route>
             </Routes>
-          </BrowserRouter>
+          </HashRouter>
         </ToastProvider>
       </LanguageProvider>
     </ThemeProvider>
