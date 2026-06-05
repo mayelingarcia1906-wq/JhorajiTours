@@ -1,0 +1,22 @@
+[
+  {
+    "email": "admin@jhorajitours.com",
+    "password": "admin",
+    "name": "Administrador",
+    "role": "Administrador",
+    "phone": "829-580-8964",
+    "department": "Administración",
+    "status": "Activo",
+    "lastAccess": "2026-06-03 10:45 AM"
+  },
+  {
+    "email": "jhorajitour@gmail.com",
+    "password": "Margarita2026@",
+    "name": "Jhoraji Tour",
+    "role": "Operador de Reservas",
+    "phone": "829-580-8964",
+    "department": "Reservas",
+    "status": "Activo",
+    "lastAccess": "2026-06-03 10:20 AM"
+  }
+]
