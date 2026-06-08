@@ -124,7 +124,9 @@ const BookingsPage = () => {
       pickupLocation: formData.get('pickupLocation') ? formData.get('pickupLocation').trim() : '',
       dropoffLocation: formData.get('dropoffLocation') ? formData.get('dropoffLocation').trim() : '',
       flightNumber: formData.get('flightNumber') ? formData.get('flightNumber').trim() : '',
-      isRoundTrip: formData.get('isRoundTrip') === 'on'
+      isRoundTrip: formData.get('isRoundTrip') === 'on',
+      returnDate: formData.get('isRoundTrip') === 'on' ? (formData.get('returnDate') || '') : '',
+      returnTime: formData.get('isRoundTrip') === 'on' ? (formData.get('returnTime') || '') : ''
     };
 
     const nextBookings = editingBooking.id
@@ -270,6 +272,7 @@ const BookingsPage = () => {
 
 const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, providers, toursList, agencies, drivers }) => {
   const [bookingType, setBookingType] = useState(editingBooking.type || 'ACTIVIDAD');
+  const [isRoundTrip, setIsRoundTrip] = useState(!!editingBooking.isRoundTrip);
 
   return (
     <div style={{ backgroundColor: 'var(--bg-color)', minHeight: '100%' }}>
@@ -363,10 +366,23 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
               </div>
               <div style={{ marginTop: '15px' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--text-dark)', margin: 0 }}>
-                  <input type="checkbox" name="isRoundTrip" defaultChecked={editingBooking.isRoundTrip} style={{ width: '16px', height: '16px', accentColor: 'var(--primary-color)' }} />
+                  <input type="checkbox" name="isRoundTrip" checked={isRoundTrip} onChange={e => setIsRoundTrip(e.target.checked)} style={{ width: '16px', height: '16px', accentColor: 'var(--primary-color)' }} />
                   ¿Es Round Trip (Ida y Vuelta)?
                 </label>
               </div>
+              
+              {isRoundTrip && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginTop: '15px', paddingTop: '15px', borderTop: '1px dashed #bae6fd' }}>
+                  <div className="form-group mb-0">
+                    <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Fecha Recogida (Regreso)</label>
+                    <input name="returnDate" type="date" className="form-control" required defaultValue={editingBooking.returnDate} min={!editingBooking.id ? new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0] : undefined} />
+                  </div>
+                  <div className="form-group mb-0">
+                    <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Hora Recogida (Regreso)</label>
+                    <input name="returnTime" type="time" className="form-control" defaultValue={editingBooking.returnTime} />
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
