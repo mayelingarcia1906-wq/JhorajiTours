@@ -206,7 +206,7 @@ const OrdersPage = () => {
         </div>
 
         <div className="table-wrapper">
-          <table className="table" style={{ minWidth: '1000px' }}>
+          <table className="table compact-table">
             <thead>
               <tr style={{ color: 'var(--text-light)', fontSize: '0.85rem', borderBottom: '1px solid var(--border-color)' }}>
                 <th style={{ width: '40px' }}><input type="checkbox" onChange={toggleSelectAll} checked={filteredOrders.length > 0 && selectedOrders.length === filteredOrders.length} /></th>
@@ -214,11 +214,11 @@ const OrdersPage = () => {
                 <th>Hora</th>
                 <th>Tipo</th>
                 <th>Cliente</th>
-                <th>Punto / Ruta</th>
+                <th>Ruta</th>
                 <th>Servicio</th>
                 <th>Adultos</th>
                 <th>Niños</th>
-                <th>Precio Proveedor</th>
+                <th>Precio Prov.</th>
                 <th style={{ textAlign: 'right' }}>Acciones</th>
               </tr>
             </thead>

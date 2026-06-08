@@ -110,21 +110,6 @@ const ActivitiesPage = () => {
 
   return (
     <div>
-      <style>{`
-        .activities-table th {
-          padding: 8px 6px !important;
-          font-size: 0.7rem !important;
-          white-space: nowrap;
-        }
-        .activities-table td {
-          padding: 8px 6px !important;
-          vertical-align: middle;
-        }
-        .activities-table .badge {
-          padding: 4px 6px;
-          font-size: 0.7rem;
-        }
-      `}</style>
       <div className="page-header mb-4">
         <div>
           <h2>Actividades</h2>
@@ -166,7 +151,7 @@ const ActivitiesPage = () => {
 
       <div className="card">
         <div className="table-wrapper">
-          <table className="table activities-table">
+          <table className="table compact-table">
             <thead>
               <tr>
                 <th>ACTIVIDAD / PROVEEDOR</th>

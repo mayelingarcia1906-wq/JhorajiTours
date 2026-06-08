@@ -202,7 +202,7 @@ const FinancesPage = () => {
                 <button className="btn" disabled={selectedProv.length === 0} style={{ backgroundColor: '#a855f7', color: '#fff', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Printer size={15}/> IMPRIMIR SELECCIÓN</button>
               </div>
               <div className="table-wrapper">
-                <table className="table">
+                <table className="table compact-table">
                   <thead>
                     <tr>
                       <th style={{width: '30px'}}><input type="checkbox" onChange={e => setSelectedProv(e.target.checked ? provLiq.map(p=>p.id) : [])} checked={provLiq.length > 0 && selectedProv.length === provLiq.length}/></th>
@@ -259,7 +259,7 @@ const FinancesPage = () => {
                 <button className="btn" disabled={selectedDriver.length === 0} style={{ backgroundColor: '#a855f7', color: '#fff', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Printer size={15}/> IMPRIMIR SELECCIÓN</button>
               </div>
               <div className="table-wrapper">
-                <table className="table">
+                <table className="table compact-table">
                   <thead>
                     <tr>
                       <th style={{width: '30px'}}><input type="checkbox" onChange={e => setSelectedDriver(e.target.checked ? driverLiq.map(d=>d.id) : [])} checked={driverLiq.length > 0 && selectedDriver.length === driverLiq.length}/></th>
@@ -308,7 +308,7 @@ const FinancesPage = () => {
                 <button className="btn" onClick={handleDeleteExpense} disabled={selectedExp.length === 0} style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Trash2 size={15}/> ELIMINAR</button>
               </div>
               <div className="table-wrapper">
-                <table className="table">
+                <table className="table compact-table">
                   <thead>
                     <tr>
                       <th style={{width: '30px'}}><input type="checkbox" onChange={e => setSelectedExp(e.target.checked ? expenses.map(ex=>ex.id) : [])} checked={expenses.length > 0 && selectedExp.length === expenses.length}/></th>
