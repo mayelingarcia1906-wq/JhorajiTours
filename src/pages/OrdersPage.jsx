@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { Printer, Trash2, Edit3, MessageCircle, X, Plus, Filter } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { Printer, Trash2, Edit3, MessageCircle, X, Plus, Filter, Eye } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 
 const initialOrders = [
@@ -31,7 +31,7 @@ const formatDate = (dateStr) => {
   return `${day}/${month}/${year}`;
 };
 
-const OrdersPage = ({ hideHeader }) => {
+const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
   const { addToast } = useToast();
   const [orders, setOrders] = useState(() => readStoredData('jhoraji_orders', initialOrders));
   const providers = readStoredData('jhoraji_providers', []);
@@ -45,6 +45,14 @@ const OrdersPage = ({ hideHeader }) => {
   
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [editingOrder, setEditingOrder] = useState(null);
+
+  useEffect(() => {
+    const handleStorage = () => {
+      setOrders(readStoredData('jhoraji_orders', initialOrders));
+    };
+    window.addEventListener('orders_updated', handleStorage);
+    return () => window.removeEventListener('orders_updated', handleStorage);
+  }, []);
 
   const persistOrders = (nextOrders) => {
     setOrders(nextOrders);
@@ -236,7 +244,10 @@ const OrdersPage = ({ hideHeader }) => {
                   <td style={{ color: 'var(--text-dark)', fontWeight: 700, fontSize: '0.9rem' }}>{o.providerPrice}</td>
                   <td style={{ textAlign: 'right' }}>
                     <div className="d-flex gap-2" style={{ justifyContent: 'flex-end' }}>
-                      <button className="btn" onClick={() => setEditingOrder(o)} title="Editar" style={{ backgroundColor: 'rgba(20, 184, 166, 0.1)', color: '#14b8a6', padding: '6px', borderRadius: '8px', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Edit3 size={16} /></button>
+                      {onViewOrder && (
+                        <button className="btn" onClick={() => onViewOrder(o)} title="Ver detalles" style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', padding: '6px', borderRadius: '8px', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Eye size={16} /></button>
+                      )}
+                      <button className="btn" onClick={() => onEditOrder ? onEditOrder(o) : setEditingOrder(o)} title="Editar" style={{ backgroundColor: 'rgba(20, 184, 166, 0.1)', color: '#14b8a6', padding: '6px', borderRadius: '8px', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Edit3 size={16} /></button>
                       <button className="btn" title="WhatsApp" style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)', color: '#22c55e', padding: '6px', borderRadius: '8px', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MessageCircle size={16} /></button>
                     </div>
                   </td>

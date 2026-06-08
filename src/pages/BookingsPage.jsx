@@ -59,6 +59,7 @@ const BookingsPage = () => {
     const saved = sessionStorage.getItem('jhoraji_editing_booking');
     try { return saved ? JSON.parse(saved) : null; } catch { return null; }
   });
+  const [viewingBooking, setViewingBooking] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
 
   useEffect(() => {
@@ -155,6 +156,7 @@ const BookingsPage = () => {
         const orders = JSON.parse(localStorage.getItem('jhoraji_orders') || '[]');
         const newOrder = {
           id: Date.now(),
+          bookingId: submitted.id,
           date: submitted.date,
           time: submitted.time,
           type: submitted.type,
@@ -174,6 +176,7 @@ const BookingsPage = () => {
         if (submitted.isRoundTrip && submitted.returnDate) {
           const returnOrder = {
             id: Date.now() + 1,
+            bookingId: submitted.id,
             date: submitted.returnDate,
             time: submitted.returnTime,
             type: submitted.type,
@@ -190,8 +193,36 @@ const BookingsPage = () => {
         }
         
         localStorage.setItem('jhoraji_orders', JSON.stringify(nextOrders));
+        window.dispatchEvent(new Event('orders_updated'));
       } catch (e) {
         console.error("Error auto-creating order", e);
+      }
+    } else {
+      try {
+        const orders = JSON.parse(localStorage.getItem('jhoraji_orders') || '[]');
+        const nextOrders = orders.map(o => {
+          if (o.bookingId === submitted.id || (!o.bookingId && o.client === submitted.customer && o.date === submitted.date)) {
+            return {
+              ...o,
+              date: submitted.date,
+              time: submitted.time,
+              type: submitted.type,
+              client: submitted.customer,
+              route: submitted.type === 'TRASLADO' ? `${submitted.pickupLocation || ''} - ${submitted.dropoffLocation || ''}` : submitted.hotel,
+              service: submitted.type === 'TRASLADO' ? 'Traslado' : submitted.tour,
+              adults: submitted.pax,
+              children: submitted.children,
+              providerPrice: `US$ ${submitted.providerCost.toFixed(2)}`,
+              provider: submitted.provider,
+              driver: submitted.driver
+            };
+          }
+          return o;
+        });
+        localStorage.setItem('jhoraji_orders', JSON.stringify(nextOrders));
+        window.dispatchEvent(new Event('orders_updated'));
+      } catch (e) {
+        console.error("Error updating order", e);
       }
     }
 
@@ -203,6 +234,41 @@ const BookingsPage = () => {
     persistBookings(bookings.filter((b) => b.id !== showDeleteConfirm));
     addToast(t('bookingDeleted'), 'success');
     setShowDeleteConfirm(null);
+  };
+
+  const handleEditOrder = (order) => {
+    const booking = bookings.find(b => b.id === order.bookingId) || 
+      bookings.find(b => b.customer === order.client && b.date === order.date && b.type === order.type);
+    
+    if (booking) {
+      setEditingBooking(booking);
+    } else {
+      addToast('Reserva original no encontrada, abriendo como nueva', 'warning');
+      setEditingBooking({
+        ...emptyBooking,
+        type: order.type,
+        date: order.date,
+        time: order.time,
+        customer: order.client,
+        providerCost: parseFloat((order.providerPrice||'0').replace(/[^0-9.]/g, '') || 0),
+        provider: order.provider,
+        driver: order.driver,
+        tour: order.type === 'ACTIVIDAD' ? order.service : '',
+        pickupLocation: order.type === 'TRASLADO' ? order.route.split(' - ')[0] : '',
+        dropoffLocation: order.type === 'TRASLADO' ? order.route.split(' - ')[1] : '',
+      });
+    }
+  };
+
+  const handleViewOrder = (order) => {
+    const booking = bookings.find(b => b.id === order.bookingId) || 
+      bookings.find(b => b.customer === order.client && b.date === order.date && b.type === order.type);
+    
+    if (booking) {
+      setViewingBooking(booking);
+    } else {
+      addToast('Reserva original no encontrada', 'warning');
+    }
   };
 
   if (editingBooking) {
@@ -221,7 +287,42 @@ const BookingsPage = () => {
         </button>
       </div>
 
-      <OrdersPage hideHeader={true} />
+      <OrdersPage hideHeader={true} onEditOrder={handleEditOrder} onViewOrder={handleViewOrder} />
+
+      {viewingBooking && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '600px' }}>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h3 style={{ margin: 0 }}>Detalles de la Reserva</h3>
+              <button className="btn" style={{ padding: '4px' }} onClick={() => setViewingBooking(null)}><X size={20}/></button>
+            </div>
+            <div>
+              <p><strong>Cliente:</strong> {viewingBooking.customer}</p>
+              <p><strong>Fecha:</strong> {viewingBooking.date} &nbsp; <strong>Hora:</strong> {viewingBooking.time}</p>
+              <p><strong>Tipo:</strong> {viewingBooking.type}</p>
+              {viewingBooking.type === 'ACTIVIDAD' ? (
+                <>
+                  <p><strong>Tour/Actividad:</strong> {viewingBooking.tour}</p>
+                  <p><strong>Proveedor:</strong> {viewingBooking.provider}</p>
+                  <p><strong>Hotel:</strong> {viewingBooking.hotel}</p>
+                </>
+              ) : (
+                <>
+                  <p><strong>Chofer:</strong> {viewingBooking.driver}</p>
+                  <p><strong>Ruta:</strong> {viewingBooking.pickupLocation} - {viewingBooking.dropoffLocation}</p>
+                  <p><strong>Vuelo:</strong> {viewingBooking.flightNumber}</p>
+                </>
+              )}
+              <p><strong>PAX:</strong> {viewingBooking.pax} Adultos, {viewingBooking.children} Niños</p>
+              <p><strong>Precio Cliente:</strong> ${viewingBooking.clientPrice}</p>
+              <p><strong>Notas:</strong> {viewingBooking.notes || 'N/A'}</p>
+            </div>
+            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
+              <button className="btn btn-outline" onClick={() => setViewingBooking(null)}>Cerrar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -429,7 +530,7 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
 
             <div className="form-group mb-0" style={{ gridColumn: '1 / -1' }}>
               <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Notas</label>
-              <textarea name="notes" className="form-control" rows="3" required defaultValue={editingBooking.notes}></textarea>
+              <textarea name="notes" className="form-control" rows="3" defaultValue={editingBooking.notes}></textarea>
             </div>
           </div>
 
