@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Activity, Edit3, Eraser, Plus, Search, ShieldCheck, Trash2, X } from 'lucide-react';
+import { Pagination } from '../components/Pagination';
 
 const MODULE_COLORS = {
   Usuarios: { bg: 'rgba(14,165,233,0.1)', color: 'var(--primary-color)' },
@@ -46,6 +47,8 @@ const AuditPage = () => {
   const [appliedSearch, setAppliedSearch] = useState('');
   const [moduleFilter, setModuleFilter] = useState('all');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
 
   const modules = ['all', ...Object.keys(MODULE_COLORS)];
 
@@ -60,8 +63,11 @@ const AuditPage = () => {
     });
   }, [logs, moduleFilter, appliedSearch]);
 
-  const handleSearch = () => setAppliedSearch(searchQuery);
-  const clearSearch = () => { setSearchQuery(''); setAppliedSearch(''); };
+  const handleSearch = () => { setAppliedSearch(searchQuery); setCurrentPage(1); };
+  const clearSearch = () => { setSearchQuery(''); setAppliedSearch(''); setCurrentPage(1); };
+
+  const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
+  const currentItems = filteredLogs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handleClearLogs = () => {
     localStorage.removeItem('jhoraji_audit');
@@ -162,7 +168,7 @@ const AuditPage = () => {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {filteredLogs.map(log => {
+            {currentItems.map(log => {
               const actionStyle = getActionStyle(log.action);
               const modStyle = MODULE_COLORS[log.module] || MODULE_COLORS['Sistema'];
               const ActionIcon = actionStyle.icon;
@@ -187,6 +193,9 @@ const AuditPage = () => {
             })}
           </div>
         )}
+        <div style={{ padding: '0 1rem', paddingBottom: '1rem' }}>
+          <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredLogs.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} />
+        </div>
       </div>
 
       {showClearConfirm && (

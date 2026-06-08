@@ -229,12 +229,12 @@ const ToursPage = () => {
 
       {selectedTour && (
         <div className="modal-overlay">
-          <div className="modal-content" onClick={(event) => event.stopPropagation()} style={{ padding: 0, overflow: 'hidden' }}>
-            <div style={{ height: '240px', position: 'relative' }}>
+          <div className="modal-content" onClick={(event) => event.stopPropagation()} style={{ padding: 0, display: 'flex', flexDirection: 'column' }}>
+            <div style={{ height: '240px', position: 'relative', flexShrink: 0, borderTopLeftRadius: 'var(--radius-lg)', borderTopRightRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
               <img src={selectedTour.image} alt={selectedTour.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <button onClick={() => setSelectedTour(null)} style={{ position: 'absolute', top: '15px', right: '15px', background: 'rgba(0,0,0,0.5)', color: 'white', borderRadius: '50%', padding: '5px' }}><X size={24} /></button>
+              <button onClick={() => setSelectedTour(null)} style={{ position: 'absolute', top: '15px', right: '15px', background: 'rgba(0,0,0,0.5)', color: 'white', borderRadius: '50%', padding: '5px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={24} /></button>
             </div>
-            <div style={{ padding: '1.5rem' }}>
+            <div style={{ padding: '1.5rem', overflowY: 'auto' }}>
               <div className="d-flex justify-content-between align-items-center mb-3" style={{ gap: '12px', flexWrap: 'wrap' }}>
                 <h2 style={{ margin: 0 }}>{selectedTour.title}</h2>
                 <span className={`badge ${selectedTour.active ? 'badge-success' : 'badge-danger'}`}>{selectedTour.active ? t('active') : t('inactive')}</span>
