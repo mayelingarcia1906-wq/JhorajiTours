@@ -4,9 +4,9 @@ import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
 
 const initialOrders = [
-  { id: 101, date: '2026-06-10', time: '08:30', type: 'ACTIVIDAD', client: 'Carlos Mendoza', route: 'Punta Cana - Saona', service: 'Excursión VIP', adults: 2, children: 0, providerPrice: 'US$ 120.00', provider: '', driver: '' },
-  { id: 102, date: '2026-06-11', time: '14:00', type: 'TRASLADO', client: 'Familia Perez', route: 'Aeropuerto - Hotel Riu', service: 'Transfer Privado', adults: 4, children: 2, providerPrice: 'US$ 45.00', provider: '', driver: '' },
-  { id: 103, date: '2026-06-12', time: '09:00', type: 'ACTIVIDAD', client: 'Ana Gonzalez', route: 'Bávaro - Buggies', service: 'Buggies Doble', adults: 2, children: 0, providerPrice: 'US$ 55.00', provider: '', driver: '' }
+  { id: 'RES-00101', date: '2026-06-10', time: '08:30', type: 'ACTIVIDAD', client: 'Carlos Mendoza', route: 'Punta Cana - Saona', service: 'Excursión VIP', adults: 2, children: 0, providerPrice: 'US$ 120.00', provider: '', driver: '' },
+  { id: 'RES-00102', date: '2026-06-11', time: '14:00', type: 'TRASLADO', client: 'Familia Perez', route: 'Aeropuerto - Hotel Riu', service: 'Transfer Privado', adults: 4, children: 2, providerPrice: 'US$ 45.00', provider: '', driver: '' },
+  { id: 'RES-00103', date: '2026-06-12', time: '09:00', type: 'ACTIVIDAD', client: 'Ana Gonzalez', route: 'Bávaro - Buggies', service: 'Buggies Doble', adults: 2, children: 0, providerPrice: 'US$ 55.00', provider: '', driver: '' }
 ];
 
 const emptyOrder = { date: '', time: '', type: 'ACTIVIDAD', client: '', route: '', service: '', adults: 1, children: 0, providerPrice: 'US$ 0.00', provider: '', driver: '' };
@@ -68,7 +68,7 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
     const formData = new FormData(event.currentTarget);
     const isNew = !editingOrder.id;
     const submitted = {
-      id: editingOrder.id || Date.now(),
+      id: editingOrder.id || `RES-${String(Date.now()).slice(-6)}`,
       date: formData.get('date'),
       time: formData.get('time'),
       type: formData.get('type'),
@@ -218,6 +218,7 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
             <thead>
               <tr style={{ color: 'var(--text-light)', fontSize: '0.85rem', borderBottom: '1px solid var(--border-color)' }}>
                 <th style={{ width: '40px' }}><input type="checkbox" onChange={toggleSelectAll} checked={filteredOrders.length > 0 && selectedOrders.length === filteredOrders.length} /></th>
+                <th>Ref.</th>
                 <th>Fecha</th>
                 <th>Hora</th>
                 <th>Tipo</th>
@@ -234,7 +235,7 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
             <tbody>
               {filteredOrders.length === 0 && (
                 <tr>
-                  <td colSpan="11" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-light)' }}>
+                  <td colSpan="12" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-light)' }}>
                     No hay órdenes que coincidan con los filtros.
                   </td>
                 </tr>
@@ -242,6 +243,7 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
               {currentItems.map(o => (
                 <tr key={o.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                   <td><input type="checkbox" checked={selectedOrders.includes(o.id)} onChange={() => toggleSelectOrder(o.id)} /></td>
+                  <td style={{ color: 'var(--text-light)', fontSize: '0.85rem', fontWeight: 600 }}>{o.bookingId || (String(o.id).startsWith('RES') || String(o.id).startsWith('#') ? o.id : `RES-${String(o.id).slice(-6)}`)}</td>
                   <td style={{ color: 'var(--text-dark)', fontSize: '0.9rem' }}>{formatDate(o.date)}</td>
                   <td style={{ color: '#0ea5e9', fontWeight: 600, fontSize: '0.9rem' }}>{o.time}</td>
                   <td>

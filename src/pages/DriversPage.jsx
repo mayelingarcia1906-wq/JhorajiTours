@@ -224,32 +224,14 @@ const DriversPage = () => {
                       </td>
                       <td>
                         <div className="d-flex gap-2" style={{ flexWrap: 'nowrap', alignItems: 'center' }}>
-                          <input 
-                            type="time" 
-                            className="form-control" 
-                            style={{ width: '120px', backgroundColor: '#f1f5f9', cursor: 'not-allowed' }} 
-                            defaultValue={b.pickupTime || b.time || ''}
-                            disabled
-                          />
-                          <select 
-                            className="form-control" 
-                            style={{ flex: 1, minWidth: '200px', backgroundColor: '#f1f5f9', cursor: 'not-allowed' }}
-                            value={b.driverId || b.driver || ''}
-                            disabled
-                          >
-                            <option value="">-- Seleccionar Chofer --</option>
-                            {drivers.map(d => <option key={d.id} value={d.id}>{d.vehicle} - {d.name}</option>)}
-                          </select>
-                          <div className="search-field" style={{ width: '120px' }}>
-                            <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }}>$</span>
-                            <input 
-                              type="number" 
-                              className="form-control" 
-                              style={{ paddingLeft: '25px', backgroundColor: '#f1f5f9', cursor: 'not-allowed' }} 
-                              placeholder="0.00"
-                              defaultValue={b.driverPayment || ''}
-                              disabled
-                            />
+                          <div style={{ width: '120px', fontWeight: 600, color: '#0ea5e9' }}>
+                            {b.pickupTime || b.time || '--:--'}
+                          </div>
+                          <div style={{ flex: 1, minWidth: '200px', fontWeight: 500, color: 'var(--text-dark)' }}>
+                            {drivers.find(d => String(d.id) === String(b.driverId || b.driver))?.name || 'Sin Chofer'}
+                          </div>
+                          <div style={{ width: '120px', fontWeight: 600, color: 'var(--text-dark)' }}>
+                            $ {b.driverPayment || '0.00'}
                           </div>
                         </div>
                       </td>
