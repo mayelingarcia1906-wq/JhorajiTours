@@ -114,6 +114,9 @@ const FinancesPage = () => {
       category: categoryFilter,
       client: clientFilter
     });
+    setSelectedProv([]);
+    setSelectedDriver([]);
+    setSelectedExp([]);
   };
 
   const handleClear = () => {
@@ -131,6 +134,9 @@ const FinancesPage = () => {
       category: 'all',
       client: ''
     });
+    setSelectedProv([]);
+    setSelectedDriver([]);
+    setSelectedExp([]);
   };
 
   const [selectedProv, setSelectedProv] = useState([]);
@@ -330,7 +336,7 @@ const FinancesPage = () => {
           {['proveedores', 'choferes', 'gastos'].map(tab => (
             <button 
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => { setActiveTab(tab); setSelectedProv([]); setSelectedDriver([]); setSelectedExp([]); }}
               style={{
                 flex: 1, padding: '15px', background: 'none', border: 'none', 
                 borderBottom: activeTab === tab ? '3px solid var(--primary-color)' : '3px solid transparent',
@@ -362,7 +368,7 @@ const FinancesPage = () => {
                 <table className="table compact-table" style={{ margin: 0 }}>
                   <thead style={{ backgroundColor: '#f8fafc', color: '#64748b', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '1px solid #e2e8f0' }}>
                     <tr>
-                      <th style={{width: '40px', padding: '15px'}}><input type="checkbox" onChange={e => setSelectedProv(e.target.checked ? provLiq.map(p=>p.id) : [])} checked={provLiq.length > 0 && selectedProv.length === provLiq.length}/></th>
+                      <th style={{width: '40px', padding: '15px'}}><input type="checkbox" onChange={e => setSelectedProv(e.target.checked ? filteredProvLiq.map(p=>p.id) : [])} checked={filteredProvLiq.length > 0 && selectedProv.length === filteredProvLiq.length}/></th>
                       <th style={{ padding: '15px' }}>FECHA</th>
                       <th style={{ padding: '15px' }}>CLIENTE</th>
                       <th style={{ padding: '15px' }}>PROVEEDOR</th>
@@ -431,7 +437,7 @@ const FinancesPage = () => {
                 <table className="table compact-table">
                   <thead>
                     <tr>
-                      <th style={{width: '30px'}}><input type="checkbox" onChange={e => setSelectedDriver(e.target.checked ? driverLiq.map(d=>d.id) : [])} checked={driverLiq.length > 0 && selectedDriver.length === driverLiq.length}/></th>
+                      <th style={{width: '30px'}}><input type="checkbox" onChange={e => setSelectedDriver(e.target.checked ? filteredDriverLiq.map(d=>d.id) : [])} checked={filteredDriverLiq.length > 0 && selectedDriver.length === filteredDriverLiq.length}/></th>
                       <th>FECHA</th>
                       <th>CHOFER</th>
                       <th>CLIENTE</th>
@@ -484,7 +490,7 @@ const FinancesPage = () => {
                 <table className="table compact-table">
                   <thead>
                     <tr>
-                      <th style={{width: '30px'}}><input type="checkbox" onChange={e => setSelectedExp(e.target.checked ? expenses.map(ex=>ex.id) : [])} checked={expenses.length > 0 && selectedExp.length === expenses.length}/></th>
+                      <th style={{width: '30px'}}><input type="checkbox" onChange={e => setSelectedExp(e.target.checked ? filteredExpenses.map(ex=>ex.id) : [])} checked={filteredExpenses.length > 0 && selectedExp.length === filteredExpenses.length}/></th>
                       <th>FECHA</th>
                       <th>CATEGORÍA</th>
                       <th>DESCRIPCIÓN</th>
