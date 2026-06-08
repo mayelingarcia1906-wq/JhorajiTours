@@ -185,9 +185,8 @@ const FinancesPage = () => {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-        <div className="card" style={{ flex: '1 1 600px', overflow: 'hidden' }}>
-          <div className="tabs" style={{ display: 'flex', borderBottom: '1px solid var(--border-color)' }}>
+      <div className="card mb-4">
+        <div className="tabs" style={{ display: 'flex', borderBottom: '1px solid var(--border-color)' }}>
           {['proveedores', 'choferes', 'gastos'].map(tab => (
             <button 
               key={tab}
@@ -360,7 +359,7 @@ const FinancesPage = () => {
         </div>
       </div>
 
-      <div className="card" style={{ width: '300px', flex: '1 1 300px', maxWidth: '350px', padding: '20px', backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+      <div className="card" style={{ width: '100%', maxWidth: '400px', padding: '20px', backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
         <h3 style={{ color: '#0056b3', fontSize: '0.95rem', fontWeight: 700, marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
           RESUMEN DEL PERÍODO
         </h3>
@@ -419,7 +418,6 @@ const FinancesPage = () => {
           <span style={{ fontWeight: '800', color: '#000' }}>GANANCIA REAL:</span>
           <span style={{ fontWeight: '800', color: '#10b981' }}>US$ {gananciaReal.toFixed(2)}</span>
         </div>
-      </div>
       </div>
 
       {/* Modal Registrar Gasto */}
