@@ -440,11 +440,11 @@ const FinancesPage = () => {
               <div className="form-group">
                 <label>Categoría</label>
                 <select name="category" className="form-control" required>
-                  <option value="Gasolina">Gasolina</option>
-                  <option value="Mantenimiento">Mantenimiento</option>
-                  <option value="Pago Guías">Pago Guías</option>
-                  <option value="Pago Nómina">Pago Nómina</option>
-                  <option value="Otros">Otros</option>
+                  <option value="Gasolina">⛽ Gasolina</option>
+                  <option value="Mantenimiento">🔧 Mantenimiento</option>
+                  <option value="Pago Guías">👥 Pago Guías</option>
+                  <option value="Pago Nómina">💼 Pago Nómina</option>
+                  <option value="Otros">📝 Otros</option>
                 </select>
               </div>
               <div className="form-group">
