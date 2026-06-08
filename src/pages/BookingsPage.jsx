@@ -229,6 +229,11 @@ const BookingsPage = () => {
 const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, providers, toursList, agencies, drivers }) => {
   const [bookingType, setBookingType] = useState(editingBooking.type || 'ACTIVIDAD');
   const [isRoundTrip, setIsRoundTrip] = useState(!!editingBooking.isRoundTrip);
+  const [selectedProvider, setSelectedProvider] = useState(editingBooking.provider || '');
+
+  const activeProvider = providers.find(p => p.name === selectedProvider);
+  const activeProviderId = activeProvider ? String(activeProvider.id) : null;
+  const availableTours = activeProviderId ? toursList.filter(t => String(t.providerId) === activeProviderId) : [];
 
   return (
     <div style={{ backgroundColor: 'var(--bg-color)', minHeight: '100%' }}>
@@ -277,7 +282,7 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
               <>
                 <div className="form-group mb-0">
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Proveedor</label>
-                  <select name="provider" className="form-control" defaultValue={editingBooking.provider}>
+                  <select name="provider" className="form-control" value={selectedProvider} onChange={(e) => setSelectedProvider(e.target.value)}>
                     <option value="">Seleccionar</option>
                     {providers.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
                   </select>
@@ -286,7 +291,7 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Actividad / Tour</label>
                   <select name="tour" className="form-control" defaultValue={editingBooking.tour}>
                     <option value="">Seleccionar</option>
-                    {toursList.map(t => <option key={t.id} value={t.name}>{t.name}</option>)}
+                    {availableTours.map(t => <option key={t.id} value={t.name}>{t.name}</option>)}
                   </select>
                 </div>
               </>
