@@ -56,13 +56,15 @@ const FinancesPage = () => {
   const [driverFilter, setDriverFilter] = useState('all');
   const [providerFilter, setProviderFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [clientFilter, setClientFilter] = useState('');
 
   const [appliedFilters, setAppliedFilters] = useState({
     fromDate: '2026-06-05',
     toDate: '2026-06-05',
     driver: 'all',
     provider: 'all',
-    category: 'all'
+    category: 'all',
+    client: ''
   });
 
   const handleRefresh = () => {
@@ -71,7 +73,8 @@ const FinancesPage = () => {
       toDate,
       driver: driverFilter,
       provider: providerFilter,
-      category: categoryFilter
+      category: categoryFilter,
+      client: clientFilter
     });
   };
 
@@ -86,6 +89,7 @@ const FinancesPage = () => {
       const selectedProvObj = providers.find(pr => pr.id.toString() === appliedFilters.provider);
       if (selectedProvObj && p.provider !== selectedProvObj.name) return false;
     }
+    if (appliedFilters.client && p.client && !p.client.toLowerCase().includes(appliedFilters.client.toLowerCase())) return false;
     return true;
   });
 
@@ -95,6 +99,7 @@ const FinancesPage = () => {
       const selectedDriverObj = drivers.find(dr => dr.id.toString() === appliedFilters.driver);
       if (selectedDriverObj && d.driver !== selectedDriverObj.name) return false;
     }
+    if (appliedFilters.client && d.client && !d.client.toLowerCase().includes(appliedFilters.client.toLowerCase())) return false;
     return true;
   });
 
@@ -243,6 +248,10 @@ const FinancesPage = () => {
               <option value="all">-- Categoría --</option>
               {expenseCategories.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
             </select>
+          )}
+
+          {(activeTab === 'proveedores' || activeTab === 'choferes') && (
+            <input type="text" className="form-control" style={{ maxWidth: '180px' }} placeholder="Buscar cliente..." value={clientFilter} onChange={e => setClientFilter(e.target.value)} />
           )}
 
           <button className="btn btn-primary" onClick={handleRefresh} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
