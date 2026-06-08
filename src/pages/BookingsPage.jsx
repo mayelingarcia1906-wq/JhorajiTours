@@ -284,8 +284,10 @@ const BookingsPage = () => {
               <button className="btn btn-outline" disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}>{t('next')}</button>
             </div>
           </div>
-        </>
-      ) : (
+        )}
+      </div>
+    </>
+  ) : (
         <OrdersPage />
       )}
 
