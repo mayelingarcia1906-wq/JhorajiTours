@@ -31,7 +31,7 @@ const formatDate = (dateStr) => {
   return `${day}/${month}/${year}`;
 };
 
-const OrdersPage = () => {
+const OrdersPage = ({ hideHeader }) => {
   const { addToast } = useToast();
   const [orders, setOrders] = useState(() => readStoredData('jhoraji_orders', initialOrders));
   const providers = readStoredData('jhoraji_providers', []);
@@ -131,21 +131,23 @@ const OrdersPage = () => {
 
   return (
     <div>
-      <div className="page-header mb-4">
-        <div>
-          <h2>Control de órdenes</h2>
-          <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
+      {!hideHeader && (
+        <div className="page-header mb-4">
+          <div>
+            <h2>Control de órdenes</h2>
+            <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
+            <button className="btn btn-primary" onClick={() => {
+              const d = new Date();
+              d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+              setEditingOrder({ ...emptyOrder, date: d.toISOString().split('T')[0] });
+            }}>
+              <Plus size={18} /> Nueva Orden
+            </button>
+          </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
-          <button className="btn btn-primary" onClick={() => {
-            const d = new Date();
-            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-            setEditingOrder({ ...emptyOrder, date: d.toISOString().split('T')[0] });
-          }}>
-            <Plus size={18} /> Nueva Orden
-          </button>
-        </div>
-      </div>
+      )}
 
       <div className="card mb-4" style={{ padding: '20px' }}>
         

@@ -201,133 +201,17 @@ const BookingsPage = () => {
 
   return (
     <div>
-      <div className="tabs mb-4" style={{ display: 'flex', borderBottom: '1px solid var(--border-color)' }}>
-        <button onClick={() => setMainTab('bookings')} style={{ flex: 1, padding: '15px', background: 'none', border: 'none', borderBottom: mainTab === 'bookings' ? '3px solid var(--primary-color)' : '3px solid transparent', color: mainTab === 'bookings' ? 'var(--primary-color)' : 'var(--text-light)', fontWeight: mainTab === 'bookings' ? 'bold' : 'normal', textTransform: 'uppercase', fontSize: '0.85rem' }}>Lista de Reservas</button>
-        <button onClick={() => setMainTab('orders')} style={{ flex: 1, padding: '15px', background: 'none', border: 'none', borderBottom: mainTab === 'orders' ? '3px solid var(--primary-color)' : '3px solid transparent', color: mainTab === 'orders' ? 'var(--primary-color)' : 'var(--text-light)', fontWeight: mainTab === 'orders' ? 'bold' : 'normal', textTransform: 'uppercase', fontSize: '0.85rem' }}>Control de Órdenes</button>
+      <div className="page-header mb-4">
+        <div>
+          <h2>{t('bookingsTitle')}</h2>
+          <p className="text-muted" style={{ margin: 0 }}>{t('bookingsSubtitle')}</p>
+        </div>
+        <button className="btn btn-primary" onClick={() => setEditingBooking({ ...emptyBooking })}>
+          <Plus size={18} /> {t('newBooking')}
+        </button>
       </div>
 
-      {mainTab === 'bookings' ? (
-        <>
-          <div className="page-header mb-4">
-            <div>
-              <h2>{t('bookingsTitle')}</h2>
-              <p className="text-muted" style={{ margin: 0 }}>{t('bookingsSubtitle')}</p>
-            </div>
-            <button className="btn btn-primary" onClick={() => setEditingBooking({ ...emptyBooking })}>
-              <Plus size={18} /> {t('newBooking')}
-            </button>
-          </div>
-
-          <div className="card">
-        <div className="page-toolbar mb-4">
-          <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '5px', maxWidth: '100%' }}>
-            {statusTabs.map((tab) => (
-              <button key={tab} className={`tab-btn ${activeTab === tab ? 'active' : ''}`} onClick={() => handleTabChange(tab)}>
-                {t(tab)}
-              </button>
-            ))}
-          </div>
-          <div>
-            <div className="search-integrated">
-              <Search size={16} className="search-icon" />
-              <input type="text" placeholder={t('searchBookings')} className="form-control" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={handleKeyDown} />
-              <button className={`search-clear-btn ${searchQuery ? 'visible' : ''}`} onClick={clearSearch} title="Limpiar" type="button"><Eraser size={15} /></button>
-              <button className="search-btn-inner" onClick={handleSearch} type="button"><Search size={13} /> {t('search')}</button>
-            </div>
-          </div>
-        </div>
-
-        <div className="table-wrapper">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>{t('bookingId')}</th>
-                <th>{t('customer')}</th>
-                <th>{t('tour')}</th>
-                <th>{t('date')}</th>
-                <th>{t('pax')}</th>
-                <th>{t('hotel')}</th>
-                <th>{t('status')}</th>
-                <th>{t('amount')}</th>
-                <th>{t('actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentItems.map((booking) => (
-                <tr key={booking.id}>
-                  <td className="font-bold">{booking.id}</td>
-                  <td><div style={{ display: 'flex', flexDirection: 'column' }}><span style={{ fontWeight: 500 }}>{booking.customer}</span><span style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>{booking.email}</span></div></td>
-                  <td>{booking.type === 'TRASLADO' ? `Traslado: ${booking.pickupLocation || ''}` : booking.tour}</td>
-                  <td>{booking.date}</td>
-                  <td>{booking.pax}</td>
-                  <td>{booking.type === 'TRASLADO' ? booking.dropoffLocation : booking.hotel}</td>
-                  <td><span className={`badge badge-${statusBadge[booking.status]}`}>{t(booking.status)}</span></td>
-                  <td className="font-bold">{booking.amount}</td>
-                  <td>
-                    <div className="action-buttons">
-                      <button className="icon-btn" onClick={() => setSelectedBooking(booking)} title={t('view')}><Eye size={18} /></button>
-                      <button className="icon-btn" onClick={() => setEditingBooking(booking)} title={t('edit')}><Edit3 size={18} /></button>
-                      <button className="icon-btn" onClick={() => setShowDeleteConfirm(booking.id)} title={t('delete')} style={{ color: 'var(--danger)' }}><Trash2 size={18} /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {totalPages > 1 && (
-          <div className="d-flex justify-content-between align-items-center mt-4" style={{ padding: '0 1rem' }}>
-            <span className="text-muted">{t('showing')} {((currentPage - 1) * itemsPerPage) + 1} {t('to')} {Math.min(currentPage * itemsPerPage, filteredBookings.length)} {t('of')} {filteredBookings.length}</span>
-            <div className="d-flex gap-2">
-              <button className="btn btn-outline" disabled={currentPage === 1} onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}>{t('previous')}</button>
-              <button className="btn btn-outline" disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}>{t('next')}</button>
-            </div>
-          </div>
-        )}
-      </div>
-    </>
-  ) : (
-        <OrdersPage />
-      )}
-
-      {selectedBooking && (
-        <div className="modal-overlay">
-          <div className="modal-content" onClick={(event) => event.stopPropagation()}>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h3 style={{ margin: 0 }}>{t('bookingDetail')} {selectedBooking.id}</h3>
-              <button onClick={() => setSelectedBooking(null)} style={{ background: 'none', color: 'var(--text-light)' }}><X size={24} /></button>
-            </div>
-            <div className="responsive-grid">
-              <div><p className="text-muted mb-1">{t('customer')}</p><div className="d-flex align-items-center gap-2"><User size={16}/>{selectedBooking.customer}</div></div>
-              <div><p className="text-muted mb-1">Teléfono</p><div className="font-bold">{selectedBooking.phone}</div></div>
-              <div><p className="text-muted mb-1">{t('tour')}</p><div className="d-flex align-items-center gap-2"><MapPin size={16}/>{selectedBooking.type === 'TRASLADO' ? 'Traslado' : selectedBooking.tour}</div></div>
-              <div><p className="text-muted mb-1">{t('date')}</p><div className="d-flex align-items-center gap-2"><Calendar size={16}/>{selectedBooking.date}</div></div>
-              <div><p className="text-muted mb-1">{t('people')}</p><div className="d-flex align-items-center gap-2"><Users size={16}/>{selectedBooking.pax}</div></div>
-              <div><p className="text-muted mb-1">{t('status')}</p><span className={`badge badge-${statusBadge[selectedBooking.status]}`}>{t(selectedBooking.status)}</span></div>
-              <div><p className="text-muted mb-1">{t('totalAmount')}</p><div className="d-flex align-items-center gap-1 font-bold"><DollarSign size={16} color="var(--primary-color)"/>{selectedBooking.amount}</div></div>
-              <div style={{ gridColumn: '1 / -1' }}><p className="text-muted mb-1">{t('notes')}</p><div style={{ padding: '10px', backgroundColor: 'var(--bg-color)', borderRadius: 'var(--radius-md)', minHeight: '60px' }}>{selectedBooking.notes || t('noNotes')}</div></div>
-            </div>
-            <div className="modal-actions">
-              <button className="btn btn-outline" onClick={() => setSelectedBooking(null)}>{t('close')}</button>
-              <button className="btn btn-primary" onClick={() => { setEditingBooking(selectedBooking); setSelectedBooking(null); }}>{t('editBooking')}</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showDeleteConfirm && (
-        <div className="modal-overlay" style={{ zIndex: 300 }}>
-          <div className="card" style={{ maxWidth: '420px', width: '90%', textAlign: 'center' }}>
-            <h3 style={{ marginBottom: '15px' }}>{t('deleteBookingTitle')}</h3>
-            <p className="text-muted mb-4">{t('deleteBookingText')} {showDeleteConfirm}?</p>
-            <div className="d-flex justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
-              <button className="btn btn-outline" onClick={() => setShowDeleteConfirm(null)}>{t('cancel')}</button>
-              <button className="btn btn-danger" onClick={handleDelete}>{t('delete')}</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <OrdersPage hideHeader={true} />
     </div>
   );
 };
