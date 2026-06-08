@@ -275,21 +275,21 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
             <div className="form-group mb-0">
               <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Hora recogida</label>
               <div style={{ position: 'relative' }}>
-                <input name="time" type="time" className="form-control" defaultValue={editingBooking.time} />
+                <input name="time" type="time" className="form-control" required defaultValue={editingBooking.time} />
               </div>
             </div>
             {bookingType === 'ACTIVIDAD' && (
               <>
                 <div className="form-group mb-0">
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Proveedor</label>
-                  <select name="provider" className="form-control" value={selectedProvider} onChange={(e) => setSelectedProvider(e.target.value)}>
+                  <select name="provider" className="form-control" required value={selectedProvider} onChange={(e) => setSelectedProvider(e.target.value)}>
                     <option value="">Seleccionar</option>
                     {providers.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
                   </select>
                 </div>
                 <div className="form-group mb-0">
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Actividad / Tour</label>
-                  <select name="tour" className="form-control" defaultValue={editingBooking.tour}>
+                  <select name="tour" className="form-control" required defaultValue={editingBooking.tour}>
                     <option value="">Seleccionar</option>
                     {availableTours.map(t => <option key={t.id} value={t.name}>{t.name}</option>)}
                   </select>
@@ -304,22 +304,22 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
                 <div className="form-group mb-0">
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Seleccionar Chofer</label>
-                  <select name="driver" className="form-control" defaultValue={editingBooking.driver}>
+                  <select name="driver" className="form-control" required defaultValue={editingBooking.driver}>
                     <option value="">Seleccionar</option>
                     {drivers.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
                   </select>
                 </div>
                 <div className="form-group mb-0">
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Lugar de Recogida</label>
-                  <input name="pickupLocation" type="text" className="form-control" defaultValue={editingBooking.pickupLocation} />
+                  <input name="pickupLocation" type="text" className="form-control" required defaultValue={editingBooking.pickupLocation} />
                 </div>
                 <div className="form-group mb-0">
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Lugar de Destino</label>
-                  <input name="dropoffLocation" type="text" className="form-control" defaultValue={editingBooking.dropoffLocation} />
+                  <input name="dropoffLocation" type="text" className="form-control" required defaultValue={editingBooking.dropoffLocation} />
                 </div>
                 <div className="form-group mb-0">
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Número de Vuelo</label>
-                  <input name="flightNumber" type="text" className="form-control" defaultValue={editingBooking.flightNumber} />
+                  <input name="flightNumber" type="text" className="form-control" required defaultValue={editingBooking.flightNumber} />
                 </div>
               </div>
               <div style={{ marginTop: '15px' }}>
@@ -337,7 +337,7 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
                   </div>
                   <div className="form-group mb-0">
                     <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Hora Recogida (Regreso)</label>
-                    <input name="returnTime" type="time" className="form-control" defaultValue={editingBooking.returnTime} />
+                    <input name="returnTime" type="time" className="form-control" required defaultValue={editingBooking.returnTime} />
                   </div>
                 </div>
               )}
@@ -358,7 +358,7 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
             )}
             <div className="form-group mb-0">
               <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Teléfono</label>
-              <input name="phone" type="tel" className="form-control" defaultValue={editingBooking.phone} />
+              <input name="phone" type="tel" className="form-control" required defaultValue={editingBooking.phone} />
             </div>
             <div className="form-group mb-0">
               <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Idioma</label>
@@ -377,15 +377,15 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
             </div>
             <div className="form-group mb-0">
               <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Niños</label>
-              <input name="children" type="number" min="0" className="form-control" defaultValue={editingBooking.children || 0} />
+              <input name="children" type="number" min="0" className="form-control" required defaultValue={editingBooking.children || 0} />
             </div>
             <div className="form-group mb-0">
               <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Equipos/Unidades</label>
-              <input name="units" type="number" min="1" className="form-control" defaultValue={editingBooking.units || 1} />
+              <input name="units" type="number" min="1" className="form-control" required defaultValue={editingBooking.units || 1} />
             </div>
             <div className="form-group mb-0">
               <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Costo del Traslado / Proveedor</label>
-              <input name="providerCost" type="number" step="0.01" min="0" className="form-control" defaultValue={editingBooking.providerCost || 0} />
+              <input name="providerCost" type="number" step="0.01" min="0" className="form-control" required defaultValue={editingBooking.providerCost || 0} />
             </div>
 
             <div className="form-group mb-0">
@@ -407,7 +407,7 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
                 </div>
                 <div className="form-group mb-0">
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>% Plataforma</label>
-                  <input name="platformPercent" type="number" step="0.01" min="0" className="form-control" defaultValue={editingBooking.platformPercent || 0} />
+                  <input name="platformPercent" type="number" step="0.01" min="0" className="form-control" required defaultValue={editingBooking.platformPercent || 0} />
                 </div>
               </>
             )}
@@ -429,7 +429,7 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
 
             <div className="form-group mb-0" style={{ gridColumn: '1 / -1' }}>
               <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Notas</label>
-              <textarea name="notes" className="form-control" rows="3" defaultValue={editingBooking.notes}></textarea>
+              <textarea name="notes" className="form-control" rows="3" required defaultValue={editingBooking.notes}></textarea>
             </div>
           </div>
 
