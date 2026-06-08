@@ -267,7 +267,24 @@ const BookingsPage = () => {
     if (booking) {
       setViewingBooking(booking);
     } else {
-      addToast('Reserva original no encontrada', 'warning');
+      addToast('Reserva original no encontrada, mostrando datos de la orden', 'warning');
+      setViewingBooking({
+        id: order.id,
+        type: order.type,
+        date: order.date,
+        time: order.time,
+        customer: order.client,
+        providerCost: parseFloat((order.providerPrice||'0').replace(/[^0-9.]/g, '') || 0),
+        clientPrice: '---',
+        provider: order.provider,
+        driver: order.driver,
+        tour: order.type === 'ACTIVIDAD' ? order.service : '',
+        pickupLocation: order.type === 'TRASLADO' ? order.route.split(' - ')[0] : '',
+        dropoffLocation: order.type === 'TRASLADO' ? order.route.split(' - ')[1] : '',
+        pax: order.adults || 1,
+        children: order.children || 0,
+        notes: 'Datos obtenidos de la orden antigua.'
+      });
     }
   };
 
