@@ -132,6 +132,7 @@ const OrdersPage = () => {
     });
   }, [orders, appliedFilters]);
 
+  return (
     <div>
       <div className="page-header mb-4">
         <div>
