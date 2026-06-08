@@ -213,9 +213,6 @@ const DashboardLayout = () => {
             <button className="mobile-menu-btn d-none d-lg-block" onClick={() => setDesktopSidebarOpen(!desktopSidebarOpen)}>
               <Menu size={24} />
             </button>
-            <div className="d-none d-md-block" style={{ color: 'var(--text-light)', fontWeight: 500, fontSize: '0.95rem', marginLeft: '15px', textTransform: 'capitalize' }}>
-              {new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-            </div>
           </div>
 
           <div className="d-flex align-items-center gap-4 dashboard-header-actions">
@@ -297,12 +294,6 @@ const DashboardLayout = () => {
                 <div style={{ position: 'absolute', top: '100%', right: '0', marginTop: '10px', width: '270px', backgroundColor: 'var(--card-bg)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border-color)', zIndex: 60, padding: '10px 0' }}>
                   <div style={{ padding: '12px 18px', borderBottom: '1px solid var(--border-color)', marginBottom: '6px' }}>
                     <div style={{ fontWeight: 700, color: 'var(--text-dark)' }}>{currentUser.name}</div>
-                    <div className="text-muted" style={{ marginTop: '2px' }}>{currentUser.email}</div>
-                    <div className="d-flex gap-2" style={{ marginTop: '8px', flexWrap: 'wrap' }}>
-                      <span className={`badge ${isAdmin ? 'badge-danger' : 'badge-primary'}`}>{currentUser.role}</span>
-                      <span className="badge badge-success">{currentUser.status || 'Activo'}</span>
-                    </div>
-                    <div className="text-muted" style={{ marginTop: '8px', fontSize: '0.82rem' }}>{currentUser.department || 'Administración'} · {currentUser.phone || '829-580-8964'}</div>
                   </div>
                   <button className="dropdown-item" style={{ width: '100%', padding: '10px 20px', textAlign: 'left', background: 'none', color: 'var(--text-dark)' }} onClick={() => { setProfileOpen(false); navigate('/settings?section=profile'); }}>{t('myProfile')}</button>
                   <button className="dropdown-item" style={{ width: '100%', padding: '10px 20px', textAlign: 'left', background: 'none', color: 'var(--text-dark)' }} onClick={() => { setProfileOpen(false); navigate('/settings'); }}>{t('settings')}</button>

@@ -109,7 +109,9 @@ const DashboardHome = () => {
       <div className="d-flex justify-content-between align-items-center mb-4" style={{ flexWrap: 'wrap', gap: '15px' }}>
         <div>
           <h2>{t('dashboardSummary')}</h2>
-          <p className="text-muted" style={{ margin: 0 }}>{t('dashboardWelcome')}</p>
+          <p className="text-muted" style={{ margin: 0, textTransform: 'capitalize' }}>
+            {new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </p>
         </div>
         <button 
           className="btn btn-primary d-flex align-items-center gap-2" 

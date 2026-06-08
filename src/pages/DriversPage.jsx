@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Calendar, Truck, User, Edit3, Trash2, X, Plus } from 'lucide-react';
+import { Calendar, Truck, User, Edit3, Trash2, X, Plus, Printer } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
@@ -224,14 +224,17 @@ const DriversPage = () => {
                       </td>
                       <td>
                         <div className="d-flex gap-2" style={{ flexWrap: 'nowrap', alignItems: 'center' }}>
-                          <div style={{ width: '120px', fontWeight: 600, color: '#0ea5e9' }}>
-                            {b.pickupTime || b.time || '--:--'}
+                          <div style={{ width: '120px' }}>
+                            <div style={{ fontSize: '0.65rem', color: 'var(--text-light)', marginBottom: '2px', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Hora</div>
+                            <div style={{ fontWeight: 600, color: '#0ea5e9' }}>{b.pickupTime || b.time || '--:--'}</div>
                           </div>
-                          <div style={{ flex: 1, minWidth: '200px', fontWeight: 500, color: 'var(--text-dark)' }}>
-                            {drivers.find(d => String(d.id) === String(b.driverId || b.driver))?.name || 'Sin Chofer'}
+                          <div style={{ flex: 1, minWidth: '200px' }}>
+                            <div style={{ fontSize: '0.65rem', color: 'var(--text-light)', marginBottom: '2px', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Chofer Asignado</div>
+                            <div style={{ fontWeight: 500, color: 'var(--text-dark)' }}>{drivers.find(d => String(d.id) === String(b.driverId || b.driver))?.name || 'Sin Chofer'}</div>
                           </div>
-                          <div style={{ width: '120px', fontWeight: 600, color: 'var(--text-dark)' }}>
-                            $ {b.driverPayment || '0.00'}
+                          <div style={{ width: '120px' }}>
+                            <div style={{ fontSize: '0.65rem', color: 'var(--text-light)', marginBottom: '2px', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Pago Prov.</div>
+                            <div style={{ fontWeight: 600, color: 'var(--text-dark)' }}>$ {b.driverPayment || '0.00'}</div>
                           </div>
                         </div>
                       </td>
@@ -346,7 +349,13 @@ const DriversPage = () => {
           </button>
 
           {reportGenerated && (
-            <div className="table-wrapper">
+            <>
+              <div className="d-flex justify-content-end mb-3 gap-2">
+                <button className="btn btn-outline" onClick={() => window.print()} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Printer size={16}/> Imprimir Reporte
+                </button>
+              </div>
+              <div className="table-wrapper">
               <table className="table">
                 <thead>
                   <tr>
@@ -393,6 +402,7 @@ const DriversPage = () => {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </div>
       )}
