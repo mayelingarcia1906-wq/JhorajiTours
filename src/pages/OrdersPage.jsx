@@ -152,7 +152,6 @@ const OrdersPage = () => {
       </div>
 
       <div className="card mb-4" style={{ padding: '20px' }}>
-        <p className="text-muted mb-3" style={{ fontSize: '0.9rem' }}>Control de Órdenes - Jhoraji Tour Operador</p>
         
         <div className="responsive-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px', alignItems: 'end', marginBottom: '20px' }}>
           <div>
@@ -187,20 +186,24 @@ const OrdersPage = () => {
         </div>
 
         {selectedOrders.length > 0 && (
-          <div className="d-flex gap-2 mb-3">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '10px 15px', backgroundColor: 'var(--bg-color)', borderRadius: '8px', marginBottom: '15px', border: '1px solid var(--border-color)' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-dark)' }}>{selectedOrders.length} seleccionada(s)</span>
+            <div style={{ width: '1px', height: '20px', backgroundColor: 'var(--border-color)' }}></div>
             <button 
               className="btn" 
               onClick={handlePrintSelected} 
-              style={{ backgroundColor: '#a855f7', color: '#fff', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}
+              style={{ backgroundColor: 'transparent', color: '#a855f7', fontSize: '0.85rem', display: 'flex', gap: '6px', alignItems: 'center', padding: '4px 8px', fontWeight: 600, border: 'none' }}
+              title="Imprimir"
             >
-              <Printer size={15}/> IMPRIMIR SELECCIÓN
+              <Printer size={16}/> Imprimir
             </button>
             <button 
               className="btn" 
               onClick={handleDeleteSelected} 
-              style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}
+              style={{ backgroundColor: 'transparent', color: '#ef4444', fontSize: '0.85rem', display: 'flex', gap: '6px', alignItems: 'center', padding: '4px 8px', fontWeight: 600, border: 'none' }}
+              title="Eliminar"
             >
-              <Trash2 size={15}/> ELIMINAR SELECCIÓN
+              <Trash2 size={16}/> Eliminar
             </button>
           </div>
         )}
@@ -248,8 +251,8 @@ const OrdersPage = () => {
                   <td style={{ color: 'var(--text-dark)', fontWeight: 700, fontSize: '0.9rem' }}>{o.providerPrice}</td>
                   <td style={{ textAlign: 'right' }}>
                     <div className="d-flex gap-2" style={{ justifyContent: 'flex-end' }}>
-                      <button className="btn" onClick={() => setEditingOrder(o)} style={{ backgroundColor: '#14b8a6', color: '#fff', padding: '4px 12px', borderRadius: '15px', fontSize: '0.8rem', border: 'none' }}>Editar</button>
-                      <button className="btn" style={{ backgroundColor: '#22c55e', color: '#fff', padding: '4px 12px', borderRadius: '15px', fontSize: '0.8rem', border: 'none' }}>WhatsApp</button>
+                      <button className="btn" onClick={() => setEditingOrder(o)} title="Editar" style={{ backgroundColor: 'rgba(20, 184, 166, 0.1)', color: '#14b8a6', padding: '6px', borderRadius: '8px', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Edit3 size={16} /></button>
+                      <button className="btn" title="WhatsApp" style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)', color: '#22c55e', padding: '6px', borderRadius: '8px', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MessageCircle size={16} /></button>
                     </div>
                   </td>
                 </tr>
