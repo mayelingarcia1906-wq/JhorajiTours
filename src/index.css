@@ -90,7 +90,7 @@ button {
   transition: var(--transition);
 }
 
-input, select, textarea {
+input:not([type="radio"]):not([type="checkbox"]), select, textarea {
   background-color: var(--bg-color);
   color: var(--text-dark);
   border: 1px solid var(--border-color);
@@ -164,12 +164,6 @@ input, select, textarea {
   transition: var(--transition);
 }
 .form-control:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(14,165,233,0.1); }
-
-/* Custom Checkbox and Radio focus */
-input[type="radio"]:focus, input[type="checkbox"]:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(14,165,233,0.25);
-}
 
 /* Table */
 .table-wrapper {
