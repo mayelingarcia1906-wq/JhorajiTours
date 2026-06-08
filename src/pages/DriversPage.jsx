@@ -227,15 +227,15 @@ const DriversPage = () => {
                           <input 
                             type="time" 
                             className="form-control" 
-                            style={{ width: '120px' }} 
+                            style={{ width: '120px', backgroundColor: '#f1f5f9', cursor: 'not-allowed' }} 
                             defaultValue={b.pickupTime || b.time || ''}
-                            onBlur={(e) => handleAssignDriver(b.id, b.driverId || b.driver, e.target.value, b.driverPayment)}
+                            disabled
                           />
                           <select 
                             className="form-control" 
-                            style={{ flex: 1, minWidth: '200px' }}
+                            style={{ flex: 1, minWidth: '200px', backgroundColor: '#f1f5f9', cursor: 'not-allowed' }}
                             value={b.driverId || b.driver || ''}
-                            onChange={(e) => handleAssignDriver(b.id, e.target.value, b.pickupTime, b.driverPayment)}
+                            disabled
                           >
                             <option value="">-- Seleccionar Chofer --</option>
                             {drivers.map(d => <option key={d.id} value={d.id}>{d.vehicle} - {d.name}</option>)}
@@ -245,10 +245,10 @@ const DriversPage = () => {
                             <input 
                               type="number" 
                               className="form-control" 
-                              style={{ paddingLeft: '25px' }} 
+                              style={{ paddingLeft: '25px', backgroundColor: '#f1f5f9', cursor: 'not-allowed' }} 
                               placeholder="0.00"
                               defaultValue={b.driverPayment || ''}
-                              onBlur={(e) => handleAssignDriver(b.id, b.driverId || b.driver, b.pickupTime, e.target.value)}
+                              disabled
                             />
                           </div>
                         </div>
