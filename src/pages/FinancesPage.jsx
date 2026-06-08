@@ -31,6 +31,7 @@ const FinancesPage = () => {
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState('proveedores');
   const [showExpenseModal, setShowExpenseModal] = useState(false);
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [expenseCategory, setExpenseCategory] = useState('Gasolina');
   const [expenseCatOpen, setExpenseCatOpen] = useState(false);
   
@@ -253,78 +254,49 @@ const FinancesPage = () => {
           <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <button className="btn btn-outline" onClick={() => setShowSummaryModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <FileText size={18} /> Resumen
+          </button>
           <button className="btn btn-primary" onClick={() => { setExpenseCategory('Gasolina'); setExpenseCatOpen(false); setShowExpenseModal(true); }}>
             <Plus size={18} /> Registrar Gasto
           </button>
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
-        <div style={{ flex: '1 1 250px', maxWidth: '320px', width: '100%' }}>
-          <div className="card" style={{ width: '100%', padding: '20px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px' }}>
-            <h3 style={{ color: '#0f172a', fontSize: '0.95rem', fontWeight: 800, marginBottom: '25px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              RESUMEN DEL PERÍODO
-            </h3>
-            
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '0.9rem' }}>
-              <span style={{ color: '#475569' }}>Total Reservas:</span>
-              <span style={{ fontWeight: 800, color: '#0f172a' }}>{allBookings.filter(b => b.status === 'paid' && b.date >= appliedFilters.fromDate && b.date <= appliedFilters.toDate).length}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '0.9rem' }}>
-              <span style={{ color: '#475569' }}>Ingreso Bruto:</span>
-              <span style={{ fontWeight: 800, color: '#10b981' }}>US$ {totalBruto.toFixed(2)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '0.9rem' }}>
-              <span style={{ color: '#475569' }}>Pago Proveedores:</span>
-              <span style={{ fontWeight: 800, color: '#ef4444' }}>US$ {totalProv.toFixed(2)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '0.9rem' }}>
-              <span style={{ color: '#475569' }}>Comisiones OTA:</span>
-              <span style={{ fontWeight: 800, color: '#f59e0b' }}>US$ {totalOta.toFixed(2)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '0.9rem' }}>
-              <span style={{ color: '#475569' }}>Pagos Choferes:</span>
-              <span style={{ fontWeight: 800, color: '#3b82f6' }}>US$ {totalDriver.toFixed(2)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '25px', fontSize: '0.9rem' }}>
-              <span style={{ color: '#475569' }}>Gastos Operativos:</span>
-              <span style={{ fontWeight: 800, color: '#0f172a' }}>US$ {totalGastos.toFixed(2)}</span>
-            </div>
-
-            <div style={{ fontWeight: 800, marginBottom: '15px', fontSize: '0.95rem', color: '#0f172a' }}>
-              Desglose Gastos:
-            </div>
-            
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.85rem' }}>
-              <span style={{ color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' }}>⛽ Gasolina:</span>
-              <span style={{ color: '#475569' }}>US$ {gasTotal.toFixed(2)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.85rem' }}>
-              <span style={{ color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' }}>🔧 Mantenimiento:</span>
-              <span style={{ color: '#475569' }}>US$ {mantTotal.toFixed(2)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.85rem' }}>
-              <span style={{ color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' }}>👥 Pago Guías:</span>
-              <span style={{ color: '#475569' }}>US$ {guiasTotal.toFixed(2)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.85rem' }}>
-              <span style={{ color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' }}>💼 Pago Nómina:</span>
-              <span style={{ color: '#475569' }}>US$ {nominaTotal.toFixed(2)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '25px', fontSize: '0.85rem' }}>
-              <span style={{ color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' }}>📝 Otros:</span>
-              <span style={{ color: '#475569' }}>US$ {otrosTotal.toFixed(2)}</span>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px', paddingTop: '15px', borderTop: '1px solid #e2e8f0', fontSize: '0.95rem' }}>
-              <span style={{ fontWeight: '800', color: '#0f172a' }}>GANANCIA REAL:</span>
-              <span style={{ fontWeight: '800', color: gananciaReal >= 0 ? '#10b981' : '#ef4444' }}>US$ {gananciaReal.toFixed(2)}</span>
-            </div>
-          </div>
+      {/* METRICS ROW */}
+      <div className="metrics-row mb-4" style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+        <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>INGRESO BRUTO</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-dark)', margin: '5px 0' }}>US$ {totalBruto.toFixed(2)}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>Total pagado por clientes</div>
         </div>
+        <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>PROV. (PAGOS)</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ef4444', margin: '5px 0' }}>US$ {totalProv.toFixed(2)}</div>
+        </div>
+        <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>OTA</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f59e0b', margin: '5px 0' }}>US$ {totalOta.toFixed(2)}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>Comisiones plataformas</div>
+        </div>
+        <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>CHOFERES</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#3b82f6', margin: '5px 0' }}>US$ {totalDriver.toFixed(2)}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>Pagos a conductores</div>
+        </div>
+        <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>GASTOS OPER.</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-dark)', margin: '5px 0' }}>US$ {totalGastos.toFixed(2)}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>Incluye Nómina</div>
+        </div>
+        <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#166534' }}>GANANCIA REAL</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#15803d', margin: '5px 0' }}>US$ {gananciaReal.toFixed(2)}</div>
+          <div style={{ fontSize: '0.75rem', color: '#166534', borderTop: '1px dashed #bbf7d0', paddingTop: '5px' }}>Ingresos - Gastos</div>
+        </div>
+      </div>
 
-        <div style={{ flex: '3 1 600px', width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div className="card mb-4" style={{ overflowX: 'auto', margin: 0 }}>
+      <div className="card mb-4" style={{ overflowX: 'auto' }}>
         <div className="page-toolbar" style={{ display: 'flex', gap: '15px', flexWrap: 'nowrap', alignItems: 'center', minWidth: 'max-content' }}>
           <input type="date" className="form-control" style={{ maxWidth: '160px' }} value={fromDate} onChange={e => setFromDate(e.target.value)} />
           <input type="date" className="form-control" style={{ maxWidth: '160px' }} value={toDate} onChange={e => setToDate(e.target.value)} />
@@ -551,8 +523,76 @@ const FinancesPage = () => {
         </div>
       </div>
 
+      {/* Modal Resumen del Período */}
+      {showSummaryModal && (
+        <div className="modal-overlay" onClick={() => setShowSummaryModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px', padding: 0 }}>
+            <div className="card" style={{ width: '100%', margin: 0, padding: '20px', backgroundColor: '#fff', border: 'none', borderRadius: '12px', boxShadow: 'none' }}>
+              <div className="d-flex justify-content-between align-items-center mb-4">
+                <h3 style={{ color: '#0f172a', fontSize: '0.95rem', fontWeight: 700, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  RESUMEN DEL PERÍODO
+                </h3>
+                <button onClick={() => setShowSummaryModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 0, display: 'flex' }}><X size={20} /></button>
+              </div>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Total Reservas:</span>
+          <span style={{ fontWeight: 'bold', color: '#000' }}>{allBookings.length}</span>
         </div>
-      </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Ingreso Bruto:</span>
+          <span style={{ fontWeight: 'bold', color: '#10b981' }}>US$ {totalBruto.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Pago Proveedores:</span>
+          <span style={{ fontWeight: 'bold', color: '#ef4444' }}>US$ {totalProv.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Comisiones OTA:</span>
+          <span style={{ fontWeight: 'bold', color: '#f59e0b' }}>US$ {totalOta.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Pagos Choferes:</span>
+          <span style={{ fontWeight: 'bold', color: '#3b82f6' }}>US$ {totalDriver.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Gastos Operativos:</span>
+          <span style={{ fontWeight: 'bold', color: '#000' }}>US$ {totalGastos.toFixed(2)}</span>
+        </div>
+
+        <div style={{ fontWeight: 'bold', marginBottom: '12px', fontSize: '0.95rem', color: '#000' }}>
+          Desglose Gastos:
+        </div>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>⛽ Gasolina:</span>
+          <span style={{ color: '#333' }}>US$ {gasTotal.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>🔧 Mantenimiento:</span>
+          <span style={{ color: '#333' }}>US$ {mantTotal.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>👥 Pago Guías:</span>
+          <span style={{ color: '#333' }}>US$ {guiasTotal.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>💼 Pago Nómina:</span>
+          <span style={{ color: '#333' }}>US$ {nominaTotal.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '0.85rem' }}>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>📝 Otros:</span>
+          <span style={{ color: '#333' }}>US$ {otrosTotal.toFixed(2)}</span>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px', paddingTop: '15px', borderTop: '1px solid #e2e8f0', fontSize: '0.95rem' }}>
+          <span style={{ fontWeight: '800', color: '#000' }}>GANANCIA REAL:</span>
+          <span style={{ fontWeight: '800', color: '#10b981' }}>US$ {gananciaReal.toFixed(2)}</span>
+        </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal Registrar Gasto */}
       {showExpenseModal && (
