@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Calendar as CalendarIcon, DollarSign, Edit3, Printer, Trash2, X, Plus, Filter, Eraser, CheckCircle } from 'lucide-react';
+import { Calendar as CalendarIcon, DollarSign, Edit3, Printer, Trash2, X, Plus, Filter, Eraser, CheckCircle, Fuel, Wrench, Users, Briefcase, FileText, ChevronDown } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 
 const initialExpenses = [
@@ -31,7 +31,19 @@ const FinancesPage = () => {
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState('proveedores');
   const [showExpenseModal, setShowExpenseModal] = useState(false);
+  const [expenseCategory, setExpenseCategory] = useState('Gasolina');
+  const [expenseCatOpen, setExpenseCatOpen] = useState(false);
   
+  const expenseCategories = [
+    { value: 'Gasolina', label: 'Gasolina', icon: Fuel, color: '#ef4444' },
+    { value: 'Mantenimiento', label: 'Mantenimiento', icon: Wrench, color: '#64748b' },
+    { value: 'Pago Guías', label: 'Pago Guías', icon: Users, color: '#8b5cf6' },
+    { value: 'Pago Nómina', label: 'Pago Nómina', icon: Briefcase, color: '#d97706' },
+    { value: 'Otros', label: 'Otros', icon: FileText, color: '#f97316' }
+  ];
+  const selectedCatObj = expenseCategories.find(c => c.value === expenseCategory);
+  const SelectedIcon = selectedCatObj ? selectedCatObj.icon : Fuel;
+
   const providers = readStoredData('jhoraji_providers', []);
   const drivers = readStoredData('jhoraji_drivers', []);
 
@@ -179,7 +191,7 @@ const FinancesPage = () => {
               <Filter size={16} /> Refrescar
             </button>
           </div>
-          <button className="btn" onClick={() => setShowExpenseModal(true)} style={{ backgroundColor: '#1e293b', color: '#fff' }}>
+          <button className="btn" onClick={() => { setExpenseCategory('Gasolina'); setExpenseCatOpen(false); setShowExpenseModal(true); }} style={{ backgroundColor: '#1e293b', color: '#fff' }}>
             <Plus size={18} /> Registrar Gasto
           </button>
         </div>
@@ -437,15 +449,52 @@ const FinancesPage = () => {
               <button onClick={() => setShowExpenseModal(false)} style={{ background: 'none', color: 'var(--text-light)' }}><X size={24} /></button>
             </div>
             <form onSubmit={handleSaveExpense}>
-              <div className="form-group">
+              <div className="form-group" style={{ position: 'relative' }}>
                 <label>Categoría</label>
-                <select name="category" className="form-control" required>
-                  <option value="Gasolina">⛽ Gasolina</option>
-                  <option value="Mantenimiento">🔧 Mantenimiento</option>
-                  <option value="Pago Guías">👥 Pago Guías</option>
-                  <option value="Pago Nómina">💼 Pago Nómina</option>
-                  <option value="Otros">📝 Otros</option>
-                </select>
+                <input type="hidden" name="category" value={expenseCategory} />
+                <div 
+                  className="form-control d-flex align-items-center justify-content-between" 
+                  onClick={() => setExpenseCatOpen(!expenseCatOpen)}
+                  style={{ cursor: 'pointer', backgroundColor: '#fff' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <SelectedIcon size={18} color={selectedCatObj?.color} />
+                    <span>{selectedCatObj?.label}</span>
+                  </div>
+                  <ChevronDown size={18} color="#64748b" />
+                </div>
+
+                {expenseCatOpen && (
+                  <div style={{ 
+                    position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 10, 
+                    backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', 
+                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', marginTop: '4px', overflow: 'hidden' 
+                  }}>
+                    {expenseCategories.map(cat => {
+                      const Icon = cat.icon;
+                      const isSelected = expenseCategory === cat.value;
+                      return (
+                        <div 
+                          key={cat.value}
+                          onClick={() => {
+                            setExpenseCategory(cat.value);
+                            setExpenseCatOpen(false);
+                          }}
+                          style={{ 
+                            padding: '10px 15px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
+                            backgroundColor: isSelected ? '#f8fafc' : '#fff',
+                            borderLeft: isSelected ? `3px solid ${cat.color}` : '3px solid transparent'
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = isSelected ? '#f8fafc' : '#fff'}
+                        >
+                          <Icon size={18} color={cat.color} />
+                          <span style={{ fontWeight: isSelected ? '600' : 'normal', color: '#1e293b' }}>{cat.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
               <div className="form-group">
                 <label>Monto US$</label>
