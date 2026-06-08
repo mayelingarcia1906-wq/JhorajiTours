@@ -308,7 +308,7 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
             <div className="form-group mb-0">
               <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Fecha actividad / Traslado</label>
               <div style={{ position: 'relative' }}>
-                <input name="date" type="date" className="form-control" required defaultValue={editingBooking.date || new Date().toISOString().split('T')[0]} />
+                <input name="date" type="date" className="form-control" required defaultValue={editingBooking.date || new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]} min={!editingBooking.id ? new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0] : undefined} />
               </div>
             </div>
             <div className="form-group mb-0">

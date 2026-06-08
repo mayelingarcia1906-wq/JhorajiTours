@@ -257,7 +257,7 @@ const OrdersPage = () => {
               <div className="responsive-grid" style={{ gap: '15px' }}>
                 <div className="form-group">
                   <label>Fecha</label>
-                  <input name="date" type="date" className="form-control" required defaultValue={editingOrder.date} />
+                  <input name="date" type="date" className="form-control" required defaultValue={editingOrder.date} min={!editingOrder.id ? new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0] : undefined} />
                 </div>
                 <div className="form-group">
                   <label>Hora</label>
