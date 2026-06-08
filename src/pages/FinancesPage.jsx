@@ -275,7 +275,7 @@ const FinancesPage = () => {
           <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <button className="btn" onClick={() => setShowSummaryModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '5px', backgroundColor: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1' }}>
+          <button className="btn btn-resumen" onClick={() => setShowSummaryModal(true)}>
             <FileText size={18} /> Resumen
           </button>
           <button className="btn btn-primary" onClick={() => { setExpenseCategory('Gasolina'); setExpenseCatOpen(false); setShowExpenseModal(true); }}>
@@ -310,10 +310,10 @@ const FinancesPage = () => {
           <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-dark)', margin: '5px 0' }}>US$ {totalGastos.toFixed(2)}</div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>Incluye Nómina</div>
         </div>
-        <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#166534' }}>GANANCIA REAL</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#15803d', margin: '5px 0' }}>US$ {gananciaReal.toFixed(2)}</div>
-          <div style={{ fontSize: '0.75rem', color: '#166534', borderTop: '1px dashed #bbf7d0', paddingTop: '5px' }}>Ingresos - Gastos</div>
+        <div className="card card-ganancia" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
+          <div className="ganancia-title" style={{ fontSize: '0.7rem', fontWeight: 700 }}>GANANCIA REAL</div>
+          <div className="ganancia-amount" style={{ fontSize: '1.5rem', fontWeight: 800, margin: '5px 0' }}>US$ {gananciaReal.toFixed(2)}</div>
+          <div className="ganancia-subtitle" style={{ fontSize: '0.75rem', paddingTop: '5px' }}>Ingresos - Gastos</div>
         </div>
       </div>
 

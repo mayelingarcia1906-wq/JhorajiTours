@@ -1,9 +1,13 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Edit3, MessageCircle, Plus, Trash2, X, Search, Eraser } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
 
-const initialAgencies = [];
+const initialAgencies = Array.from({ length: 15 }, (_, i) => ({
+  id: 1000 + i,
+  name: `Agencia ${i + 1} ${['VIP', 'Tours', 'Travel', 'Punta Cana'][i % 4]}`,
+  whatsapp: `809-555-${String(1000 + i).padStart(4, '0')}`,
+}));
 
 const emptyAgency = { name: '', whatsapp: '' };
 
@@ -40,6 +44,20 @@ const AgenciesPage = () => {
 
   const totalPages = Math.ceil(filteredAgencies.length / itemsPerPage);
   const currentItems = filteredAgencies.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  // Force mock data to demonstrate pagination
+  useEffect(() => {
+    if (agencies.length < 15) {
+      const mock = Array.from({ length: 15 }, (_, i) => ({
+        id: 9000 + i,
+        name: `Agencia Demo ${i + 1}`,
+        whatsapp: `809-555-${String(9000 + i).padStart(4, '0')}`,
+      }));
+      const next = [...agencies, ...mock];
+      setAgencies(next);
+      localStorage.setItem('jhoraji_agencies', JSON.stringify(next));
+    }
+  }, [agencies]);
 
   const handleSearch = () => {
     setAppliedSearch(searchTerm);

@@ -51,14 +51,14 @@ const ToursPage = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [tours, setTours] = useState(readStoredTours);
 
-  // Fix old unsplash images
+  // Ensure tours have a valid image
   useEffect(() => {
     let needsUpdate = false;
     const updatedTours = tours.map(tour => {
-      if (tour.image && tour.image.includes('unsplash.com')) {
+      if (!tour.image || tour.image.includes('images/tours/saona.png')) {
         needsUpdate = true;
-        const initial = initialTours.find(t => t.id === tour.id);
-        return { ...tour, image: initial ? initial.image : `${import.meta.env.BASE_URL}images/tours/saona.png` };
+        // Assign a default Unsplash image if it's broken
+        return { ...tour, image: 'https://images.unsplash.com/photo-1596484552834-3a58f831d36a?w=500' };
       }
       return tour;
     });
@@ -66,7 +66,7 @@ const ToursPage = () => {
       setTours(updatedTours);
       localStorage.setItem('jhoraji_tours', JSON.stringify(updatedTours));
     }
-  }, []);
+  }, [tours]);
 
   const categories = ['all', 'island', 'adventure', 'culture', 'nature'];
   const durations = ['halfDay', 'fullDay'];

@@ -763,3 +763,48 @@ body:has(.modal-overlay) {
   margin-top: 89px;
   margin-bottom: 8px;
 }
+
+/* FinancesPage specific elements */
+.card-ganancia {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+.card-ganancia .ganancia-title, .card-ganancia .ganancia-subtitle {
+  color: #166534;
+}
+.card-ganancia .ganancia-amount {
+  color: #15803d;
+}
+.card-ganancia .ganancia-subtitle {
+  border-top: 1px dashed #bbf7d0;
+}
+
+[data-theme='dark'] .card-ganancia {
+  background-color: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+[data-theme='dark'] .card-ganancia .ganancia-title, [data-theme='dark'] .card-ganancia .ganancia-subtitle {
+  color: #4ade80;
+}
+[data-theme='dark'] .card-ganancia .ganancia-amount {
+  color: #22c55e;
+}
+[data-theme='dark'] .card-ganancia .ganancia-subtitle {
+  border-top-color: rgba(34, 197, 94, 0.3);
+}
+
+.btn-resumen {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #e2e8f0;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+}
+
+[data-theme='dark'] .btn-resumen {
+  background-color: #334155;
+  color: #f1f5f9;
+  border-color: #475569;
+}
+

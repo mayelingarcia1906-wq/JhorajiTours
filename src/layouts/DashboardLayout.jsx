@@ -213,6 +213,9 @@ const DashboardLayout = () => {
             <button className="mobile-menu-btn d-none d-lg-block" onClick={() => setDesktopSidebarOpen(!desktopSidebarOpen)}>
               <Menu size={24} />
             </button>
+            <div className="d-none d-md-block" style={{ color: 'var(--text-light)', fontWeight: 500, fontSize: '0.95rem', marginLeft: '15px', textTransform: 'capitalize' }}>
+              {new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </div>
           </div>
 
           <div className="d-flex align-items-center gap-4 dashboard-header-actions">
