@@ -161,7 +161,7 @@ const DriversPage = () => {
       <div className="card mb-4" style={{ padding: '0.5rem' }}>
         <div className="d-flex gap-2" style={{ overflowX: 'auto', padding: '0.5rem' }}>
           <button className={`tab-btn ${activeTab === 'assign' ? 'active' : ''}`} onClick={() => setActiveTab('assign')}>
-            Asignar Reservas
+            Reservas Asignadas
           </button>
           <button className={`tab-btn ${activeTab === 'directory' ? 'active' : ''}`} onClick={() => setActiveTab('directory')}>
             Directorio de Choferes
@@ -175,7 +175,7 @@ const DriversPage = () => {
       {activeTab === 'assign' && (
         <div className="card">
           <div className="page-toolbar mb-4" style={{ alignItems: 'flex-start' }}>
-            <h3 style={{ fontSize: '1.1rem', margin: 0, marginTop: '8px' }}>Asignar Reservas</h3>
+            <h3 style={{ fontSize: '1.1rem', margin: 0, marginTop: '8px' }}>Reservas Asignadas</h3>
             <div className="d-flex gap-2" style={{ flexWrap: 'wrap', flex: 1, justifyContent: 'flex-end' }}>
               <select className="form-control" style={{ width: 'auto' }} value={assignFilterAct} onChange={e => setAssignFilterAct(e.target.value)}>
                 <option value="all">Todas las Actividades</option>
@@ -223,12 +223,12 @@ const DriversPage = () => {
                         <div className="text-muted" style={{ fontSize: '0.85rem' }}>Ref: {b.id}</div>
                       </td>
                       <td>
-                        <div className="d-flex gap-2" style={{ flexWrap: 'wrap' }}>
+                        <div className="d-flex gap-2" style={{ flexWrap: 'nowrap', alignItems: 'center' }}>
                           <input 
                             type="time" 
                             className="form-control" 
                             style={{ width: '120px' }} 
-                            defaultValue={b.pickupTime || ''}
+                            defaultValue={b.pickupTime || b.time || ''}
                             onBlur={(e) => handleAssignDriver(b.id, b.driverId || b.driver, e.target.value, b.driverPayment)}
                           />
                           <select 
