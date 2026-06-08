@@ -2,9 +2,16 @@ import { useState, useMemo } from 'react';
 import { Calendar as CalendarIcon, DollarSign, Edit3, Printer, Trash2, X, Plus, Filter, Eraser, CheckCircle } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 
-const initialExpenses = [];
-const initialProvLiq = [];
-const initialDriverLiq = [];
+const initialExpenses = [
+  { id: 201, date: '2026-06-05', category: 'Gasolina', desc: 'Llenado de tanque Van 1', amount: 45.00 },
+  { id: 202, date: '2026-06-05', category: 'Mantenimiento', desc: 'Cambio de aceite', amount: 30.00 }
+];
+const initialProvLiq = [
+  { id: 301, date: '2026-06-05', client: 'Maria Lopez', provider: 'Ocean Tours', costBase: 100, extras: 20, costTotal: 120, priceClient: 150, ota: 15, profit: 15, status: 'Pendiente' }
+];
+const initialDriverLiq = [
+  { id: 401, date: '2026-06-05', driver: 'Juan Perez', client: 'Pedro Sanchez', service: 'Transfer PUJ', adults: 2, children: 0, amount: 25.00, status: 'Pendiente' }
+];
 
 const readStoredData = (key, defaultData) => {
   const saved = localStorage.getItem(key);
@@ -196,11 +203,13 @@ const FinancesPage = () => {
           {/* TAB: PROVEEDORES */}
           {activeTab === 'proveedores' && (
             <div>
-              <div className="d-flex gap-2 mb-3">
-                <button className="btn" onClick={() => toggleProvStatus('Pagado')} disabled={selectedProv.length === 0} style={{ backgroundColor: '#10b981', color: '#fff', fontSize: '0.8rem' }}>PAGAR SELECCIÓN</button>
-                <button className="btn" onClick={() => toggleProvStatus('Pendiente')} disabled={selectedProv.length === 0} style={{ backgroundColor: '#ef4444', color: '#fff', fontSize: '0.8rem' }}>PENDIENTE SELECCIÓN</button>
-                <button className="btn" disabled={selectedProv.length === 0} style={{ backgroundColor: '#a855f7', color: '#fff', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Printer size={15}/> IMPRIMIR SELECCIÓN</button>
-              </div>
+              {selectedProv.length > 0 && (
+                <div className="d-flex gap-2 mb-3">
+                  <button className="btn" onClick={() => toggleProvStatus('Pagado')} style={{ backgroundColor: '#10b981', color: '#fff', fontSize: '0.8rem' }}>PAGAR SELECCIÓN</button>
+                  <button className="btn" onClick={() => toggleProvStatus('Pendiente')} style={{ backgroundColor: '#ef4444', color: '#fff', fontSize: '0.8rem' }}>PENDIENTE SELECCIÓN</button>
+                  <button className="btn" style={{ backgroundColor: '#a855f7', color: '#fff', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Printer size={15}/> IMPRIMIR SELECCIÓN</button>
+                </div>
+              )}
               <div className="table-wrapper">
                 <table className="table compact-table">
                   <thead>
@@ -253,11 +262,13 @@ const FinancesPage = () => {
           {/* TAB: CHOFERES */}
           {activeTab === 'choferes' && (
             <div>
-              <div className="d-flex gap-2 mb-3">
-                <button className="btn" onClick={() => toggleDriverStatus('Pagado')} disabled={selectedDriver.length === 0} style={{ backgroundColor: '#10b981', color: '#fff', fontSize: '0.8rem' }}>PAGAR SELECCIÓN</button>
-                <button className="btn" onClick={() => toggleDriverStatus('Pendiente')} disabled={selectedDriver.length === 0} style={{ backgroundColor: '#ef4444', color: '#fff', fontSize: '0.8rem' }}>PENDIENTE SELECCIÓN</button>
-                <button className="btn" disabled={selectedDriver.length === 0} style={{ backgroundColor: '#a855f7', color: '#fff', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Printer size={15}/> IMPRIMIR SELECCIÓN</button>
-              </div>
+              {selectedDriver.length > 0 && (
+                <div className="d-flex gap-2 mb-3">
+                  <button className="btn" onClick={() => toggleDriverStatus('Pagado')} style={{ backgroundColor: '#10b981', color: '#fff', fontSize: '0.8rem' }}>PAGAR SELECCIÓN</button>
+                  <button className="btn" onClick={() => toggleDriverStatus('Pendiente')} style={{ backgroundColor: '#ef4444', color: '#fff', fontSize: '0.8rem' }}>PENDIENTE SELECCIÓN</button>
+                  <button className="btn" style={{ backgroundColor: '#a855f7', color: '#fff', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Printer size={15}/> IMPRIMIR SELECCIÓN</button>
+                </div>
+              )}
               <div className="table-wrapper">
                 <table className="table compact-table">
                   <thead>
@@ -303,10 +314,12 @@ const FinancesPage = () => {
           {/* TAB: GASTOS OPERATIVOS */}
           {activeTab === 'gastos' && (
             <div>
-              <div className="d-flex gap-2 mb-3">
-                <button className="btn" disabled={selectedExp.length === 0} style={{ backgroundColor: '#a855f7', color: '#fff', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Printer size={15}/> IMPRIMIR SELECCIÓN</button>
-                <button className="btn" onClick={handleDeleteExpense} disabled={selectedExp.length === 0} style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Trash2 size={15}/> ELIMINAR</button>
-              </div>
+              {selectedExp.length > 0 && (
+                <div className="d-flex gap-2 mb-3">
+                  <button className="btn" style={{ backgroundColor: '#a855f7', color: '#fff', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Printer size={15}/> IMPRIMIR SELECCIÓN</button>
+                  <button className="btn" onClick={handleDeleteExpense} style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Trash2 size={15}/> ELIMINAR</button>
+                </div>
+              )}
               <div className="table-wrapper">
                 <table className="table compact-table">
                   <thead>

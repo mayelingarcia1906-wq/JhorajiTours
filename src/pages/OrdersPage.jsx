@@ -2,7 +2,11 @@ import { useState, useMemo } from 'react';
 import { Calendar as CalendarIcon, Printer, Trash2, Edit3, MessageCircle, X, Plus } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 
-const initialOrders = [];
+const initialOrders = [
+  { id: 101, date: '2026-06-10', time: '08:30', type: 'ACTIVIDAD', client: 'Carlos Mendoza', route: 'Punta Cana - Saona', service: 'Excursión VIP', adults: 2, children: 0, providerPrice: 'US$ 120.00', provider: '', driver: '' },
+  { id: 102, date: '2026-06-11', time: '14:00', type: 'TRASLADO', client: 'Familia Perez', route: 'Aeropuerto - Hotel Riu', service: 'Transfer Privado', adults: 4, children: 2, providerPrice: 'US$ 45.00', provider: '', driver: '' },
+  { id: 103, date: '2026-06-12', time: '09:00', type: 'ACTIVIDAD', client: 'Ana Gonzalez', route: 'Bávaro - Buggies', service: 'Buggies Doble', adults: 2, children: 0, providerPrice: 'US$ 55.00', provider: '', driver: '' }
+];
 
 const emptyOrder = { date: '', time: '', type: 'ACTIVIDAD', client: '', route: '', service: '', adults: 1, children: 0, providerPrice: 'US$ 0.00', provider: '', driver: '' };
 
@@ -182,24 +186,24 @@ const OrdersPage = () => {
           </div>
         </div>
 
-        <div className="d-flex gap-2 mb-3">
-          <button 
-            className="btn" 
-            disabled={selectedOrders.length === 0} 
-            onClick={handlePrintSelected} 
-            style={{ backgroundColor: '#a855f7', color: '#fff', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}
-          >
-            <Printer size={15}/> IMPRIMIR SELECCIÓN
-          </button>
-          <button 
-            className="btn" 
-            onClick={handleDeleteSelected} 
-            disabled={selectedOrders.length === 0} 
-            style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}
-          >
-            <Trash2 size={15}/> ELIMINAR SELECCIÓN
-          </button>
-        </div>
+        {selectedOrders.length > 0 && (
+          <div className="d-flex gap-2 mb-3">
+            <button 
+              className="btn" 
+              onClick={handlePrintSelected} 
+              style={{ backgroundColor: '#a855f7', color: '#fff', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}
+            >
+              <Printer size={15}/> IMPRIMIR SELECCIÓN
+            </button>
+            <button 
+              className="btn" 
+              onClick={handleDeleteSelected} 
+              style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}
+            >
+              <Trash2 size={15}/> ELIMINAR SELECCIÓN
+            </button>
+          </div>
+        )}
 
         <div className="table-wrapper">
           <table className="table compact-table">
