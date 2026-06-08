@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Edit3, Eraser, Eye, Globe, Mail, Phone, Plus, Search, Trash2, User, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
+import { Pagination } from '../components/Pagination';
 
 const initialCustomers = [];
 
@@ -40,7 +41,7 @@ const CustomersPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [appliedSearch, setAppliedSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 12;
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [editingCustomer, setEditingCustomer] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
@@ -241,15 +242,9 @@ const CustomersPage = () => {
           </table>
         </div>
 
-        {totalPages > 1 && (
-          <div className="d-flex justify-content-between align-items-center mt-4" style={{ padding: '0 1rem' }}>
-            <span className="text-muted">{t('showing')} {((currentPage - 1) * itemsPerPage) + 1} {t('to')} {Math.min(currentPage * itemsPerPage, filteredCustomers.length)} {t('of')} {filteredCustomers.length}</span>
-            <div className="d-flex gap-2">
-              <button className="btn btn-outline" disabled={currentPage === 1} onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}>{t('previous')}</button>
-              <button className="btn btn-outline" disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}>{t('next')}</button>
-            </div>
-          </div>
-        )}
+        <div style={{ padding: '0 1rem', paddingBottom: '1rem' }}>
+          <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredCustomers.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} />
+        </div>
       </div>
 
       {/* Detail Modal */}

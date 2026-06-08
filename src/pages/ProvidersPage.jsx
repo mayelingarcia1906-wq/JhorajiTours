@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Edit3, Mail, Phone, Plus, Trash2, X, Search, Eraser } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import { Pagination } from '../components/Pagination';
 
 const initialProviders = [];
 
@@ -25,9 +26,23 @@ const ProvidersPage = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [appliedSearch, setAppliedSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
+
+  const filteredProviders = useMemo(() => {
+    return providers.filter(p => 
+      (p.name || '').toLowerCase().includes((appliedSearch || '').toLowerCase()) || 
+      (p.email && p.email.toLowerCase().includes((appliedSearch || '').toLowerCase())) ||
+      (p.phone && p.phone.toLowerCase().includes((appliedSearch || '').toLowerCase()))
+    );
+  }, [providers, appliedSearch]);
+
+  const totalPages = Math.ceil(filteredProviders.length / itemsPerPage);
+  const currentItems = filteredProviders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handleSearch = () => {
     setAppliedSearch(searchTerm);
+    setCurrentPage(1);
   };
 
   const handleKeyDown = (e) => {
@@ -37,6 +52,7 @@ const ProvidersPage = () => {
   const clearSearch = () => {
     setSearchTerm('');
     setAppliedSearch('');
+    setCurrentPage(1);
   };
 
   const persistProviders = (nextProviders) => {
@@ -134,22 +150,14 @@ const ProvidersPage = () => {
                   </td>
                 </tr>
               )}
-              {providers.filter(p => 
-                (p.name || '').toLowerCase().includes((appliedSearch || '').toLowerCase()) || 
-                (p.email && p.email.toLowerCase().includes((appliedSearch || '').toLowerCase())) ||
-                (p.phone && p.phone.toLowerCase().includes((appliedSearch || '').toLowerCase()))
-              ).length === 0 && providers.length > 0 && (
+              {filteredProviders.length === 0 && providers.length > 0 && (
                 <tr>
                   <td colSpan="4" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-light)' }}>
                     No se encontraron resultados para "{appliedSearch}".
                   </td>
                 </tr>
               )}
-              {providers.filter(p => 
-                (p.name || '').toLowerCase().includes((appliedSearch || '').toLowerCase()) || 
-                (p.email && p.email.toLowerCase().includes((appliedSearch || '').toLowerCase())) ||
-                (p.phone && p.phone.toLowerCase().includes((appliedSearch || '').toLowerCase()))
-              ).map(p => (
+              {currentItems.map(p => (
                 <tr key={p.id}>
                   <td className="font-bold">{p.name}</td>
                   <td>
@@ -184,6 +192,9 @@ const ProvidersPage = () => {
               ))}
             </tbody>
           </table>
+        </div>
+        <div style={{ padding: '0 1rem', paddingBottom: '1rem' }}>
+          <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredProviders.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} />
         </div>
       </div>
 

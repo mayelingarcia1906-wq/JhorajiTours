@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Calendar, Truck, User, Edit3, Trash2, X, Plus } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
+import { Pagination } from '../components/Pagination';
 
 const initialDrivers = [];
 
@@ -46,6 +47,17 @@ const DriversPage = () => {
   const [orderFilterVehicle, setOrderFilterVehicle] = useState('');
   const [orderFilterDateStart, setOrderFilterDateStart] = useState(today);
   const [orderFilterDateEnd, setOrderFilterDateEnd] = useState(today);
+
+  // Pagination states
+  const [currentPageAssign, setCurrentPageAssign] = useState(1);
+  const [currentPageDirectory, setCurrentPageDirectory] = useState(1);
+  const itemsPerPage = 12;
+
+  // Reset pagination when tabs change
+  useEffect(() => {
+    setCurrentPageAssign(1);
+    setCurrentPageDirectory(1);
+  }, [activeTab]);
 
   const persistDrivers = (nextDrivers) => {
     setDrivers(nextDrivers);
@@ -103,10 +115,20 @@ const DriversPage = () => {
     });
   }, [bookings, assignFilterAct, assignFilterDateStart, assignFilterDateEnd]);
 
+  useEffect(() => {
+    setCurrentPageAssign(1);
+  }, [assignFilterAct, assignFilterDateStart, assignFilterDateEnd]);
+
   const uniqueTours = useMemo(() => {
     const tours = new Set(bookings.map(b => b.tour));
     return Array.from(tours);
   }, [bookings]);
+
+  const totalPagesAssign = Math.ceil(filteredBookings.length / itemsPerPage);
+  const currentAssignItems = filteredBookings.slice((currentPageAssign - 1) * itemsPerPage, currentPageAssign * itemsPerPage);
+
+  const totalPagesDirectory = Math.ceil(drivers.length / itemsPerPage);
+  const currentDirectoryItems = drivers.slice((currentPageDirectory - 1) * itemsPerPage, currentPageDirectory * itemsPerPage);
 
   return (
     <div>
@@ -173,7 +195,7 @@ const DriversPage = () => {
                     </td>
                   </tr>
                 ) : (
-                  filteredBookings.map(b => (
+                  currentAssignItems.map(b => (
                     <tr key={b.id}>
                       <td>
                         <div className="font-bold">{b.date}</div>
@@ -221,6 +243,9 @@ const DriversPage = () => {
               </tbody>
             </table>
           </div>
+          <div style={{ padding: '0 1rem', paddingBottom: '1rem' }}>
+            <Pagination currentPage={currentPageAssign} totalPages={totalPagesAssign} totalItems={filteredBookings.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPageAssign} />
+          </div>
         </div>
       )}
 
@@ -249,7 +274,7 @@ const DriversPage = () => {
                     </td>
                   </tr>
                 )}
-                {drivers.map(d => (
+                {currentDirectoryItems.map(d => (
                   <tr key={d.id}>
                     <td>
                       <div className="font-bold d-flex align-items-center gap-2">
@@ -280,6 +305,9 @@ const DriversPage = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+          <div style={{ padding: '0 1rem', paddingBottom: '1rem' }}>
+            <Pagination currentPage={currentPageDirectory} totalPages={totalPagesDirectory} totalItems={drivers.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPageDirectory} />
           </div>
         </div>
       )}

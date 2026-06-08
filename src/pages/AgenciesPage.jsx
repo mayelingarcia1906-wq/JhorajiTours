@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Edit3, MessageCircle, Plus, Trash2, X, Search, Eraser } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import { Pagination } from '../components/Pagination';
 
 const initialAgencies = [];
 
@@ -27,9 +28,22 @@ const AgenciesPage = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [appliedSearch, setAppliedSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
+
+  const filteredAgencies = useMemo(() => {
+    return agencies.filter(a => 
+      (a.name || '').toLowerCase().includes((appliedSearch || '').toLowerCase()) || 
+      (a.whatsapp && a.whatsapp.toLowerCase().includes((appliedSearch || '').toLowerCase()))
+    );
+  }, [agencies, appliedSearch]);
+
+  const totalPages = Math.ceil(filteredAgencies.length / itemsPerPage);
+  const currentItems = filteredAgencies.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handleSearch = () => {
     setAppliedSearch(searchTerm);
+    setCurrentPage(1);
   };
 
   const handleKeyDown = (e) => {
@@ -39,6 +53,7 @@ const AgenciesPage = () => {
   const clearSearch = () => {
     setSearchTerm('');
     setAppliedSearch('');
+    setCurrentPage(1);
   };
 
   const persistAgencies = (nextAgencies) => {
@@ -133,20 +148,14 @@ const AgenciesPage = () => {
                   </td>
                 </tr>
               )}
-              {agencies.filter(a => 
-                (a.name || '').toLowerCase().includes((appliedSearch || '').toLowerCase()) || 
-                (a.whatsapp && a.whatsapp.toLowerCase().includes((appliedSearch || '').toLowerCase()))
-              ).length === 0 && agencies.length > 0 && (
+              {filteredAgencies.length === 0 && agencies.length > 0 && (
                 <tr>
                   <td colSpan="3" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-light)' }}>
                     No se encontraron resultados para "{appliedSearch}".
                   </td>
                 </tr>
               )}
-              {agencies.filter(a => 
-                (a.name || '').toLowerCase().includes((appliedSearch || '').toLowerCase()) || 
-                (a.whatsapp && a.whatsapp.toLowerCase().includes((appliedSearch || '').toLowerCase()))
-              ).map(a => (
+              {currentItems.map(a => (
                 <tr key={a.id}>
                   <td className="font-bold">{a.name}</td>
                   <td>
@@ -172,6 +181,9 @@ const AgenciesPage = () => {
               ))}
             </tbody>
           </table>
+        </div>
+        <div style={{ padding: '0 1rem', paddingBottom: '1rem' }}>
+          <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredAgencies.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} />
         </div>
       </div>
 

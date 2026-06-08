@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Calendar as CalendarIcon, DollarSign, Edit3, Printer, Trash2, X, Plus, Filter, Eraser, CheckCircle, AlertCircle, Fuel, Wrench, Users, Briefcase, FileText, ChevronDown } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import { Pagination } from '../components/Pagination';
 
 const initialExpenses = [
   { id: 201, date: '2026-06-05', category: 'Gasolina', desc: 'Llenado de tanque Van 1', amount: 45.00 },
@@ -118,6 +119,9 @@ const FinancesPage = () => {
     setSelectedProv([]);
     setSelectedDriver([]);
     setSelectedExp([]);
+    setCurrentPageProv(1);
+    setCurrentPageDriver(1);
+    setCurrentPageExp(1);
   };
 
   const handleClear = () => {
@@ -138,11 +142,19 @@ const FinancesPage = () => {
     setSelectedProv([]);
     setSelectedDriver([]);
     setSelectedExp([]);
+    setCurrentPageProv(1);
+    setCurrentPageDriver(1);
+    setCurrentPageExp(1);
   };
 
   const [selectedProv, setSelectedProv] = useState([]);
   const [selectedDriver, setSelectedDriver] = useState([]);
   const [selectedExp, setSelectedExp] = useState([]);
+
+  const [currentPageProv, setCurrentPageProv] = useState(1);
+  const [currentPageDriver, setCurrentPageDriver] = useState(1);
+  const [currentPageExp, setCurrentPageExp] = useState(1);
+  const itemsPerPage = 12;
 
   // Stats calculation
   const filteredProvLiq = provLiq.filter(p => {
@@ -246,6 +258,15 @@ const FinancesPage = () => {
     setSelectedDriver([]);
   };
 
+  const currentProvLiq = filteredProvLiq.slice((currentPageProv - 1) * itemsPerPage, currentPageProv * itemsPerPage);
+  const totalPagesProv = Math.ceil(filteredProvLiq.length / itemsPerPage);
+
+  const currentDriverLiq = filteredDriverLiq.slice((currentPageDriver - 1) * itemsPerPage, currentPageDriver * itemsPerPage);
+  const totalPagesDriver = Math.ceil(filteredDriverLiq.length / itemsPerPage);
+
+  const currentExpenses = filteredExpenses.slice((currentPageExp - 1) * itemsPerPage, currentPageExp * itemsPerPage);
+  const totalPagesExp = Math.ceil(filteredExpenses.length / itemsPerPage);
+
   return (
     <div>
       <div className="page-header mb-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
@@ -254,7 +275,7 @@ const FinancesPage = () => {
           <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <button className="btn" onClick={() => setShowSummaryModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '5px', backgroundColor: '#f1f5f9', color: '#334155', border: 'none' }}>
+          <button className="btn" onClick={() => setShowSummaryModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '5px', backgroundColor: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1' }}>
             <FileText size={18} /> Resumen
           </button>
           <button className="btn btn-primary" onClick={() => { setExpenseCategory('Gasolina'); setExpenseCatOpen(false); setShowExpenseModal(true); }}>
@@ -340,7 +361,7 @@ const FinancesPage = () => {
           {['proveedores', 'choferes', 'gastos'].map(tab => (
             <button 
               key={tab}
-              onClick={() => { setActiveTab(tab); setSelectedProv([]); setSelectedDriver([]); setSelectedExp([]); }}
+              onClick={() => { setActiveTab(tab); setSelectedProv([]); setSelectedDriver([]); setSelectedExp([]); setCurrentPageProv(1); setCurrentPageDriver(1); setCurrentPageExp(1); }}
               style={{
                 flex: 1, padding: '15px', background: 'none', border: 'none', 
                 borderBottom: activeTab === tab ? '3px solid var(--primary-color)' : '3px solid transparent',
@@ -386,7 +407,7 @@ const FinancesPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredProvLiq.map(p => (
+                    {currentProvLiq.map(p => (
                       <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                         <td style={{ padding: '15px' }}><input type="checkbox" checked={selectedProv.includes(p.id)} onChange={() => setSelectedProv(prev => prev.includes(p.id) ? prev.filter(id => id !== p.id) : [...prev, p.id])}/></td>
                         <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>{p.date}</td>
@@ -422,6 +443,7 @@ const FinancesPage = () => {
                   </tbody>
                 </table>
               </div>
+              <Pagination currentPage={currentPageProv} totalPages={totalPagesProv} totalItems={filteredProvLiq.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPageProv} />
             </div>
           )}
 
@@ -453,7 +475,7 @@ const FinancesPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredDriverLiq.map(d => (
+                    {currentDriverLiq.map(d => (
                       <tr key={d.id}>
                         <td><input type="checkbox" checked={selectedDriver.includes(d.id)} onChange={() => setSelectedDriver(prev => prev.includes(d.id) ? prev.filter(id => id !== d.id) : [...prev, d.id])}/></td>
                         <td>{d.date}</td>
@@ -476,6 +498,7 @@ const FinancesPage = () => {
                   </tbody>
                 </table>
               </div>
+              <Pagination currentPage={currentPageDriver} totalPages={totalPagesDriver} totalItems={filteredDriverLiq.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPageDriver} />
             </div>
           )}
 
@@ -502,7 +525,7 @@ const FinancesPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredExpenses.map(ex => (
+                    {currentExpenses.map(ex => (
                       <tr key={ex.id}>
                         <td><input type="checkbox" checked={selectedExp.includes(ex.id)} onChange={() => setSelectedExp(prev => prev.includes(ex.id) ? prev.filter(id => id !== ex.id) : [...prev, ex.id])}/></td>
                         <td>{ex.date}</td>
@@ -518,6 +541,7 @@ const FinancesPage = () => {
                   </tbody>
                 </table>
               </div>
+              <Pagination currentPage={currentPageExp} totalPages={totalPagesExp} totalItems={filteredExpenses.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPageExp} />
             </div>
           )}
         </div>

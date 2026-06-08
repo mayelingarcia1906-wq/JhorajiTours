@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Printer, Trash2, Edit3, MessageCircle, X, Plus, Filter, Eye } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import { Pagination } from '../components/Pagination';
 
 const initialOrders = [
   { id: 101, date: '2026-06-10', time: '08:30', type: 'ACTIVIDAD', client: 'Carlos Mendoza', route: 'Punta Cana - Saona', service: 'Excursión VIP', adults: 2, children: 0, providerPrice: 'US$ 120.00', provider: '', driver: '' },
@@ -43,6 +44,9 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
   const [driverFilter, setDriverFilter] = useState('all');
   const [clientSearch, setClientSearch] = useState('');
   
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
+
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [editingOrder, setEditingOrder] = useState(null);
 
@@ -137,6 +141,14 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
     });
   }, [orders, fromDate, toDate, providerFilter, driverFilter, clientSearch]);
 
+  // Handle page resets on filter change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [fromDate, toDate, providerFilter, driverFilter, clientSearch]);
+
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const currentItems = filteredOrders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
     <div>
       {!hideHeader && (
@@ -227,7 +239,7 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
                   </td>
                 </tr>
               )}
-              {filteredOrders.map(o => (
+              {currentItems.map(o => (
                 <tr key={o.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                   <td><input type="checkbox" checked={selectedOrders.includes(o.id)} onChange={() => toggleSelectOrder(o.id)} /></td>
                   <td style={{ color: 'var(--text-dark)', fontSize: '0.9rem' }}>{formatDate(o.date)}</td>
@@ -267,6 +279,9 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
               ))}
             </tbody>
           </table>
+        </div>
+        <div style={{ padding: '0 1rem', paddingBottom: '1rem' }}>
+          <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredOrders.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} />
         </div>
       </div>
 

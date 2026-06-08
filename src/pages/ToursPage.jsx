@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { Clock, DollarSign, Edit3, Eraser, Eye, MapPin, Plus, Search, Star, Trash2, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
+import { Pagination } from '../components/Pagination';
 
 const initialTours = [];
 
@@ -44,7 +45,7 @@ const ToursPage = () => {
   const [appliedSearch, setAppliedSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 12;
   const [selectedTour, setSelectedTour] = useState(null);
   const [editingTour, setEditingTour] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
@@ -222,15 +223,9 @@ const ToursPage = () => {
         ))}
       </div>
 
-      {totalPages > 1 && (
-        <div className="d-flex justify-content-between align-items-center mt-4" style={{ padding: '0 1rem' }}>
-          <span className="text-muted">{t('showing')} {((currentPage - 1) * itemsPerPage) + 1} {t('to')} {Math.min(currentPage * itemsPerPage, filteredTours.length)} {t('of')} {filteredTours.length}</span>
-          <div className="d-flex gap-2">
-            <button className="btn btn-outline" disabled={currentPage === 1} onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}>{t('previous')}</button>
-            <button className="btn btn-outline" disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}>{t('next')}</button>
-          </div>
-        </div>
-      )}
+      <div style={{ padding: '0 1rem', paddingBottom: '1rem' }}>
+        <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredTours.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} />
+      </div>
 
       {selectedTour && (
         <div className="modal-overlay">
