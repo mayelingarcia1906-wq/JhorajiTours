@@ -110,6 +110,21 @@ const ActivitiesPage = () => {
 
   return (
     <div>
+      <style>{`
+        .activities-table th {
+          padding: 8px 6px !important;
+          font-size: 0.7rem !important;
+          white-space: nowrap;
+        }
+        .activities-table td {
+          padding: 8px 6px !important;
+          vertical-align: middle;
+        }
+        .activities-table .badge {
+          padding: 4px 6px;
+          font-size: 0.7rem;
+        }
+      `}</style>
       <div className="page-header mb-4">
         <div>
           <h2>Actividades</h2>
@@ -151,15 +166,15 @@ const ActivitiesPage = () => {
 
       <div className="card">
         <div className="table-wrapper">
-          <table className="table">
+          <table className="table activities-table">
             <thead>
               <tr>
-                <th>PROVEEDOR / ACTIVIDAD</th>
-                <th>COSTO BASE</th>
+                <th>ACTIVIDAD / PROVEEDOR</th>
+                <th>COSTO</th>
                 <th>MODO</th>
-                <th>UNIDADES BASE</th>
-                <th>COMISIONES (GYG / VIA / CIV / OTRO)</th>
-                <th>PRECIO ALTERADO</th>
+                <th>UNIDADES</th>
+                <th>COMISIONES</th>
+                <th>PRECIO FINAL</th>
                 <th>ESTADO</th>
                 <th style={{ textAlign: 'right' }}>ACCIONES</th>
               </tr>
@@ -194,8 +209,8 @@ const ActivitiesPage = () => {
                     </div>
                   </td>
                   <td className="font-bold" style={{ color: '#1e3a8a' }}>
-                    <div style={{ fontSize: '0.85rem', lineHeight: '1' }}>US$</div>
-                    <div style={{ fontSize: '1.05rem', marginTop: '4px' }}>{Number(a.costBase).toFixed(2)}</div>
+                    <div style={{ fontSize: '0.75rem', lineHeight: '1' }}>US$</div>
+                    <div style={{ fontSize: '0.95rem', marginTop: '2px' }}>{Number(a.costBase).toFixed(2)}</div>
                   </td>
                   <td>
                     <span className="badge" style={{ backgroundColor: 'transparent', color: 'var(--text-dark)', border: '1px solid var(--border-color)', fontWeight: '500' }}>
@@ -203,41 +218,41 @@ const ActivitiesPage = () => {
                     </span>
                   </td>
                   <td>
-                    <span className="badge" style={{ backgroundColor: '#e2e8f0', color: 'var(--text-dark)', border: '1px solid var(--border-color)', borderRadius: '50%', width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+                    <span className="badge" style={{ backgroundColor: '#e2e8f0', color: 'var(--text-dark)', border: '1px solid var(--border-color)', borderRadius: '50%', width: '22px', height: '22px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
                       1
                     </span>
                   </td>
                   <td>
-                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'nowrap' }}>
+                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'nowrap' }}>
                       {a.commissions?.getYourGuide !== undefined && (
-                        <div style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '6px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', minWidth: '45px', boxShadow: 'var(--shadow-sm)' }}>
-                          <span style={{ fontSize: '0.6rem', color: 'var(--text-light)', fontWeight: '700', textTransform: 'uppercase', lineHeight: '1' }}>GYG</span>
-                          <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--text-dark)', lineHeight: '1' }}>{a.commissions.getYourGuide}%</span>
+                        <div style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '4px', padding: '4px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', minWidth: '38px', boxShadow: 'var(--shadow-sm)' }}>
+                          <span style={{ fontSize: '0.55rem', color: 'var(--text-light)', fontWeight: '700', textTransform: 'uppercase', lineHeight: '1' }}>GYG</span>
+                          <span style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-dark)', lineHeight: '1' }}>{a.commissions.getYourGuide}%</span>
                         </div>
                       )}
                       {a.commissions?.viator !== undefined && (
-                        <div style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '6px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', minWidth: '45px', boxShadow: 'var(--shadow-sm)' }}>
-                          <span style={{ fontSize: '0.6rem', color: 'var(--text-light)', fontWeight: '700', textTransform: 'uppercase', lineHeight: '1' }}>VIA</span>
-                          <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--text-dark)', lineHeight: '1' }}>{a.commissions.viator}%</span>
+                        <div style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '4px', padding: '4px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', minWidth: '38px', boxShadow: 'var(--shadow-sm)' }}>
+                          <span style={{ fontSize: '0.55rem', color: 'var(--text-light)', fontWeight: '700', textTransform: 'uppercase', lineHeight: '1' }}>VIA</span>
+                          <span style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-dark)', lineHeight: '1' }}>{a.commissions.viator}%</span>
                         </div>
                       )}
                       {a.commissions?.civitatis !== undefined && (
-                        <div style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '6px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', minWidth: '45px', boxShadow: 'var(--shadow-sm)' }}>
-                          <span style={{ fontSize: '0.6rem', color: 'var(--text-light)', fontWeight: '700', textTransform: 'uppercase', lineHeight: '1' }}>CIV</span>
-                          <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--text-dark)', lineHeight: '1' }}>{a.commissions.civitatis}%</span>
+                        <div style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '4px', padding: '4px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', minWidth: '38px', boxShadow: 'var(--shadow-sm)' }}>
+                          <span style={{ fontSize: '0.55rem', color: 'var(--text-light)', fontWeight: '700', textTransform: 'uppercase', lineHeight: '1' }}>CIV</span>
+                          <span style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-dark)', lineHeight: '1' }}>{a.commissions.civitatis}%</span>
                         </div>
                       )}
                       {a.commissions?.direct !== undefined && (
-                        <div style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '6px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', minWidth: '45px', boxShadow: 'var(--shadow-sm)' }}>
-                          <span style={{ fontSize: '0.6rem', color: 'var(--text-light)', fontWeight: '700', textTransform: 'uppercase', lineHeight: '1' }}>OTRO</span>
-                          <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--text-dark)', lineHeight: '1' }}>{a.commissions.direct}%</span>
+                        <div style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '4px', padding: '4px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', minWidth: '38px', boxShadow: 'var(--shadow-sm)' }}>
+                          <span style={{ fontSize: '0.55rem', color: 'var(--text-light)', fontWeight: '700', textTransform: 'uppercase', lineHeight: '1' }}>OTRO</span>
+                          <span style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-dark)', lineHeight: '1' }}>{a.commissions.direct}%</span>
                         </div>
                       )}
                     </div>
                   </td>
                   <td className="font-bold" style={{ color: '#1e3a8a' }}>
-                    <div style={{ fontSize: '0.85rem', lineHeight: '1' }}>US$</div>
-                    <div style={{ fontSize: '1.05rem', marginTop: '4px' }}>
+                    <div style={{ fontSize: '0.75rem', lineHeight: '1' }}>US$</div>
+                    <div style={{ fontSize: '0.95rem', marginTop: '2px' }}>
                       {(() => {
                         const totalComm = Object.values(a.commissions || {}).reduce((acc, val) => acc + (Number(val) || 0), 0);
                         return calcPrice(a.costBase, totalComm);
