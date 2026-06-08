@@ -167,7 +167,8 @@ const BookingsPage = () => {
           children: submitted.children,
           providerPrice: `US$ ${submitted.providerCost.toFixed(2)}`,
           provider: submitted.provider,
-          driver: submitted.driver
+          driver: submitted.driver,
+          paymentDone: submitted.paymentDone
         };
         
         let nextOrders = [newOrder, ...orders];
@@ -187,7 +188,8 @@ const BookingsPage = () => {
             children: submitted.children,
             providerPrice: `US$ ${submitted.providerCost.toFixed(2)}`,
             provider: submitted.provider,
-            driver: submitted.driver
+            driver: submitted.driver,
+            paymentDone: submitted.paymentDone
           };
           nextOrders = [returnOrder, ...nextOrders];
         }
@@ -214,7 +216,8 @@ const BookingsPage = () => {
               children: submitted.children,
               providerPrice: `US$ ${submitted.providerCost.toFixed(2)}`,
               provider: submitted.provider,
-              driver: submitted.driver
+              driver: submitted.driver,
+              paymentDone: submitted.paymentDone
             };
           }
           return o;
@@ -283,6 +286,7 @@ const BookingsPage = () => {
         dropoffLocation: order.type === 'TRASLADO' ? order.route.split(' - ')[1] : '',
         pax: order.adults || 1,
         children: order.children || 0,
+        paymentDone: order.paymentDone || false,
         notes: 'Datos obtenidos de la orden antigua.'
       });
     }
@@ -398,19 +402,34 @@ const BookingsPage = () => {
               </div>
 
               {/* Extras y Notas */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div>
                   <h4 style={{ fontSize: '0.9rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <DollarSign size={16} /> Costos
                   </h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed var(--border-color)', paddingBottom: '8px' }}>
-                      <span style={{ color: 'var(--text-light)', fontSize: '0.9rem' }}>Costo Proveedor:</span>
-                      <span style={{ fontWeight: 600, color: 'var(--text-dark)' }}>US$ {Number(viewingBooking.providerCost || 0).toFixed(2)}</span>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed var(--border-color)', paddingBottom: '8px' }}>
+                        <span style={{ color: 'var(--text-light)', fontSize: '0.9rem' }}>Costo Proveedor:</span>
+                        <span style={{ fontWeight: 600, color: 'var(--text-dark)' }}>US$ {Number(viewingBooking.providerCost || 0).toFixed(2)}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '8px' }}>
+                        <span style={{ color: 'var(--text-light)', fontSize: '0.9rem' }}>Precio Cliente:</span>
+                        <span style={{ fontWeight: 700, color: '#10b981', fontSize: '1.1rem' }}>US$ {Number(viewingBooking.clientPrice || 0).toFixed(2)}</span>
+                      </div>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '8px' }}>
-                      <span style={{ color: 'var(--text-light)', fontSize: '0.9rem' }}>Precio Cliente:</span>
-                      <span style={{ fontWeight: 700, color: '#10b981', fontSize: '1.1rem' }}>US$ {Number(viewingBooking.clientPrice || 0).toFixed(2)}</span>
+                    <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', paddingLeft: '10px' }}>
+                      {viewingBooking.paymentDone ? (
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#059669', padding: '8px 16px', borderRadius: 'var(--radius-full)', fontWeight: 600, fontSize: '0.9rem' }}>
+                          <span style={{ width: '8px', height: '8px', backgroundColor: '#059669', borderRadius: '50%' }}></span>
+                          PAGO REALIZADO
+                        </div>
+                      ) : (
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#d97706', padding: '8px 16px', borderRadius: 'var(--radius-full)', fontWeight: 600, fontSize: '0.9rem' }}>
+                          <span style={{ width: '8px', height: '8px', backgroundColor: '#d97706', borderRadius: '50%' }}></span>
+                          PAGO PENDIENTE
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

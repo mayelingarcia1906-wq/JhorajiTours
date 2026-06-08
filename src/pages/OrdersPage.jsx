@@ -215,6 +215,7 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
                 <th>Adultos</th>
                 <th>Niños</th>
                 <th>Precio Prov.</th>
+                <th>Pago</th>
                 <th style={{ textAlign: 'right' }}>Acciones</th>
               </tr>
             </thead>
@@ -242,6 +243,17 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
                   <td style={{ color: 'var(--text-dark)', fontSize: '0.9rem' }}>{o.adults}</td>
                   <td style={{ color: 'var(--text-dark)', fontSize: '0.9rem' }}>{o.children}</td>
                   <td style={{ color: 'var(--text-dark)', fontWeight: 700, fontSize: '0.9rem' }}>{o.providerPrice}</td>
+                  <td>
+                    {o.paymentDone ? (
+                      <span style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#059669', padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px' }}>
+                        PAGADO
+                      </span>
+                    ) : (
+                      <span style={{ backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#d97706', padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px' }}>
+                        PENDIENTE
+                      </span>
+                    )}
+                  </td>
                   <td style={{ textAlign: 'right' }}>
                     <div className="d-flex gap-2" style={{ justifyContent: 'flex-end' }}>
                       {onViewOrder && (
