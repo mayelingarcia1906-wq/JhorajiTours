@@ -43,19 +43,8 @@ const OrdersPage = () => {
   const [driverFilter, setDriverFilter] = useState('all');
   const [clientSearch, setClientSearch] = useState('');
   
-  const [appliedFilters, setAppliedFilters] = useState({
-    fromDate: '', toDate: '', provider: 'all', driver: 'all', client: ''
-  });
-
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [editingOrder, setEditingOrder] = useState(null);
-
-  const handleFilter = () => {
-    setAppliedFilters({
-      fromDate, toDate, provider: providerFilter, driver: driverFilter, client: clientSearch
-    });
-    setSelectedOrders([]);
-  };
 
   const persistOrders = (nextOrders) => {
     setOrders(nextOrders);
@@ -121,16 +110,24 @@ const OrdersPage = () => {
 
   const filteredOrders = useMemo(() => {
     return orders.filter(o => {
-      const { fromDate, toDate, provider, driver, client } = appliedFilters;
       let match = true;
       if (fromDate && o.date < fromDate) match = false;
       if (toDate && o.date > toDate) match = false;
-      if (provider !== 'all' && String(o.provider) !== String(provider)) match = false;
-      if (driver !== 'all' && String(o.driver) !== String(driver)) match = false;
-      if (client && !(o.client || '').toLowerCase().includes(client.toLowerCase())) match = false;
+      
+      // Si elige proveedor, filtramos las actividades, pero mantenemos los traslados visibles
+      if (providerFilter !== 'all') {
+        if (o.type === 'ACTIVIDAD' && String(o.provider) !== String(providerFilter)) {
+          match = false;
+        }
+      }
+      
+      // Si elige chofer, mostramos solo traslados de ese chofer
+      if (driverFilter !== 'all' && String(o.driver) !== String(driverFilter)) match = false;
+      
+      if (clientSearch && !(o.client || '').toLowerCase().includes(clientSearch.toLowerCase())) match = false;
       return match;
     });
-  }, [orders, appliedFilters]);
+  }, [orders, fromDate, toDate, providerFilter, driverFilter, clientSearch]);
 
   return (
     <div>
@@ -148,26 +145,22 @@ const OrdersPage = () => {
 
       <div className="card mb-4" style={{ padding: '20px' }}>
         
-        <div className="page-toolbar d-flex" style={{ gap: '15px', flexWrap: 'wrap', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', gap: '10px', flex: 1, flexWrap: 'wrap' }}>
-            <input type="date" className="form-control" style={{ maxWidth: '150px' }} value={fromDate} onChange={e => setFromDate(e.target.value)} title="Desde" />
-            <input type="date" className="form-control" style={{ maxWidth: '150px' }} value={toDate} onChange={e => setToDate(e.target.value)} title="Hasta" />
+        <div className="page-toolbar" style={{ marginBottom: '20px' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'nowrap', overflowX: 'auto', paddingBottom: '5px' }}>
+            <input type="date" className="form-control" style={{ minWidth: '130px', flex: 1 }} value={fromDate} onChange={e => setFromDate(e.target.value)} title="Desde" />
+            <input type="date" className="form-control" style={{ minWidth: '130px', flex: 1 }} value={toDate} onChange={e => setToDate(e.target.value)} title="Hasta" />
             
-            <select className="form-control" style={{ maxWidth: '180px' }} value={providerFilter} onChange={e => setProviderFilter(e.target.value)} title="*Si eliges un proveedor, aún verás traslados.">
+            <select className="form-control" style={{ minWidth: '150px', flex: 1.5 }} value={providerFilter} onChange={e => setProviderFilter(e.target.value)} title="*Si eliges un proveedor, aún verás traslados.">
               <option value="all">-- Proveedor --</option>
               {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
             
-            <select className="form-control" style={{ maxWidth: '220px' }} value={driverFilter} onChange={e => setDriverFilter(e.target.value)} title="*Si eliges un chofer, verás solo los traslados de ese chofer.">
+            <select className="form-control" style={{ minWidth: '180px', flex: 1.5 }} value={driverFilter} onChange={e => setDriverFilter(e.target.value)} title="*Si eliges un chofer, verás solo los traslados de ese chofer.">
               <option value="all">-- Chofer (Traslados) --</option>
               {drivers.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
             
-            <input type="text" className="form-control" style={{ maxWidth: '180px' }} placeholder="Nombre cliente" value={clientSearch} onChange={e => setClientSearch(e.target.value)} />
-            
-            <button className="btn btn-primary" onClick={handleFilter} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <Filter size={16} /> Filtrar
-            </button>
+            <input type="text" className="form-control" style={{ minWidth: '150px', flex: 1.5 }} placeholder="Nombre cliente" value={clientSearch} onChange={e => setClientSearch(e.target.value)} />
           </div>
         </div>
 
