@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Calendar, DollarSign, Edit3, Eraser, Eye, MapPin, Plus, Search, Trash2, User, Users, X, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
@@ -55,9 +55,19 @@ const BookingsPage = () => {
   const itemsPerPage = 10;
   
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const [editingBooking, setEditingBooking] = useState(null);
+  const [editingBooking, setEditingBooking] = useState(() => {
+    const saved = sessionStorage.getItem('jhoraji_editing_booking');
+    try { return saved ? JSON.parse(saved) : null; } catch { return null; }
+  });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
-  
+
+  useEffect(() => {
+    if (editingBooking) {
+      sessionStorage.setItem('jhoraji_editing_booking', JSON.stringify(editingBooking));
+    } else {
+      sessionStorage.removeItem('jhoraji_editing_booking');
+    }
+  }, [editingBooking]);
   const [bookings, setBookings] = useState(() => readStoredData('jhoraji_bookings', []));
   const providers = readStoredData('jhoraji_providers', []);
   const toursList = readStoredData('jhoraji_tours', []);
@@ -229,9 +239,6 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
         <div>
           <h2 style={{ margin: 0 }}>{editingBooking.id ? 'Editar reserva' : 'Nueva reserva'}</h2>
           <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
-        </div>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-color)', fontWeight: 600 }}>
-          <Calendar size={18} /> {new Date().toLocaleDateString('es-ES')}
         </div>
       </div>
 
