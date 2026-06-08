@@ -399,9 +399,9 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Plataforma</label>
                   <select name="platform" className="form-control" defaultValue={editingBooking.platform || 'Directo / sin plataforma'}>
                     <option>Directo / sin plataforma</option>
-                    <option>Tripadvisor</option>
-                    <option>Expedia</option>
+                    <option>Civitatis</option>
                     <option>GetYourGuide</option>
+                    <option>Otros</option>
                     <option>Viator</option>
                   </select>
                 </div>
