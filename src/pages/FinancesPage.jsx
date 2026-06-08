@@ -55,30 +55,73 @@ const FinancesPage = () => {
   const [toDate, setToDate] = useState('2026-06-05');
   const [driverFilter, setDriverFilter] = useState('all');
   const [providerFilter, setProviderFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+
+  const [appliedFilters, setAppliedFilters] = useState({
+    fromDate: '2026-06-05',
+    toDate: '2026-06-05',
+    driver: 'all',
+    provider: 'all',
+    category: 'all'
+  });
+
+  const handleRefresh = () => {
+    setAppliedFilters({
+      fromDate,
+      toDate,
+      driver: driverFilter,
+      provider: providerFilter,
+      category: categoryFilter
+    });
+  };
 
   const [selectedProv, setSelectedProv] = useState([]);
   const [selectedDriver, setSelectedDriver] = useState([]);
   const [selectedExp, setSelectedExp] = useState([]);
 
   // Stats calculation
+  const filteredProvLiq = provLiq.filter(p => {
+    if (p.date < appliedFilters.fromDate || p.date > appliedFilters.toDate) return false;
+    if (appliedFilters.provider !== 'all') {
+      const selectedProvObj = providers.find(pr => pr.id.toString() === appliedFilters.provider);
+      if (selectedProvObj && p.provider !== selectedProvObj.name) return false;
+    }
+    return true;
+  });
+
+  const filteredDriverLiq = driverLiq.filter(d => {
+    if (d.date < appliedFilters.fromDate || d.date > appliedFilters.toDate) return false;
+    if (appliedFilters.driver !== 'all') {
+      const selectedDriverObj = drivers.find(dr => dr.id.toString() === appliedFilters.driver);
+      if (selectedDriverObj && d.driver !== selectedDriverObj.name) return false;
+    }
+    return true;
+  });
+
+  const filteredExpenses = expenses.filter(e => {
+    if (e.date < appliedFilters.fromDate || e.date > appliedFilters.toDate) return false;
+    if (appliedFilters.category !== 'all' && e.category !== appliedFilters.category) return false;
+    return true;
+  });
+
   const allBookings = readStoredData('jhoraji_bookings', []);
   const totalBruto = allBookings
-    .filter(b => b.status === 'paid')
+    .filter(b => b.status === 'paid' && b.date >= appliedFilters.fromDate && b.date <= appliedFilters.toDate)
     .reduce((sum, b) => {
       const val = parseFloat((b.amount || '').replace(/[^0-9.-]+/g, ""));
       return sum + (isNaN(val) ? 0 : val);
     }, 0);
-  const totalProv = provLiq.reduce((acc, curr) => acc + curr.costTotal, 0);
-  const totalOta = provLiq.reduce((acc, curr) => acc + curr.ota, 0);
-  const totalDriver = driverLiq.reduce((acc, curr) => acc + curr.amount, 0);
-  const totalGastos = expenses.reduce((acc, curr) => acc + curr.amount, 0);
+  const totalProv = filteredProvLiq.reduce((acc, curr) => acc + curr.costTotal, 0);
+  const totalOta = filteredProvLiq.reduce((acc, curr) => acc + curr.ota, 0);
+  const totalDriver = filteredDriverLiq.reduce((acc, curr) => acc + curr.amount, 0);
+  const totalGastos = filteredExpenses.reduce((acc, curr) => acc + curr.amount, 0);
   const gananciaReal = totalBruto - totalProv - totalOta - totalDriver - totalGastos;
 
-  const gasTotal = expenses.filter(e => e.category === 'Gasolina').reduce((sum, e) => sum + e.amount, 0);
-  const mantTotal = expenses.filter(e => e.category === 'Mantenimiento').reduce((sum, e) => sum + e.amount, 0);
-  const guiasTotal = expenses.filter(e => e.category === 'Pago Guías').reduce((sum, e) => sum + e.amount, 0);
-  const nominaTotal = expenses.filter(e => e.category === 'Pago Nómina').reduce((sum, e) => sum + e.amount, 0);
-  const otrosTotal = expenses.filter(e => !['Gasolina', 'Mantenimiento', 'Pago Guías', 'Pago Nómina'].includes(e.category)).reduce((sum, e) => sum + e.amount, 0);
+  const gasTotal = filteredExpenses.filter(e => e.category === 'Gasolina').reduce((sum, e) => sum + e.amount, 0);
+  const mantTotal = filteredExpenses.filter(e => e.category === 'Mantenimiento').reduce((sum, e) => sum + e.amount, 0);
+  const guiasTotal = filteredExpenses.filter(e => e.category === 'Pago Guías').reduce((sum, e) => sum + e.amount, 0);
+  const nominaTotal = filteredExpenses.filter(e => e.category === 'Pago Nómina').reduce((sum, e) => sum + e.amount, 0);
+  const otrosTotal = filteredExpenses.filter(e => !['Gasolina', 'Mantenimiento', 'Pago Guías', 'Pago Nómina'].includes(e.category)).reduce((sum, e) => sum + e.amount, 0);
 
   const persistData = (key, data, setter) => {
     setter(data);
@@ -180,15 +223,29 @@ const FinancesPage = () => {
         <div className="page-toolbar" style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'center' }}>
           <input type="date" className="form-control" style={{ maxWidth: '160px' }} value={fromDate} onChange={e => setFromDate(e.target.value)} />
           <input type="date" className="form-control" style={{ maxWidth: '160px' }} value={toDate} onChange={e => setToDate(e.target.value)} />
-          <select className="form-control" style={{ maxWidth: '200px' }} value={driverFilter} onChange={e => setDriverFilter(e.target.value)}>
-            <option value="all">-- Chofer --</option>
-            {drivers.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-          </select>
-          <select className="form-control" style={{ maxWidth: '200px' }} value={providerFilter} onChange={e => setProviderFilter(e.target.value)}>
-            <option value="all">-- Proveedor --</option>
-            {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-          </select>
-          <button className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          
+          {activeTab === 'choferes' && (
+            <select className="form-control" style={{ maxWidth: '200px' }} value={driverFilter} onChange={e => setDriverFilter(e.target.value)}>
+              <option value="all">-- Chofer --</option>
+              {drivers.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+            </select>
+          )}
+
+          {activeTab === 'proveedores' && (
+            <select className="form-control" style={{ maxWidth: '200px' }} value={providerFilter} onChange={e => setProviderFilter(e.target.value)}>
+              <option value="all">-- Proveedor --</option>
+              {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          )}
+
+          {activeTab === 'gastos' && (
+            <select className="form-control" style={{ maxWidth: '200px' }} value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)}>
+              <option value="all">-- Categoría --</option>
+              {expenseCategories.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+            </select>
+          )}
+
+          <button className="btn btn-primary" onClick={handleRefresh} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
             <Filter size={16} /> Refrescar
           </button>
         </div>
@@ -243,7 +300,7 @@ const FinancesPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {provLiq.map(p => (
+                    {filteredProvLiq.map(p => (
                       <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                         <td style={{ padding: '15px' }}><input type="checkbox" checked={selectedProv.includes(p.id)} onChange={() => setSelectedProv(prev => prev.includes(p.id) ? prev.filter(id => id !== p.id) : [...prev, p.id])}/></td>
                         <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>{p.date}</td>
@@ -308,7 +365,7 @@ const FinancesPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {driverLiq.map(d => (
+                    {filteredDriverLiq.map(d => (
                       <tr key={d.id}>
                         <td><input type="checkbox" checked={selectedDriver.includes(d.id)} onChange={() => setSelectedDriver(prev => prev.includes(d.id) ? prev.filter(id => id !== d.id) : [...prev, d.id])}/></td>
                         <td>{d.date}</td>
@@ -355,7 +412,7 @@ const FinancesPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {expenses.map(ex => (
+                    {filteredExpenses.map(ex => (
                       <tr key={ex.id}>
                         <td><input type="checkbox" checked={selectedExp.includes(ex.id)} onChange={() => setSelectedExp(prev => prev.includes(ex.id) ? prev.filter(id => id !== ex.id) : [...prev, ex.id])}/></td>
                         <td>{ex.date}</td>
