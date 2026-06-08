@@ -319,8 +319,12 @@ const BookingsPage = () => {
                   {viewingBooking.type === 'ACTIVIDAD' ? <MapPin size={22} /> : <Plane size={22} />}
                 </div>
                 <div>
-                  <h3 style={{ margin: 0, color: 'var(--text-dark)', fontSize: '1.2rem', fontWeight: 600 }}>Detalles de {viewingBooking.type === 'ACTIVIDAD' ? 'la Actividad' : 'el Traslado'}</h3>
-                  <p style={{ margin: 0, color: 'var(--text-light)', fontSize: '0.85rem' }}>#{viewingBooking.id || 'RES-000'}</p>
+                  <h3 style={{ margin: 0, color: 'var(--text-dark)', fontSize: '1.2rem', fontWeight: 600 }}>
+                    {viewingBooking.type === 'ACTIVIDAD' ? 'Detalles de la Reserva' : 'Detalles del Traslado'}
+                  </h3>
+                  <p style={{ margin: 0, color: 'var(--text-light)', fontSize: '0.85rem' }}>
+                    {viewingBooking.id ? (String(viewingBooking.id).startsWith('#') ? viewingBooking.id : `#${viewingBooking.id}`) : '#RES-000'}
+                  </p>
                 </div>
               </div>
               <button className="btn" style={{ padding: '6px', backgroundColor: '#f1f5f9', borderRadius: '50%', color: 'var(--text-light)', border: 'none' }} onClick={() => setViewingBooking(null)}>
