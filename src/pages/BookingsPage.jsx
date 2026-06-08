@@ -70,7 +70,7 @@ const BookingsPage = () => {
   }, [editingBooking]);
   const [bookings, setBookings] = useState(() => readStoredData('jhoraji_bookings', []));
   const providers = readStoredData('jhoraji_providers', []);
-  const toursList = readStoredData('jhoraji_tours', []);
+  const toursList = readStoredData('jhoraji_act', []);
   const agencies = readStoredData('jhoraji_agencies', []);
   const drivers = readStoredData('jhoraji_drivers', []);
 
