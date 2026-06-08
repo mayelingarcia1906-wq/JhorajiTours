@@ -131,13 +131,18 @@ const FinancesPage = () => {
 
   return (
     <div>
-      <div className="page-header mb-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="page-header mb-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
         <div>
           <h2>Gastos Empresa & Liquidación</h2>
           <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0ea5e9', fontWeight: 600 }}>
-          <CalendarIcon size={18} /> 05/06/2026
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b', fontWeight: 600 }}>
+            <CalendarIcon size={18} /> 05/06/2026
+          </div>
+          <button className="btn btn-primary" onClick={() => { setExpenseCategory('Gasolina'); setExpenseCatOpen(false); setShowExpenseModal(true); }}>
+            <Plus size={18} /> Registrar Gasto
+          </button>
         </div>
       </div>
 
@@ -175,24 +180,19 @@ const FinancesPage = () => {
       </div>
 
       <div className="card mb-4">
-        <div className="page-toolbar d-flex" style={{ gap: '15px', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', gap: '10px', flex: 1, flexWrap: 'wrap' }}>
-            <input type="date" className="form-control" style={{ maxWidth: '150px' }} value={fromDate} onChange={e => setFromDate(e.target.value)} />
-            <input type="date" className="form-control" style={{ maxWidth: '150px' }} value={toDate} onChange={e => setToDate(e.target.value)} />
-            <select className="form-control" style={{ maxWidth: '180px' }} value={driverFilter} onChange={e => setDriverFilter(e.target.value)}>
-              <option value="all">-- Chofer --</option>
-              {drivers.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-            </select>
-            <select className="form-control" style={{ maxWidth: '180px' }} value={providerFilter} onChange={e => setProviderFilter(e.target.value)}>
-              <option value="all">-- Proveedor --</option>
-              {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </select>
-            <button className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <Filter size={16} /> Refrescar
-            </button>
-          </div>
-          <button className="btn" onClick={() => { setExpenseCategory('Gasolina'); setExpenseCatOpen(false); setShowExpenseModal(true); }} style={{ backgroundColor: '#1e293b', color: '#fff' }}>
-            <Plus size={18} /> Registrar Gasto
+        <div className="page-toolbar" style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <input type="date" className="form-control" style={{ maxWidth: '160px' }} value={fromDate} onChange={e => setFromDate(e.target.value)} />
+          <input type="date" className="form-control" style={{ maxWidth: '160px' }} value={toDate} onChange={e => setToDate(e.target.value)} />
+          <select className="form-control" style={{ maxWidth: '200px' }} value={driverFilter} onChange={e => setDriverFilter(e.target.value)}>
+            <option value="all">-- Chofer --</option>
+            {drivers.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+          </select>
+          <select className="form-control" style={{ maxWidth: '200px' }} value={providerFilter} onChange={e => setProviderFilter(e.target.value)}>
+            <option value="all">-- Proveedor --</option>
+            {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select>
+          <button className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <Filter size={16} /> Refrescar
           </button>
         </div>
       </div>
@@ -510,7 +510,7 @@ const FinancesPage = () => {
               </div>
               <div className="modal-actions mt-4">
                 <button type="button" className="btn btn-outline" onClick={() => setShowExpenseModal(false)}>Cancelar</button>
-                <button type="submit" className="btn" style={{ backgroundColor: '#0f172a', color: '#fff' }}>GUARDAR</button>
+                <button type="submit" className="btn btn-primary">GUARDAR</button>
               </div>
             </form>
           </div>
