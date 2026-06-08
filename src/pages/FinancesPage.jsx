@@ -368,7 +368,7 @@ const FinancesPage = () => {
       </div>
 
       <div className="card" style={{ width: '100%', maxWidth: '400px', padding: '20px', backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
-        <h3 style={{ color: '#0056b3', fontSize: '0.95rem', fontWeight: 700, marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+        <h3 style={{ color: '#0f172a', fontSize: '0.95rem', fontWeight: 700, marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
           RESUMEN DEL PERÍODO
         </h3>
         
