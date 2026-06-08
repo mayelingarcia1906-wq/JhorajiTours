@@ -137,9 +137,6 @@ const FinancesPage = () => {
           <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b', fontWeight: 600 }}>
-            <CalendarIcon size={18} /> 05/06/2026
-          </div>
           <button className="btn btn-primary" onClick={() => { setExpenseCategory('Gasolina'); setExpenseCatOpen(false); setShowExpenseModal(true); }}>
             <Plus size={18} /> Registrar Gasto
           </button>
