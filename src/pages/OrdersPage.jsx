@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Calendar as CalendarIcon, Printer, Trash2, Edit3, MessageCircle, X, Plus } from 'lucide-react';
+import { Printer, Trash2, Edit3, MessageCircle, X, Plus, Filter } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 
 const initialOrders = [
@@ -132,9 +132,6 @@ const OrdersPage = () => {
     });
   }, [orders, appliedFilters]);
 
-  const currentDateStr = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
-  return (
     <div>
       <div className="page-header mb-4">
         <div>
@@ -142,9 +139,6 @@ const OrdersPage = () => {
           <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0ea5e9', fontWeight: 600 }}>
-            <CalendarIcon size={18} /> {currentDateStr}
-          </div>
           <button className="btn btn-primary" onClick={() => setEditingOrder({ ...emptyOrder })}>
             <Plus size={18} /> Nueva Orden
           </button>
@@ -153,35 +147,26 @@ const OrdersPage = () => {
 
       <div className="card mb-4" style={{ padding: '20px' }}>
         
-        <div className="responsive-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px', alignItems: 'end', marginBottom: '20px' }}>
-          <div>
-            <label style={{ fontSize: '0.85rem', marginBottom: '5px', display: 'block', color: 'var(--text-light)' }}>Desde</label>
-            <input type="date" className="form-control" value={fromDate} onChange={e => setFromDate(e.target.value)} />
-          </div>
-          <div>
-            <label style={{ fontSize: '0.85rem', marginBottom: '5px', display: 'block', color: 'var(--text-light)' }}>Hasta</label>
-            <input type="date" className="form-control" value={toDate} onChange={e => setToDate(e.target.value)} />
-          </div>
-          <div title="*Si eliges un proveedor, aún verás traslados.">
-            <label style={{ fontSize: '0.85rem', marginBottom: '5px', display: 'block', color: 'var(--text-light)' }}>Proveedor</label>
-            <select className="form-control" value={providerFilter} onChange={e => setProviderFilter(e.target.value)}>
-              <option value="all">Todos</option>
+        <div className="page-toolbar d-flex" style={{ gap: '15px', flexWrap: 'wrap', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', gap: '10px', flex: 1, flexWrap: 'wrap' }}>
+            <input type="date" className="form-control" style={{ maxWidth: '150px' }} value={fromDate} onChange={e => setFromDate(e.target.value)} title="Desde" />
+            <input type="date" className="form-control" style={{ maxWidth: '150px' }} value={toDate} onChange={e => setToDate(e.target.value)} title="Hasta" />
+            
+            <select className="form-control" style={{ maxWidth: '180px' }} value={providerFilter} onChange={e => setProviderFilter(e.target.value)} title="*Si eliges un proveedor, aún verás traslados.">
+              <option value="all">-- Proveedor --</option>
               {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
-          </div>
-          <div title="*Si eliges un chofer, verás solo los traslados de ese chofer.">
-            <label style={{ fontSize: '0.85rem', marginBottom: '5px', display: 'block', color: 'var(--text-light)' }}>Chofer (Traslados)</label>
-            <select className="form-control" value={driverFilter} onChange={e => setDriverFilter(e.target.value)}>
-              <option value="all">Todos (Actividades + Traslados)</option>
+            
+            <select className="form-control" style={{ maxWidth: '220px' }} value={driverFilter} onChange={e => setDriverFilter(e.target.value)} title="*Si eliges un chofer, verás solo los traslados de ese chofer.">
+              <option value="all">-- Chofer (Traslados) --</option>
               {drivers.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
-          </div>
-          <div>
-            <label style={{ fontSize: '0.85rem', marginBottom: '5px', display: 'block', color: 'var(--text-light)' }}>Cliente</label>
-            <input type="text" className="form-control" placeholder="Nombre cliente" value={clientSearch} onChange={e => setClientSearch(e.target.value)} />
-          </div>
-          <div style={{ paddingBottom: '0' }}>
-            <button className="btn btn-primary" onClick={handleFilter} style={{ backgroundColor: '#10b981', border: 'none', padding: '10px 20px', borderRadius: '20px' }}>Filtrar</button>
+            
+            <input type="text" className="form-control" style={{ maxWidth: '180px' }} placeholder="Nombre cliente" value={clientSearch} onChange={e => setClientSearch(e.target.value)} />
+            
+            <button className="btn btn-primary" onClick={handleFilter} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <Filter size={16} /> Filtrar
+            </button>
           </div>
         </div>
 
