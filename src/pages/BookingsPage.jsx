@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Calendar, DollarSign, Edit3, Eraser, Eye, MapPin, Plus, Search, Trash2, User, Users, X, ArrowLeft } from 'lucide-react';
+import { Calendar, DollarSign, Edit3, Eraser, Eye, MapPin, Plus, Search, Trash2, User, Users, X, ArrowLeft, FileText, Clock, Plane, Briefcase } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
 import OrdersPage from './OrdersPage';
@@ -307,35 +307,130 @@ const BookingsPage = () => {
       <OrdersPage hideHeader={true} onEditOrder={handleEditOrder} onViewOrder={handleViewOrder} />
 
       {viewingBooking && (
-        <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '600px' }}>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h3 style={{ margin: 0 }}>Detalles de la Reserva</h3>
-              <button className="btn" style={{ padding: '4px' }} onClick={() => setViewingBooking(null)}><X size={20}/></button>
+        <div className="modal-overlay" style={{ padding: '20px' }}>
+          <div className="modal-content" style={{ maxWidth: '650px', width: '100%', borderRadius: 'var(--radius-lg)', padding: 0, overflow: 'hidden' }}>
+            <div style={{ backgroundColor: 'var(--bg-color)', borderBottom: '1px solid var(--border-color)', padding: '20px 25px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ backgroundColor: viewingBooking.type === 'ACTIVIDAD' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(14, 165, 233, 0.15)', color: viewingBooking.type === 'ACTIVIDAD' ? '#16a34a' : '#0ea5e9', padding: '8px', borderRadius: '10px' }}>
+                  {viewingBooking.type === 'ACTIVIDAD' ? <MapPin size={22} /> : <Plane size={22} />}
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, color: 'var(--text-dark)', fontSize: '1.2rem', fontWeight: 600 }}>Detalles de {viewingBooking.type === 'ACTIVIDAD' ? 'la Actividad' : 'el Traslado'}</h3>
+                  <p style={{ margin: 0, color: 'var(--text-light)', fontSize: '0.85rem' }}>#{viewingBooking.id || 'RES-000'}</p>
+                </div>
+              </div>
+              <button className="btn" style={{ padding: '6px', backgroundColor: '#f1f5f9', borderRadius: '50%', color: 'var(--text-light)', border: 'none' }} onClick={() => setViewingBooking(null)}>
+                <X size={20}/>
+              </button>
             </div>
-            <div>
-              <p><strong>Cliente:</strong> {viewingBooking.customer}</p>
-              <p><strong>Fecha:</strong> {viewingBooking.date} &nbsp; <strong>Hora:</strong> {viewingBooking.time}</p>
-              <p><strong>Tipo:</strong> {viewingBooking.type}</p>
-              {viewingBooking.type === 'ACTIVIDAD' ? (
-                <>
-                  <p><strong>Tour/Actividad:</strong> {viewingBooking.tour}</p>
-                  <p><strong>Proveedor:</strong> {viewingBooking.provider}</p>
-                  <p><strong>Hotel:</strong> {viewingBooking.hotel}</p>
-                </>
-              ) : (
-                <>
-                  <p><strong>Chofer:</strong> {viewingBooking.driver}</p>
-                  <p><strong>Ruta:</strong> {viewingBooking.pickupLocation} - {viewingBooking.dropoffLocation}</p>
-                  <p><strong>Vuelo:</strong> {viewingBooking.flightNumber}</p>
-                </>
-              )}
-              <p><strong>PAX:</strong> {viewingBooking.pax} Adultos, {viewingBooking.children} Niños</p>
-              <p><strong>Precio Cliente:</strong> ${viewingBooking.clientPrice}</p>
-              <p><strong>Notas:</strong> {viewingBooking.notes || 'N/A'}</p>
+            
+            <div style={{ padding: '25px', display: 'flex', flexDirection: 'column', gap: '25px', maxHeight: '75vh', overflowY: 'auto' }}>
+              
+              {/* Información General */}
+              <div>
+                <h4 style={{ fontSize: '0.9rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <User size={16} /> Información del Cliente
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', backgroundColor: '#f8fafc', padding: '15px', borderRadius: 'var(--radius-md)', border: '1px solid #f1f5f9' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-light)', marginBottom: '4px' }}>Cliente</label>
+                    <span style={{ fontSize: '0.95rem', color: 'var(--text-dark)', fontWeight: 500 }}>{viewingBooking.customer}</span>
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-light)', marginBottom: '4px' }}>Fecha y Hora</label>
+                    <span style={{ fontSize: '0.95rem', color: 'var(--text-dark)', fontWeight: 500 }}>{viewingBooking.date} {viewingBooking.time ? `• ${viewingBooking.time}` : ''}</span>
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-light)', marginBottom: '4px' }}>Pasajeros (PAX)</label>
+                    <span style={{ fontSize: '0.95rem', color: 'var(--text-dark)', fontWeight: 500 }}>{viewingBooking.pax} Adultos {viewingBooking.children > 0 ? `, ${viewingBooking.children} Niños` : ''}</span>
+                  </div>
+                  {viewingBooking.language && (
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-light)', marginBottom: '4px' }}>Idioma</label>
+                      <span style={{ fontSize: '0.95rem', color: 'var(--text-dark)', fontWeight: 500 }}>{viewingBooking.language}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Detalles del Servicio */}
+              <div>
+                <h4 style={{ fontSize: '0.9rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Briefcase size={16} /> Detalles del Servicio
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', backgroundColor: '#f0f9ff', padding: '15px', borderRadius: 'var(--radius-md)', border: '1px solid #e0f2fe' }}>
+                  {viewingBooking.type === 'ACTIVIDAD' ? (
+                    <>
+                      <div style={{ gridColumn: '1 / -1' }}>
+                        <label style={{ display: 'block', fontSize: '0.75rem', color: '#0369a1', marginBottom: '4px' }}>Tour / Actividad</label>
+                        <span style={{ fontSize: '1.05rem', color: '#0c4a6e', fontWeight: 600 }}>{viewingBooking.tour || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', color: '#0369a1', marginBottom: '4px' }}>Proveedor</label>
+                        <span style={{ fontSize: '0.95rem', color: '#0c4a6e', fontWeight: 500 }}>{viewingBooking.provider || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', color: '#0369a1', marginBottom: '4px' }}>Hotel / Recogida</label>
+                        <span style={{ fontSize: '0.95rem', color: '#0c4a6e', fontWeight: 500 }}>{viewingBooking.hotel || 'N/A'}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', color: '#0369a1', marginBottom: '4px' }}>Chofer Asignado</label>
+                        <span style={{ fontSize: '0.95rem', color: '#0c4a6e', fontWeight: 500 }}>{viewingBooking.driver || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', color: '#0369a1', marginBottom: '4px' }}>Número de Vuelo</label>
+                        <span style={{ fontSize: '0.95rem', color: '#0c4a6e', fontWeight: 500 }}>{viewingBooking.flightNumber || 'N/A'}</span>
+                      </div>
+                      <div style={{ gridColumn: '1 / -1' }}>
+                        <label style={{ display: 'block', fontSize: '0.75rem', color: '#0369a1', marginBottom: '4px' }}>Ruta del Traslado</label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <span style={{ fontSize: '0.95rem', color: '#0c4a6e', fontWeight: 500, flex: 1, backgroundColor: 'white', padding: '6px 12px', borderRadius: '4px', border: '1px solid #bae6fd' }}>{viewingBooking.pickupLocation || 'N/A'}</span>
+                          <span style={{ color: '#0284c7' }}>→</span>
+                          <span style={{ fontSize: '0.95rem', color: '#0c4a6e', fontWeight: 500, flex: 1, backgroundColor: 'white', padding: '6px 12px', borderRadius: '4px', border: '1px solid #bae6fd' }}>{viewingBooking.dropoffLocation || 'N/A'}</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Extras y Notas */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                <div>
+                  <h4 style={{ fontSize: '0.9rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <DollarSign size={16} /> Costos
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed var(--border-color)', paddingBottom: '8px' }}>
+                      <span style={{ color: 'var(--text-light)', fontSize: '0.9rem' }}>Costo Proveedor:</span>
+                      <span style={{ fontWeight: 600, color: 'var(--text-dark)' }}>US$ {Number(viewingBooking.providerCost || 0).toFixed(2)}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '8px' }}>
+                      <span style={{ color: 'var(--text-light)', fontSize: '0.9rem' }}>Precio Cliente:</span>
+                      <span style={{ fontWeight: 700, color: '#10b981', fontSize: '1.1rem' }}>US$ {Number(viewingBooking.clientPrice || 0).toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 style={{ fontSize: '0.9rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <FileText size={16} /> Notas Adicionales
+                  </h4>
+                  <div style={{ backgroundColor: '#fcfdfd', padding: '15px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', minHeight: '80px', color: viewingBooking.notes ? 'var(--text-dark)' : 'var(--text-light)', fontSize: '0.9rem', fontStyle: viewingBooking.notes ? 'normal' : 'italic' }}>
+                    {viewingBooking.notes || 'Ninguna nota registrada.'}
+                  </div>
+                </div>
+              </div>
+
             </div>
-            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
-              <button className="btn btn-outline" onClick={() => setViewingBooking(null)}>Cerrar</button>
+            
+            <div style={{ padding: '15px 25px', borderTop: '1px solid var(--border-color)', backgroundColor: '#f8fafc', display: 'flex', justifyContent: 'flex-end' }}>
+              <button className="btn" style={{ backgroundColor: 'white', border: '1px solid #cbd5e1', color: '#475569', padding: '8px 24px', borderRadius: 'var(--radius-full)', fontWeight: 600 }} onClick={() => setViewingBooking(null)}>
+                Cerrar
+              </button>
             </div>
           </div>
         </div>
