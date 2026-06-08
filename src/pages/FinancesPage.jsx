@@ -216,48 +216,56 @@ const FinancesPage = () => {
                   <button className="btn" style={{ backgroundColor: '#a855f7', color: '#fff', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Printer size={15}/> IMPRIMIR SELECCIÓN</button>
                 </div>
               )}
-              <div className="table-wrapper">
-                <table className="table compact-table">
-                  <thead>
+              <div className="table-wrapper" style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
+                <table className="table compact-table" style={{ margin: 0 }}>
+                  <thead style={{ backgroundColor: '#f8fafc', color: '#64748b', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '1px solid #e2e8f0' }}>
                     <tr>
-                      <th style={{width: '30px'}}><input type="checkbox" onChange={e => setSelectedProv(e.target.checked ? provLiq.map(p=>p.id) : [])} checked={provLiq.length > 0 && selectedProv.length === provLiq.length}/></th>
-                      <th>FECHA</th>
-                      <th>CLIENTE</th>
-                      <th>PROVEEDOR</th>
-                      <th>COSTO BASE</th>
-                      <th>EXTRAS</th>
-                      <th>COSTO TOTAL</th>
-                      <th>PRECIO CL.</th>
-                      <th>OTA</th>
-                      <th>GANANCIA</th>
-                      <th>ESTADO</th>
+                      <th style={{width: '40px', padding: '15px'}}><input type="checkbox" onChange={e => setSelectedProv(e.target.checked ? provLiq.map(p=>p.id) : [])} checked={provLiq.length > 0 && selectedProv.length === provLiq.length}/></th>
+                      <th style={{ padding: '15px' }}>FECHA</th>
+                      <th style={{ padding: '15px' }}>CLIENTE</th>
+                      <th style={{ padding: '15px' }}>PROVEEDOR</th>
+                      <th style={{ padding: '15px' }}>COSTO BASE</th>
+                      <th style={{ padding: '15px' }}>EXTRAS</th>
+                      <th style={{ padding: '15px' }}>COSTO TOTAL</th>
+                      <th style={{ padding: '15px' }}>PRECIO CL.</th>
+                      <th style={{ padding: '15px' }}>OTA</th>
+                      <th style={{ padding: '15px' }}>GANANCIA</th>
+                      <th style={{ padding: '15px' }}>ESTADO</th>
                     </tr>
                   </thead>
                   <tbody>
                     {provLiq.map(p => (
-                      <tr key={p.id}>
-                        <td><input type="checkbox" checked={selectedProv.includes(p.id)} onChange={() => setSelectedProv(prev => prev.includes(p.id) ? prev.filter(id => id !== p.id) : [...prev, p.id])}/></td>
-                        <td>{p.date}</td>
-                        <td>{p.client}</td>
-                        <td style={{fontWeight: '600'}}>{p.provider}</td>
-                        <td>US$ {p.costBase.toFixed(2)}</td>
-                        <td>US$ {p.extras.toFixed(2)}</td>
-                        <td style={{fontWeight: '700'}}>US$ {p.costTotal.toFixed(2)}</td>
-                        <td>US$ {p.priceClient.toFixed(2)}</td>
-                        <td>US$ {p.ota.toFixed(2)}</td>
-                        <td style={{color: '#22c55e', fontWeight: 'bold'}}>US$ {p.profit.toFixed(2)}</td>
-                        <td>
-                          <span className={`badge badge-${p.status === 'Pagado' ? 'success' : 'danger'}`}>{p.status}</span>
+                      <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '15px' }}><input type="checkbox" checked={selectedProv.includes(p.id)} onChange={() => setSelectedProv(prev => prev.includes(p.id) ? prev.filter(id => id !== p.id) : [...prev, p.id])}/></td>
+                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>{p.date}</td>
+                        <td style={{ padding: '15px', color: '#1e293b', fontSize: '0.9rem' }}>{p.client}</td>
+                        <td style={{ padding: '15px', fontWeight: '700', color: '#0f172a', fontSize: '0.95rem' }}>{p.provider}</td>
+                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>US$ {p.costBase.toFixed(2)}</td>
+                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>US$ {p.extras.toFixed(2)}</td>
+                        <td style={{ padding: '15px', fontWeight: '800', color: '#0f172a', fontSize: '0.95rem' }}>US$ {p.costTotal.toFixed(2)}</td>
+                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>US$ {p.priceClient.toFixed(2)}</td>
+                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>US$ {p.ota.toFixed(2)}</td>
+                        <td style={{ padding: '15px', color: '#16a34a', fontWeight: '800', fontSize: '0.95rem' }}>US$ {p.profit.toFixed(2)}</td>
+                        <td style={{ padding: '15px' }}>
+                          {p.status === 'Pagado' ? (
+                            <span style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: '#ecfdf5', color: '#059669', padding: '4px 10px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px' }}>
+                              PAGADO
+                            </span>
+                          ) : (
+                            <span style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: '#fef2f2', color: '#ef4444', padding: '4px 10px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px' }}>
+                              PENDIENTE
+                            </span>
+                          )}
                         </td>
                       </tr>
                     ))}
-                    <tr style={{ backgroundColor: '#1e293b', color: '#fff', fontWeight: 'bold' }}>
-                      <td colSpan="6" style={{ textAlign: 'right' }}>TOTALES:</td>
-                      <td>US$ {totalProv.toFixed(2)}</td>
-                      <td>US$ {totalBruto.toFixed(2)}</td>
-                      <td style={{color: '#f59e0b'}}>US$ {totalOta.toFixed(2)}</td>
-                      <td style={{color: '#22c55e'}}>US$ {(totalBruto - totalProv - totalOta).toFixed(2)}</td>
-                      <td></td>
+                    <tr style={{ backgroundColor: '#1e293b', color: '#fff' }}>
+                      <td colSpan="6" style={{ padding: '16px 15px', textAlign: 'right', fontWeight: '700', fontSize: '0.85rem', letterSpacing: '0.5px' }}>TOTALES:</td>
+                      <td style={{ padding: '16px 15px', fontWeight: '800', fontSize: '0.95rem' }}>US$ {totalProv.toFixed(2)}</td>
+                      <td style={{ padding: '16px 15px', fontWeight: '700', fontSize: '0.9rem' }}>US$ {totalBruto.toFixed(2)}</td>
+                      <td style={{ padding: '16px 15px', color: '#f59e0b', fontWeight: '800', fontSize: '0.95rem' }}>US$ {totalOta.toFixed(2)}</td>
+                      <td style={{ padding: '16px 15px', color: '#22c55e', fontWeight: '800', fontSize: '0.95rem' }}>US$ {(totalBruto - totalProv - totalOta).toFixed(2)}</td>
+                      <td style={{ padding: '16px 15px' }}></td>
                     </tr>
                   </tbody>
                 </table>
@@ -359,68 +367,64 @@ const FinancesPage = () => {
         </div>
       </div>
 
-      <div className="card" style={{ width: '100%', maxWidth: '500px', margin: '0 auto', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', borderBottom: '1px solid var(--border-color)' }}>
-          <div style={{ padding: '15px 20px', borderBottom: '3px solid #f59e0b', color: '#f59e0b', fontWeight: 'bold', textTransform: 'uppercase', fontSize: '0.9rem' }}>
-            RESUMEN DEL PERÍODO
-          </div>
+      <div className="card" style={{ width: '100%', maxWidth: '400px', padding: '20px', backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+        <h3 style={{ color: '#0056b3', fontSize: '0.95rem', fontWeight: 700, marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          RESUMEN DEL PERÍODO
+        </h3>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Total Reservas:</span>
+          <span style={{ fontWeight: 'bold', color: '#000' }}>{allBookings.length}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Ingreso Bruto:</span>
+          <span style={{ fontWeight: 'bold', color: '#10b981' }}>US$ {totalBruto.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Pago Proveedores:</span>
+          <span style={{ fontWeight: 'bold', color: '#ef4444' }}>US$ {totalProv.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Comisiones OTA:</span>
+          <span style={{ fontWeight: 'bold', color: '#f59e0b' }}>US$ {totalOta.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Pagos Choferes:</span>
+          <span style={{ fontWeight: 'bold', color: '#3b82f6' }}>US$ {totalDriver.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Gastos Operativos:</span>
+          <span style={{ fontWeight: 'bold', color: '#000' }}>US$ {totalGastos.toFixed(2)}</span>
+        </div>
+
+        <div style={{ fontWeight: 'bold', marginBottom: '12px', fontSize: '0.95rem', color: '#000' }}>
+          Desglose Gastos:
         </div>
         
-        <div style={{ padding: '0 20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid var(--border-color)', fontSize: '0.9rem' }}>
-            <span style={{ color: 'var(--text-light)', fontWeight: '600' }}>TOTAL RESERVAS</span>
-            <span style={{ fontWeight: 'bold', color: 'var(--text-dark)' }}>{allBookings.length}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid var(--border-color)', fontSize: '0.9rem' }}>
-            <span style={{ color: 'var(--text-light)', fontWeight: '600' }}>INGRESO BRUTO</span>
-            <span style={{ fontWeight: 'bold', color: 'var(--success)' }}>US$ {totalBruto.toFixed(2)}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid var(--border-color)', fontSize: '0.9rem' }}>
-            <span style={{ color: 'var(--text-light)', fontWeight: '600' }}>PAGO PROVEEDORES</span>
-            <span style={{ fontWeight: 'bold', color: 'var(--danger)' }}>US$ {totalProv.toFixed(2)}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid var(--border-color)', fontSize: '0.9rem' }}>
-            <span style={{ color: 'var(--text-light)', fontWeight: '600' }}>COMISIONES OTA</span>
-            <span style={{ fontWeight: 'bold', color: 'var(--warning)' }}>US$ {totalOta.toFixed(2)}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid var(--border-color)', fontSize: '0.9rem' }}>
-            <span style={{ color: 'var(--text-light)', fontWeight: '600' }}>PAGOS CHOFERES</span>
-            <span style={{ fontWeight: 'bold', color: 'var(--info)' }}>US$ {totalDriver.toFixed(2)}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid var(--border-color)', fontSize: '0.9rem' }}>
-            <span style={{ color: 'var(--text-light)', fontWeight: '600' }}>GASTOS OPERATIVOS</span>
-            <span style={{ fontWeight: 'bold', color: 'var(--text-dark)' }}>US$ {totalGastos.toFixed(2)}</span>
-          </div>
-
-          <div style={{ paddingTop: '15px', paddingBottom: '5px', fontSize: '0.85rem', color: 'var(--text-light)', fontWeight: 'bold', textTransform: 'uppercase' }}>
-            Desglose Gastos
-          </div>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '0.85rem' }}>
-            <span style={{ color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: '8px' }}>⛽ Gasolina</span>
-            <span style={{ color: 'var(--text-dark)', fontWeight: '500' }}>US$ {gasTotal.toFixed(2)}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '0.85rem' }}>
-            <span style={{ color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: '8px' }}>🔧 Mantenimiento</span>
-            <span style={{ color: 'var(--text-dark)', fontWeight: '500' }}>US$ {mantTotal.toFixed(2)}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '0.85rem' }}>
-            <span style={{ color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: '8px' }}>👥 Pago Guías</span>
-            <span style={{ color: 'var(--text-dark)', fontWeight: '500' }}>US$ {guiasTotal.toFixed(2)}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '0.85rem' }}>
-            <span style={{ color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: '8px' }}>💼 Pago Nómina</span>
-            <span style={{ color: 'var(--text-dark)', fontWeight: '500' }}>US$ {nominaTotal.toFixed(2)}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', marginBottom: '15px', fontSize: '0.85rem' }}>
-            <span style={{ color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: '8px' }}>📝 Otros</span>
-            <span style={{ color: 'var(--text-dark)', fontWeight: '500' }}>US$ {otrosTotal.toFixed(2)}</span>
-          </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>⛽ Gasolina:</span>
+          <span style={{ color: '#333' }}>US$ {gasTotal.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>🔧 Mantenimiento:</span>
+          <span style={{ color: '#333' }}>US$ {mantTotal.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>👥 Pago Guías:</span>
+          <span style={{ color: '#333' }}>US$ {guiasTotal.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>💼 Pago Nómina:</span>
+          <span style={{ color: '#333' }}>US$ {nominaTotal.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '0.85rem' }}>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>📝 Otros:</span>
+          <span style={{ color: '#333' }}>US$ {otrosTotal.toFixed(2)}</span>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '15px 20px', backgroundColor: '#1e293b', color: '#fff', fontSize: '1rem' }}>
-          <span style={{ fontWeight: 'bold' }}>GANANCIA REAL:</span>
-          <span style={{ fontWeight: 'bold', color: '#22c55e' }}>US$ {gananciaReal.toFixed(2)}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px', paddingTop: '15px', borderTop: '1px solid #e2e8f0', fontSize: '0.95rem' }}>
+          <span style={{ fontWeight: '800', color: '#000' }}>GANANCIA REAL:</span>
+          <span style={{ fontWeight: '800', color: '#10b981' }}>US$ {gananciaReal.toFixed(2)}</span>
         </div>
       </div>
 
