@@ -137,7 +137,11 @@ const OrdersPage = () => {
           <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
-          <button className="btn btn-primary" onClick={() => setEditingOrder({ ...emptyOrder })}>
+          <button className="btn btn-primary" onClick={() => {
+            const d = new Date();
+            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+            setEditingOrder({ ...emptyOrder, date: d.toISOString().split('T')[0] });
+          }}>
             <Plus size={18} /> Nueva Orden
           </button>
         </div>

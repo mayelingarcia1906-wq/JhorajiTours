@@ -382,7 +382,7 @@ const FinancesPage = () => {
               </div>
               <div className="form-group">
                 <label>Fecha</label>
-                <input name="date" type="date" className="form-control" required defaultValue="2026-06-05" />
+                <input name="date" type="date" className="form-control" required defaultValue={new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]} />
               </div>
               <div className="modal-actions mt-4">
                 <button type="button" className="btn btn-outline" onClick={() => setShowExpenseModal(false)}>Cancelar</button>
