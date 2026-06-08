@@ -245,11 +245,11 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
                   <td style={{ color: 'var(--text-dark)', fontWeight: 700, fontSize: '0.9rem' }}>{o.providerPrice}</td>
                   <td>
                     {o.paymentDone ? (
-                      <span style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#059669', padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: '#ecfdf5', color: '#059669', padding: '4px 8px', borderRadius: '6px', border: '1px solid #a7f3d0', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px' }}>
                         PAGADO
                       </span>
                     ) : (
-                      <span style={{ backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#d97706', padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: '#fffbeb', color: '#d97706', padding: '4px 8px', borderRadius: '6px', border: '1px solid #fde68a', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px' }}>
                         PENDIENTE
                       </span>
                     )}

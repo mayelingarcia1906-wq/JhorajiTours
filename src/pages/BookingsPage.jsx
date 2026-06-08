@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Calendar, DollarSign, Edit3, Eraser, Eye, MapPin, Plus, Search, Trash2, User, Users, X, ArrowLeft, FileText, Clock, Plane, Briefcase } from 'lucide-react';
+import { Calendar, DollarSign, Edit3, Eraser, Eye, MapPin, Plus, Search, Trash2, User, Users, X, ArrowLeft, FileText, Clock, Plane, Briefcase, CheckCircle, AlertCircle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
 import OrdersPage from './OrdersPage';
@@ -420,13 +420,13 @@ const BookingsPage = () => {
                     </div>
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', paddingLeft: '10px' }}>
                       {viewingBooking.paymentDone ? (
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#059669', padding: '8px 16px', borderRadius: 'var(--radius-full)', fontWeight: 600, fontSize: '0.9rem' }}>
-                          <span style={{ width: '8px', height: '8px', backgroundColor: '#059669', borderRadius: '50%' }}></span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#ecfdf5', color: '#059669', padding: '10px 18px', borderRadius: '12px', border: '1px solid #a7f3d0', boxShadow: '0 2px 10px rgba(16, 185, 129, 0.1)', fontWeight: 700, fontSize: '0.95rem', letterSpacing: '0.5px' }}>
+                          <CheckCircle size={18} strokeWidth={2.5} />
                           PAGO REALIZADO
                         </div>
                       ) : (
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#d97706', padding: '8px 16px', borderRadius: 'var(--radius-full)', fontWeight: 600, fontSize: '0.9rem' }}>
-                          <span style={{ width: '8px', height: '8px', backgroundColor: '#d97706', borderRadius: '50%' }}></span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#fffbeb', color: '#d97706', padding: '10px 18px', borderRadius: '12px', border: '1px solid #fde68a', boxShadow: '0 2px 10px rgba(245, 158, 11, 0.1)', fontWeight: 700, fontSize: '0.95rem', letterSpacing: '0.5px' }}>
+                          <AlertCircle size={18} strokeWidth={2.5} />
                           PAGO PENDIENTE
                         </div>
                       )}
