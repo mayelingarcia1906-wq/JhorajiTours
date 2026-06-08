@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Calendar, DollarSign, Edit3, Eraser, Eye, MapPin, Plus, Search, Trash2, User, Users, X, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
+import OrdersPage from './OrdersPage';
 
 const emptyBooking = {
   type: 'ACTIVIDAD',
@@ -44,6 +45,8 @@ const statusBadge = { paid: 'success', pending: 'warning', canceled: 'danger' };
 const BookingsPage = () => {
   const { addToast } = useToast();
   const { t } = useLanguage();
+  
+  const [mainTab, setMainTab] = useState('bookings');
   
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -129,11 +132,59 @@ const BookingsPage = () => {
       returnTime: formData.get('isRoundTrip') === 'on' ? (formData.get('returnTime') || '') : ''
     };
 
-    const nextBookings = editingBooking.id
-      ? bookings.map((b) => (b.id === editingBooking.id ? submitted : b))
-      : [submitted, ...bookings];
+    const isNew = !editingBooking.id;
+    const nextBookings = isNew
+      ? [submitted, ...bookings]
+      : bookings.map((b) => (b.id === editingBooking.id ? submitted : b));
 
     persistBookings(nextBookings);
+    
+    // Auto-create order if new
+    if (isNew) {
+      try {
+        const orders = JSON.parse(localStorage.getItem('jhoraji_orders') || '[]');
+        const newOrder = {
+          id: Date.now(),
+          date: submitted.date,
+          time: submitted.time,
+          type: submitted.type,
+          client: submitted.customer,
+          route: submitted.type === 'TRASLADO' ? `${submitted.pickupLocation || ''} - ${submitted.dropoffLocation || ''}` : submitted.hotel,
+          service: submitted.type === 'TRASLADO' ? 'Traslado' : submitted.tour,
+          adults: submitted.pax,
+          children: submitted.children,
+          providerPrice: `US$ ${submitted.providerCost.toFixed(2)}`,
+          provider: submitted.provider,
+          driver: submitted.driver
+        };
+        
+        let nextOrders = [newOrder, ...orders];
+        
+        // Si es Round Trip, crear también la orden de regreso
+        if (submitted.isRoundTrip && submitted.returnDate) {
+          const returnOrder = {
+            id: Date.now() + 1,
+            date: submitted.returnDate,
+            time: submitted.returnTime,
+            type: submitted.type,
+            client: submitted.customer,
+            route: `${submitted.dropoffLocation || ''} - ${submitted.pickupLocation || ''}`, // invertido
+            service: 'Traslado (Regreso)',
+            adults: submitted.pax,
+            children: submitted.children,
+            providerPrice: `US$ ${submitted.providerCost.toFixed(2)}`,
+            provider: submitted.provider,
+            driver: submitted.driver
+          };
+          nextOrders = [returnOrder, ...nextOrders];
+        }
+        
+        localStorage.setItem('jhoraji_orders', JSON.stringify(nextOrders));
+      } catch (e) {
+        console.error("Error auto-creating order", e);
+      }
+    }
+
     setEditingBooking(null);
     addToast(t('bookingSaved'), 'success');
   };
@@ -150,17 +201,24 @@ const BookingsPage = () => {
 
   return (
     <div>
-      <div className="page-header mb-4">
-        <div>
-          <h2>{t('bookingsTitle')}</h2>
-          <p className="text-muted" style={{ margin: 0 }}>{t('bookingsSubtitle')}</p>
-        </div>
-        <button className="btn btn-primary" onClick={() => setEditingBooking({ ...emptyBooking })}>
-          <Plus size={18} /> {t('newBooking')}
-        </button>
+      <div className="tabs mb-4" style={{ display: 'flex', borderBottom: '1px solid var(--border-color)' }}>
+        <button onClick={() => setMainTab('bookings')} style={{ flex: 1, padding: '15px', background: 'none', border: 'none', borderBottom: mainTab === 'bookings' ? '3px solid var(--primary-color)' : '3px solid transparent', color: mainTab === 'bookings' ? 'var(--primary-color)' : 'var(--text-light)', fontWeight: mainTab === 'bookings' ? 'bold' : 'normal', textTransform: 'uppercase', fontSize: '0.85rem' }}>Lista de Reservas</button>
+        <button onClick={() => setMainTab('orders')} style={{ flex: 1, padding: '15px', background: 'none', border: 'none', borderBottom: mainTab === 'orders' ? '3px solid var(--primary-color)' : '3px solid transparent', color: mainTab === 'orders' ? 'var(--primary-color)' : 'var(--text-light)', fontWeight: mainTab === 'orders' ? 'bold' : 'normal', textTransform: 'uppercase', fontSize: '0.85rem' }}>Control de Órdenes</button>
       </div>
 
-      <div className="card">
+      {mainTab === 'bookings' ? (
+        <>
+          <div className="page-header mb-4">
+            <div>
+              <h2>{t('bookingsTitle')}</h2>
+              <p className="text-muted" style={{ margin: 0 }}>{t('bookingsSubtitle')}</p>
+            </div>
+            <button className="btn btn-primary" onClick={() => setEditingBooking({ ...emptyBooking })}>
+              <Plus size={18} /> {t('newBooking')}
+            </button>
+          </div>
+
+          <div className="card">
         <div className="page-toolbar mb-4">
           <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '5px', maxWidth: '100%' }}>
             {statusTabs.map((tab) => (
@@ -226,8 +284,10 @@ const BookingsPage = () => {
               <button className="btn btn-outline" disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}>{t('next')}</button>
             </div>
           </div>
-        )}
-      </div>
+        </>
+      ) : (
+        <OrdersPage />
+      )}
 
       {selectedBooking && (
         <div className="modal-overlay">

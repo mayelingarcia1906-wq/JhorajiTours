@@ -74,7 +74,6 @@ const DashboardLayout = () => {
       label: 'Módulos',
       items: [
         { name: t('bookings'), path: '/bookings', icon: <CalendarDays size={20} />, roles: ['all'] },
-        { name: 'Control de órdenes', path: '/orders', icon: <ClipboardList size={20} />, roles: ['all'] },
         { name: 'Gastos & Liquidación', path: '/finances', icon: <DollarSign size={20} />, roles: ['Admin', 'Operaciones'] },
         { name: t('tours'), path: '/tours', icon: <Map size={20} />, roles: ['all'] },
         { name: t('customers'), path: '/customers', icon: <Users size={20} />, roles: ['all'] },
