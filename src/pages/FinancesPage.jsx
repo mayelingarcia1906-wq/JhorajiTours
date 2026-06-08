@@ -78,6 +78,23 @@ const FinancesPage = () => {
     });
   };
 
+  const handleClear = () => {
+    setFromDate('2026-06-05');
+    setToDate('2026-06-05');
+    setDriverFilter('all');
+    setProviderFilter('all');
+    setCategoryFilter('all');
+    setClientFilter('');
+    setAppliedFilters({
+      fromDate: '2026-06-05',
+      toDate: '2026-06-05',
+      driver: 'all',
+      provider: 'all',
+      category: 'all',
+      client: ''
+    });
+  };
+
   const [selectedProv, setSelectedProv] = useState([]);
   const [selectedDriver, setSelectedDriver] = useState([]);
   const [selectedExp, setSelectedExp] = useState([]);
@@ -255,7 +272,10 @@ const FinancesPage = () => {
           )}
 
           <button className="btn btn-primary" onClick={handleRefresh} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <Filter size={16} /> Refrescar
+            <Filter size={16} /> Buscar
+          </button>
+          <button className="btn btn-outline" onClick={handleClear} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <Eraser size={16} /> Limpiar
           </button>
         </div>
       </div>
