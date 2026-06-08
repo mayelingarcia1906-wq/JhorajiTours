@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Calendar as CalendarIcon, DollarSign, Edit3, Printer, Trash2, X, Plus, Filter, Eraser, CheckCircle, Fuel, Wrench, Users, Briefcase, FileText, ChevronDown } from 'lucide-react';
+import { Calendar as CalendarIcon, DollarSign, Edit3, Printer, Trash2, X, Plus, Filter, Eraser, CheckCircle, AlertCircle, Fuel, Wrench, Users, Briefcase, FileText, ChevronDown } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 
 const initialExpenses = [
@@ -48,8 +48,46 @@ const FinancesPage = () => {
   const drivers = readStoredData('jhoraji_drivers', []);
 
   const [expenses, setExpenses] = useState(() => readStoredData('jhoraji_expenses', initialExpenses));
-  const [provLiq, setProvLiq] = useState(() => readStoredData('jhoraji_prov_liq', initialProvLiq));
-  const [driverLiq, setDriverLiq] = useState(() => readStoredData('jhoraji_driver_liq', initialDriverLiq));
+  const allBookings = readStoredData('jhoraji_bookings', []);
+  const [liqStatus, setLiqStatus] = useState(() => readStoredData('jhoraji_liq_status', {}));
+
+  const provLiq = allBookings
+    .filter(b => b.type === 'ACTIVIDAD' && b.provider)
+    .map(b => {
+      const costBase = Number(b.providerCost) || 0;
+      const priceClient = parseFloat((b.amount || '').replace(/[^0-9.-]+/g, "")) || 0;
+      return {
+        id: `prov_${b.id}`,
+        bookingId: b.id,
+        date: b.date,
+        client: b.customer,
+        provider: b.provider,
+        costBase: costBase,
+        extras: 0,
+        costTotal: costBase,
+        priceClient: priceClient,
+        ota: 0,
+        profit: priceClient - costBase,
+        status: liqStatus[`prov_${b.id}`] || 'Pendiente'
+      };
+    });
+
+  const driverLiq = allBookings
+    .filter(b => b.type === 'TRASLADO' && b.driver)
+    .map(b => {
+      return {
+        id: `drv_${b.id}`,
+        bookingId: b.id,
+        date: b.date,
+        driver: b.driver,
+        client: b.customer,
+        service: `Traslado ${b.pickupLocation || ''} - ${b.dropoffLocation || ''}`,
+        adults: b.pax || 0,
+        children: b.children || 0,
+        amount: 0,
+        status: liqStatus[`drv_${b.id}`] || 'Pendiente'
+      };
+    });
 
   const [fromDate, setFromDate] = useState('2026-06-05');
   const [toDate, setToDate] = useState('2026-06-05');
@@ -126,7 +164,6 @@ const FinancesPage = () => {
     return true;
   });
 
-  const allBookings = readStoredData('jhoraji_bookings', []);
   const totalBruto = allBookings
     .filter(b => b.status === 'paid' && b.date >= appliedFilters.fromDate && b.date <= appliedFilters.toDate)
     .reduce((sum, b) => {
@@ -178,8 +215,12 @@ const FinancesPage = () => {
 
   const toggleProvStatus = (status) => {
     if (selectedProv.length === 0) return;
-    const nextProv = provLiq.map(p => selectedProv.includes(p.id) ? { ...p, status } : p);
-    persistData('jhoraji_prov_liq', nextProv, setProvLiq);
+    const nextStatus = { ...liqStatus };
+    selectedProv.forEach(id => {
+      nextStatus[id] = status;
+    });
+    setLiqStatus(nextStatus);
+    localStorage.setItem('jhoraji_liq_status', JSON.stringify(nextStatus));
     logAudit('Actualizó estado a proveedor', `${selectedProv.length} marcados como ${status}`);
     addToast(`Comisiones marcadas como ${status}`, 'success');
     setSelectedProv([]);
@@ -187,8 +228,12 @@ const FinancesPage = () => {
 
   const toggleDriverStatus = (status) => {
     if (selectedDriver.length === 0) return;
-    const nextDr = driverLiq.map(d => selectedDriver.includes(d.id) ? { ...d, status } : d);
-    persistData('jhoraji_driver_liq', nextDr, setDriverLiq);
+    const nextStatus = { ...liqStatus };
+    selectedDriver.forEach(id => {
+      nextStatus[id] = status;
+    });
+    setLiqStatus(nextStatus);
+    localStorage.setItem('jhoraji_liq_status', JSON.stringify(nextStatus));
     logAudit('Actualizó estado a chofer', `${selectedDriver.length} marcados como ${status}`);
     addToast(`Liquidaciones marcadas como ${status}`, 'success');
     setSelectedDriver([]);
@@ -234,15 +279,15 @@ const FinancesPage = () => {
           <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-dark)', margin: '5px 0' }}>US$ {totalGastos.toFixed(2)}</div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>Incluye Nómina</div>
         </div>
-        <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px', backgroundColor: '#0f172a', color: '#fff' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8' }}>GANANCIA REAL</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#22c55e', margin: '5px 0' }}>US$ {gananciaReal.toFixed(2)}</div>
-          <div style={{ fontSize: '0.75rem', color: '#94a3b8', borderTop: '1px dashed #334155', paddingTop: '5px' }}>Ingresos - Gastos</div>
+        <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#166534' }}>GANANCIA REAL</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#15803d', margin: '5px 0' }}>US$ {gananciaReal.toFixed(2)}</div>
+          <div style={{ fontSize: '0.75rem', color: '#166534', borderTop: '1px dashed #bbf7d0', paddingTop: '5px' }}>Ingresos - Gastos</div>
         </div>
       </div>
 
-      <div className="card mb-4">
-        <div className="page-toolbar" style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'center' }}>
+      <div className="card mb-4" style={{ overflowX: 'auto' }}>
+        <div className="page-toolbar" style={{ display: 'flex', gap: '15px', flexWrap: 'nowrap', alignItems: 'center', minWidth: 'max-content' }}>
           <input type="date" className="form-control" style={{ maxWidth: '160px' }} value={fromDate} onChange={e => setFromDate(e.target.value)} />
           <input type="date" className="form-control" style={{ maxWidth: '160px' }} value={toDate} onChange={e => setToDate(e.target.value)} />
           
@@ -306,9 +351,9 @@ const FinancesPage = () => {
             <div>
               {selectedProv.length > 0 && (
                 <div className="d-flex gap-2 mb-3">
-                  <button className="btn" onClick={() => toggleProvStatus('Pagado')} style={{ backgroundColor: '#10b981', color: '#fff', fontSize: '0.8rem' }}>PAGAR SELECCIÓN</button>
-                  <button className="btn" onClick={() => toggleProvStatus('Pendiente')} style={{ backgroundColor: '#ef4444', color: '#fff', fontSize: '0.8rem' }}>PENDIENTE SELECCIÓN</button>
-                  <button className="btn" style={{ backgroundColor: '#a855f7', color: '#fff', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Printer size={15}/> IMPRIMIR SELECCIÓN</button>
+                  <button className="btn btn-outline" onClick={() => toggleProvStatus('Pagado')} style={{ color: '#10b981', borderColor: '#10b981', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '5px' }}><CheckCircle size={15}/> Pagar</button>
+                  <button className="btn btn-outline" onClick={() => toggleProvStatus('Pendiente')} style={{ color: '#ef4444', borderColor: '#ef4444', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '5px' }}><AlertCircle size={15}/> Pendiente</button>
+                  <button className="btn btn-outline" style={{ color: '#64748b', borderColor: '#cbd5e1', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Printer size={15}/> Imprimir</button>
                 </div>
               )}
               <div className="table-wrapper" style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
@@ -373,9 +418,9 @@ const FinancesPage = () => {
             <div>
               {selectedDriver.length > 0 && (
                 <div className="d-flex gap-2 mb-3">
-                  <button className="btn" onClick={() => toggleDriverStatus('Pagado')} style={{ backgroundColor: '#10b981', color: '#fff', fontSize: '0.8rem' }}>PAGAR SELECCIÓN</button>
-                  <button className="btn" onClick={() => toggleDriverStatus('Pendiente')} style={{ backgroundColor: '#ef4444', color: '#fff', fontSize: '0.8rem' }}>PENDIENTE SELECCIÓN</button>
-                  <button className="btn" style={{ backgroundColor: '#a855f7', color: '#fff', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Printer size={15}/> IMPRIMIR SELECCIÓN</button>
+                  <button className="btn btn-outline" onClick={() => toggleDriverStatus('Pagado')} style={{ color: '#10b981', borderColor: '#10b981', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '5px' }}><CheckCircle size={15}/> Pagar</button>
+                  <button className="btn btn-outline" onClick={() => toggleDriverStatus('Pendiente')} style={{ color: '#ef4444', borderColor: '#ef4444', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '5px' }}><AlertCircle size={15}/> Pendiente</button>
+                  <button className="btn btn-outline" style={{ color: '#64748b', borderColor: '#cbd5e1', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Printer size={15}/> Imprimir</button>
                 </div>
               )}
               <div className="table-wrapper">
