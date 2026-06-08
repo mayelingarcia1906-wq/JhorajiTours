@@ -62,6 +62,12 @@ const FinancesPage = () => {
   const totalGastos = expenses.reduce((acc, curr) => acc + curr.amount, 0);
   const gananciaReal = totalBruto - totalProv - totalOta - totalDriver - totalGastos;
 
+  const gasTotal = expenses.filter(e => e.category === 'Gasolina').reduce((sum, e) => sum + e.amount, 0);
+  const mantTotal = expenses.filter(e => e.category === 'Mantenimiento').reduce((sum, e) => sum + e.amount, 0);
+  const guiasTotal = expenses.filter(e => e.category === 'Pago Guías').reduce((sum, e) => sum + e.amount, 0);
+  const nominaTotal = expenses.filter(e => e.category === 'Pago Nómina').reduce((sum, e) => sum + e.amount, 0);
+  const otrosTotal = expenses.filter(e => !['Gasolina', 'Mantenimiento', 'Pago Guías', 'Pago Nómina'].includes(e.category)).reduce((sum, e) => sum + e.amount, 0);
+
   const persistData = (key, data, setter) => {
     setter(data);
     localStorage.setItem(key, JSON.stringify(data));
@@ -179,8 +185,9 @@ const FinancesPage = () => {
         </div>
       </div>
 
-      <div className="card">
-        <div className="tabs" style={{ display: 'flex', borderBottom: '1px solid var(--border-color)' }}>
+      <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+        <div className="card" style={{ flex: '1 1 600px', overflow: 'hidden' }}>
+          <div className="tabs" style={{ display: 'flex', borderBottom: '1px solid var(--border-color)' }}>
           {['proveedores', 'choferes', 'gastos'].map(tab => (
             <button 
               key={tab}
@@ -351,6 +358,68 @@ const FinancesPage = () => {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="card" style={{ width: '300px', flex: '1 1 300px', maxWidth: '350px', padding: '20px', backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+        <h3 style={{ color: '#0056b3', fontSize: '0.95rem', fontWeight: 700, marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          RESUMEN DEL PERÍODO
+        </h3>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Total Reservas:</span>
+          <span style={{ fontWeight: 'bold', color: '#000' }}>{allBookings.length}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Ingreso Bruto:</span>
+          <span style={{ fontWeight: 'bold', color: '#10b981' }}>US$ {totalBruto.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Pago Proveedores:</span>
+          <span style={{ fontWeight: 'bold', color: '#ef4444' }}>US$ {totalProv.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Comisiones OTA:</span>
+          <span style={{ fontWeight: 'bold', color: '#f59e0b' }}>US$ {totalOta.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Pagos Choferes:</span>
+          <span style={{ fontWeight: 'bold', color: '#3b82f6' }}>US$ {totalDriver.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '0.9rem' }}>
+          <span style={{ color: '#333' }}>Gastos Operativos:</span>
+          <span style={{ fontWeight: 'bold', color: '#000' }}>US$ {totalGastos.toFixed(2)}</span>
+        </div>
+
+        <div style={{ fontWeight: 'bold', marginBottom: '12px', fontSize: '0.95rem', color: '#000' }}>
+          Desglose Gastos:
+        </div>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>⛽ Gasolina:</span>
+          <span style={{ color: '#333' }}>US$ {gasTotal.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>🔧 Mantenimiento:</span>
+          <span style={{ color: '#333' }}>US$ {mantTotal.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>👥 Pago Guías:</span>
+          <span style={{ color: '#333' }}>US$ {guiasTotal.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>💼 Pago Nómina:</span>
+          <span style={{ color: '#333' }}>US$ {nominaTotal.toFixed(2)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '0.85rem' }}>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>📝 Otros:</span>
+          <span style={{ color: '#333' }}>US$ {otrosTotal.toFixed(2)}</span>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px', paddingTop: '15px', borderTop: '1px solid #e2e8f0', fontSize: '0.95rem' }}>
+          <span style={{ fontWeight: '800', color: '#000' }}>GANANCIA REAL:</span>
+          <span style={{ fontWeight: '800', color: '#10b981' }}>US$ {gananciaReal.toFixed(2)}</span>
+        </div>
+      </div>
       </div>
 
       {/* Modal Registrar Gasto */}
