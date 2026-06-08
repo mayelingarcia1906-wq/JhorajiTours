@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Calendar as CalendarIcon, Printer, Trash2, Edit3, MessageCircle, X } from 'lucide-react';
+import { Calendar as CalendarIcon, Printer, Trash2, Edit3, MessageCircle, X, Plus } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 
 const initialOrders = [];
@@ -132,13 +132,18 @@ const OrdersPage = () => {
 
   return (
     <div>
-      <div className="page-header mb-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="page-header mb-4">
         <div>
           <h2>Control de órdenes</h2>
           <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0ea5e9', fontWeight: 600 }}>
-          <CalendarIcon size={18} /> {currentDateStr}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0ea5e9', fontWeight: 600 }}>
+            <CalendarIcon size={18} /> {currentDateStr}
+          </div>
+          <button className="btn btn-primary" onClick={() => setEditingOrder({ ...emptyOrder })}>
+            <Plus size={18} /> Nueva Orden
+          </button>
         </div>
       </div>
 
@@ -154,54 +159,45 @@ const OrdersPage = () => {
             <label style={{ fontSize: '0.85rem', marginBottom: '5px', display: 'block', color: 'var(--text-light)' }}>Hasta</label>
             <input type="date" className="form-control" value={toDate} onChange={e => setToDate(e.target.value)} />
           </div>
-          <div>
+          <div title="*Si eliges un proveedor, aún verás traslados.">
             <label style={{ fontSize: '0.85rem', marginBottom: '5px', display: 'block', color: 'var(--text-light)' }}>Proveedor</label>
             <select className="form-control" value={providerFilter} onChange={e => setProviderFilter(e.target.value)}>
               <option value="all">Todos</option>
               {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-light)', marginTop: '4px' }}>*Si eliges un proveedor, aún verás traslados.</div>
           </div>
-          <div>
+          <div title="*Si eliges un chofer, verás solo los traslados de ese chofer.">
             <label style={{ fontSize: '0.85rem', marginBottom: '5px', display: 'block', color: 'var(--text-light)' }}>Chofer (Traslados)</label>
             <select className="form-control" value={driverFilter} onChange={e => setDriverFilter(e.target.value)}>
               <option value="all">Todos (Actividades + Traslados)</option>
               {drivers.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-light)', marginTop: '4px' }}>*Si eliges un chofer, verás solo los traslados de ese chofer.</div>
           </div>
           <div>
             <label style={{ fontSize: '0.85rem', marginBottom: '5px', display: 'block', color: 'var(--text-light)' }}>Cliente</label>
             <input type="text" className="form-control" placeholder="Nombre cliente" value={clientSearch} onChange={e => setClientSearch(e.target.value)} />
           </div>
-          <div style={{ paddingBottom: '20px' }}>
+          <div style={{ paddingBottom: '0' }}>
             <button className="btn btn-primary" onClick={handleFilter} style={{ backgroundColor: '#10b981', border: 'none', padding: '10px 20px', borderRadius: '20px' }}>Filtrar</button>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', marginBottom: '20px' }}>
+        <div className="d-flex gap-2 mb-3">
           <button 
             className="btn" 
-            onClick={handlePrintSelected}
-            disabled={selectedOrders.length === 0}
-            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', backgroundColor: '#0ea5e9', color: '#fff', padding: '10px', borderRadius: '8px', opacity: selectedOrders.length === 0 ? 0.6 : 1 }}
+            disabled={selectedOrders.length === 0} 
+            onClick={handlePrintSelected} 
+            style={{ backgroundColor: '#a855f7', color: '#fff', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}
           >
-            <Printer size={18} /> Imprimir Seleccionadas
+            <Printer size={15}/> IMPRIMIR SELECCIÓN
           </button>
           <button 
             className="btn" 
-            onClick={handleDeleteSelected}
-            disabled={selectedOrders.length === 0}
-            style={{ flex: 1, backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', padding: '10px', borderRadius: '8px', opacity: selectedOrders.length === 0 ? 0.6 : 1 }}
+            onClick={handleDeleteSelected} 
+            disabled={selectedOrders.length === 0} 
+            style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}
           >
-            Eliminar Seleccionadas
-          </button>
-          <button 
-            className="btn" 
-            onClick={() => setEditingOrder({ ...emptyOrder })}
-            style={{ flex: 0.5, backgroundColor: 'var(--bg-color)', color: 'var(--text-dark)', border: '1px solid var(--border-color)', padding: '10px', borderRadius: '8px' }}
-          >
-            + Nueva Orden
+            <Trash2 size={15}/> ELIMINAR SELECCIÓN
           </button>
         </div>
 
