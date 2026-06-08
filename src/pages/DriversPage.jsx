@@ -59,6 +59,22 @@ const DriversPage = () => {
     setCurrentPageDirectory(1);
   }, [activeTab]);
 
+  const [reportGenerated, setReportGenerated] = useState(false);
+
+  const reportBookings = useMemo(() => {
+    return bookings.filter(b => {
+      const bDriver = b.driverId || b.driver;
+      const matchDriver = !orderFilterVehicle || String(bDriver) === String(orderFilterVehicle);
+      const matchDate = (!orderFilterDateStart || b.date >= orderFilterDateStart) && 
+                        (!orderFilterDateEnd || b.date <= orderFilterDateEnd);
+      return bDriver && matchDriver && matchDate && b.status !== 'canceled';
+    });
+  }, [bookings, orderFilterVehicle, orderFilterDateStart, orderFilterDateEnd]);
+
+  useEffect(() => {
+    setReportGenerated(false);
+  }, [orderFilterVehicle, orderFilterDateStart, orderFilterDateEnd]);
+
   const persistDrivers = (nextDrivers) => {
     setDrivers(nextDrivers);
     localStorage.setItem('jhoraji_drivers', JSON.stringify(nextDrivers));
@@ -98,7 +114,7 @@ const DriversPage = () => {
   const handleAssignDriver = (bookingId, driverId, pickupTime, payment) => {
     const nextBookings = bookings.map((b) => {
       if (b.id === bookingId) {
-        return { ...b, driverId, pickupTime, driverPayment: payment };
+        return { ...b, driverId, driver: driverId, pickupTime, driverPayment: payment };
       }
       return b;
     });
@@ -213,12 +229,12 @@ const DriversPage = () => {
                             className="form-control" 
                             style={{ width: '120px' }} 
                             defaultValue={b.pickupTime || ''}
-                            onBlur={(e) => handleAssignDriver(b.id, b.driverId, e.target.value, b.driverPayment)}
+                            onBlur={(e) => handleAssignDriver(b.id, b.driverId || b.driver, e.target.value, b.driverPayment)}
                           />
                           <select 
                             className="form-control" 
                             style={{ flex: 1, minWidth: '200px' }}
-                            value={b.driverId || ''}
+                            value={b.driverId || b.driver || ''}
                             onChange={(e) => handleAssignDriver(b.id, e.target.value, b.pickupTime, b.driverPayment)}
                           >
                             <option value="">-- Seleccionar Chofer --</option>
@@ -232,7 +248,7 @@ const DriversPage = () => {
                               style={{ paddingLeft: '25px' }} 
                               placeholder="0.00"
                               defaultValue={b.driverPayment || ''}
-                              onBlur={(e) => handleAssignDriver(b.id, b.driverId, b.pickupTime, e.target.value)}
+                              onBlur={(e) => handleAssignDriver(b.id, b.driverId || b.driver, b.pickupTime, e.target.value)}
                             />
                           </div>
                         </div>
@@ -313,21 +329,20 @@ const DriversPage = () => {
       )}
 
       {activeTab === 'orders' && (
-        <div className="card" style={{ maxWidth: '600px', margin: '0 auto' }}>
+        <div className="card" style={{ maxWidth: '1000px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
             <h3 style={{ fontSize: '1.2rem', color: 'var(--primary-color)', marginBottom: '5px' }}>Ver Orden de Recogida</h3>
-            <p className="text-muted" style={{ fontSize: '0.9rem' }}>Genera un reporte con la ruta asignada a un chofer específico.</p>
-          </div>
-          
-          <div className="form-group mb-4">
-            <label>Seleccionar Chofer o Vehículo</label>
-            <select className="form-control" value={orderFilterVehicle} onChange={e => setOrderFilterVehicle(e.target.value)}>
-              <option value="">-- Todos los choferes --</option>
-              {drivers.map(d => <option key={d.id} value={d.id}>{d.name} ({d.vehicle})</option>)}
-            </select>
+            <p className="text-muted" style={{ fontSize: '0.9rem' }}>Consulta las rutas asignadas a los choferes.</p>
           </div>
           
           <div className="responsive-grid mb-4" style={{ gap: '15px' }}>
+            <div className="form-group">
+              <label>Seleccionar Chofer</label>
+              <select className="form-control" value={orderFilterVehicle} onChange={e => setOrderFilterVehicle(e.target.value)}>
+                <option value="">-- Todos los choferes --</option>
+                {drivers.map(d => <option key={d.id} value={d.id}>{d.name} ({d.vehicle})</option>)}
+              </select>
+            </div>
             <div className="form-group">
               <label>Fecha Desde</label>
               <div className="search-field" style={{ width: '100%' }}>
@@ -344,9 +359,59 @@ const DriversPage = () => {
             </div>
           </div>
           
-          <button className="btn btn-primary" style={{ width: '100%', padding: '12px' }} onClick={() => addToast('Consulta generada exitosamente', 'success')}>
+          <button className="btn btn-primary mb-4" style={{ width: '100%', padding: '12px' }} onClick={() => { setReportGenerated(true); addToast('Consulta generada exitosamente', 'success'); }}>
             Generar Reporte de Recogida
           </button>
+
+          {reportGenerated && (
+            <div className="table-wrapper">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Fecha / Hora</th>
+                    <th>Chofer</th>
+                    <th>Cliente</th>
+                    <th>Hotel / Ruta</th>
+                    <th>Servicio</th>
+                    <th>PAX</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reportBookings.length === 0 ? (
+                    <tr>
+                      <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-light)' }}>
+                        No se encontraron reservas asignadas con estos filtros.
+                      </td>
+                    </tr>
+                  ) : (
+                    reportBookings.map(b => {
+                      const bDriver = b.driverId || b.driver;
+                      const d = drivers.find(drv => String(drv.id) === String(bDriver));
+                      return (
+                        <tr key={b.id}>
+                          <td>
+                            <div className="font-bold">{b.date}</div>
+                            <div className="text-muted">{b.pickupTime || '--:--'}</div>
+                          </td>
+                          <td>
+                            <div className="font-bold">{d ? d.name : 'Desconocido'}</div>
+                            <div className="text-muted" style={{ fontSize: '0.8rem' }}>{d ? d.vehicle : ''}</div>
+                          </td>
+                          <td>
+                            <div className="font-bold">{b.customer}</div>
+                            <div className="text-muted" style={{ fontSize: '0.8rem' }}>{b.phone}</div>
+                          </td>
+                          <td>{b.type === 'TRASLADO' ? `${b.pickupLocation || ''} -> ${b.dropoffLocation || ''}` : b.hotel}</td>
+                          <td>{b.type === 'TRASLADO' ? 'Traslado' : b.tour}</td>
+                          <td>{b.pax} Ad, {b.children} Ni</td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
