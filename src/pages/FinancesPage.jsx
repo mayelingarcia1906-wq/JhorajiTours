@@ -254,7 +254,7 @@ const FinancesPage = () => {
           <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <button className="btn btn-outline" onClick={() => setShowSummaryModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <button className="btn" onClick={() => setShowSummaryModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '5px', backgroundColor: '#f1f5f9', color: '#334155', border: 'none' }}>
             <FileText size={18} /> Resumen
           </button>
           <button className="btn btn-primary" onClick={() => { setExpenseCategory('Gasolina'); setExpenseCatOpen(false); setShowExpenseModal(true); }}>
@@ -525,8 +525,8 @@ const FinancesPage = () => {
 
       {/* Modal Resumen del Período */}
       {showSummaryModal && (
-        <div className="modal-overlay" onClick={() => setShowSummaryModal(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px', padding: 0 }}>
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '400px', padding: 0 }}>
             <div className="card" style={{ width: '100%', margin: 0, padding: '20px', backgroundColor: '#fff', border: 'none', borderRadius: '12px', boxShadow: 'none' }}>
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <h3 style={{ color: '#0f172a', fontSize: '0.95rem', fontWeight: 700, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
