@@ -232,7 +232,7 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
 
   return (
     <div style={{ backgroundColor: 'var(--bg-color)', minHeight: '100%' }}>
-      <div className="page-header mb-4" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+      <div className="page-header mb-4" style={{ display: 'flex', alignItems: 'center', gap: '15px', justifyContent: 'flex-start' }}>
         <button className="btn btn-outline" onClick={() => setEditingBooking(null)} style={{ padding: '8px' }}>
           <ArrowLeft size={20} />
         </button>
