@@ -401,8 +401,8 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
                     <option>Directo / sin plataforma</option>
                     <option>Civitatis</option>
                     <option>GetYourGuide</option>
-                    <option>Otros</option>
                     <option>Viator</option>
+                    <option>Otros</option>
                   </select>
                 </div>
                 <div className="form-group mb-0">
