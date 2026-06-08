@@ -350,10 +350,12 @@ const FinancesPage = () => {
           {activeTab === 'proveedores' && (
             <div>
               {selectedProv.length > 0 && (
-                <div className="d-flex gap-2 mb-3">
-                  <button className="btn btn-outline" onClick={() => toggleProvStatus('Pagado')} style={{ color: '#10b981', borderColor: '#10b981', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '5px' }}><CheckCircle size={15}/> Pagar</button>
-                  <button className="btn btn-outline" onClick={() => toggleProvStatus('Pendiente')} style={{ color: '#ef4444', borderColor: '#ef4444', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '5px' }}><AlertCircle size={15}/> Pendiente</button>
-                  <button className="btn btn-outline" style={{ color: '#64748b', borderColor: '#cbd5e1', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Printer size={15}/> Imprimir</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: '#f8fafc', padding: '10px 15px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '15px' }}>
+                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem' }}>{selectedProv.length} seleccionada(s)</span>
+                  <div style={{ width: '1px', height: '20px', backgroundColor: '#cbd5e1' }}></div>
+                  <button className="btn btn-link" onClick={() => toggleProvStatus('Pagado')} style={{ color: '#10b981', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><CheckCircle size={16}/> Pagar</button>
+                  <button className="btn btn-link" onClick={() => toggleProvStatus('Pendiente')} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><AlertCircle size={16}/> Pendiente</button>
+                  <button className="btn btn-link" style={{ color: '#a855f7', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Printer size={16}/> Imprimir</button>
                 </div>
               )}
               <div className="table-wrapper" style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
@@ -417,10 +419,12 @@ const FinancesPage = () => {
           {activeTab === 'choferes' && (
             <div>
               {selectedDriver.length > 0 && (
-                <div className="d-flex gap-2 mb-3">
-                  <button className="btn btn-outline" onClick={() => toggleDriverStatus('Pagado')} style={{ color: '#10b981', borderColor: '#10b981', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '5px' }}><CheckCircle size={15}/> Pagar</button>
-                  <button className="btn btn-outline" onClick={() => toggleDriverStatus('Pendiente')} style={{ color: '#ef4444', borderColor: '#ef4444', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '5px' }}><AlertCircle size={15}/> Pendiente</button>
-                  <button className="btn btn-outline" style={{ color: '#64748b', borderColor: '#cbd5e1', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Printer size={15}/> Imprimir</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: '#f8fafc', padding: '10px 15px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '15px' }}>
+                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem' }}>{selectedDriver.length} seleccionada(s)</span>
+                  <div style={{ width: '1px', height: '20px', backgroundColor: '#cbd5e1' }}></div>
+                  <button className="btn btn-link" onClick={() => toggleDriverStatus('Pagado')} style={{ color: '#10b981', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><CheckCircle size={16}/> Pagar</button>
+                  <button className="btn btn-link" onClick={() => toggleDriverStatus('Pendiente')} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><AlertCircle size={16}/> Pendiente</button>
+                  <button className="btn btn-link" style={{ color: '#a855f7', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Printer size={16}/> Imprimir</button>
                 </div>
               )}
               <div className="table-wrapper">
@@ -469,9 +473,11 @@ const FinancesPage = () => {
           {activeTab === 'gastos' && (
             <div>
               {selectedExp.length > 0 && (
-                <div className="d-flex gap-2 mb-3">
-                  <button className="btn" style={{ backgroundColor: '#a855f7', color: '#fff', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Printer size={15}/> IMPRIMIR SELECCIÓN</button>
-                  <button className="btn" onClick={handleDeleteExpense} style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontSize: '0.8rem', display: 'flex', gap: '5px', alignItems: 'center' }}><Trash2 size={15}/> ELIMINAR</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: '#f8fafc', padding: '10px 15px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '15px' }}>
+                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem' }}>{selectedExp.length} seleccionada(s)</span>
+                  <div style={{ width: '1px', height: '20px', backgroundColor: '#cbd5e1' }}></div>
+                  <button className="btn btn-link" style={{ color: '#a855f7', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Printer size={16}/> Imprimir</button>
+                  <button className="btn btn-link" onClick={handleDeleteExpense} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Trash2 size={16}/> Eliminar</button>
                 </div>
               )}
               <div className="table-wrapper">
