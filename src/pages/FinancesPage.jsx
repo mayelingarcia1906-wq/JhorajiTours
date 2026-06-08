@@ -259,12 +259,12 @@ const FinancesPage = () => {
                         </td>
                       </tr>
                     ))}
-                    <tr style={{ backgroundColor: '#1e293b', color: '#fff' }}>
-                      <td colSpan="6" style={{ padding: '16px 15px', textAlign: 'right', fontWeight: '700', fontSize: '0.85rem', letterSpacing: '0.5px' }}>TOTALES:</td>
+                    <tr style={{ backgroundColor: '#f8fafc', color: '#0f172a' }}>
+                      <td colSpan="6" style={{ padding: '16px 15px', textAlign: 'right', fontWeight: '700', fontSize: '0.85rem', letterSpacing: '0.5px', color: '#64748b' }}>TOTALES:</td>
                       <td style={{ padding: '16px 15px', fontWeight: '800', fontSize: '0.95rem' }}>US$ {totalProv.toFixed(2)}</td>
                       <td style={{ padding: '16px 15px', fontWeight: '700', fontSize: '0.9rem' }}>US$ {totalBruto.toFixed(2)}</td>
                       <td style={{ padding: '16px 15px', color: '#f59e0b', fontWeight: '800', fontSize: '0.95rem' }}>US$ {totalOta.toFixed(2)}</td>
-                      <td style={{ padding: '16px 15px', color: '#22c55e', fontWeight: '800', fontSize: '0.95rem' }}>US$ {(totalBruto - totalProv - totalOta).toFixed(2)}</td>
+                      <td style={{ padding: '16px 15px', color: '#16a34a', fontWeight: '800', fontSize: '0.95rem' }}>US$ {(totalBruto - totalProv - totalOta).toFixed(2)}</td>
                       <td style={{ padding: '16px 15px' }}></td>
                     </tr>
                   </tbody>
