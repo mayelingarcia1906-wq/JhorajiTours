@@ -3,8 +3,15 @@ import { Edit3, Eraser, Plus, Search, Trash2, Shield, User, X, Eye, EyeOff, Aler
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
+import usersData from '../data/users.json';
 
-const initialUsers = [];
+const initialUsers = usersData.map((u, i) => ({
+  id: Date.now() + i,
+  name: u.name,
+  email: u.email,
+  role: u.role === 'Administrador' ? 'Admin' : 'Operaciones',
+  active: u.status === 'Activo',
+}));
 
 const emptyUser = {
   name: '',
@@ -26,7 +33,9 @@ const readStoredUsers = () => {
   const saved = localStorage.getItem('jhoraji_users_list');
   if (!saved) return initialUsers;
   try {
-    return JSON.parse(saved);
+    const parsed = JSON.parse(saved);
+    if (Array.isArray(parsed) && parsed.length === 0) return initialUsers;
+    return parsed;
   } catch {
     return initialUsers;
   }
