@@ -808,3 +808,41 @@ body:has(.modal-overlay) {
   border-color: #475569;
 }
 
+@media print {
+  /* Hide unnecessary elements */
+  .dashboard-sidebar,
+  .dashboard-header,
+  .mobile-menu-btn,
+  .page-header,
+  .tab-btn,
+  .form-group,
+  .btn,
+  .toast-container,
+  .no-print {
+    display: none !important;
+  }
+  
+  /* Reset margins and paddings */
+  .dashboard-main,
+  .dashboard-main.desktop-collapsed,
+  .dashboard-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Make sure the printable card takes full width and has no shadows */
+  .print-card {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Show a special print header if needed, or just let the table take over */
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+}

@@ -158,7 +158,7 @@ const DriversPage = () => {
         </button>
       </div>
 
-      <div className="card mb-4" style={{ padding: '0.5rem' }}>
+      <div className="card mb-4 no-print" style={{ padding: '0.5rem' }}>
         <div className="d-flex gap-2" style={{ overflowX: 'auto', padding: '0.5rem' }}>
           <button className={`tab-btn ${activeTab === 'assign' ? 'active' : ''}`} onClick={() => setActiveTab('assign')}>
             Reservas Asignadas
@@ -314,13 +314,13 @@ const DriversPage = () => {
       )}
 
       {activeTab === 'orders' && (
-        <div className="card" style={{ maxWidth: '1000px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+        <div className="card print-card" style={{ maxWidth: '1000px', margin: '0 auto' }}>
+          <div className="no-print" style={{ textAlign: 'center', marginBottom: '20px' }}>
             <h3 style={{ fontSize: '1.2rem', color: 'var(--primary-color)', marginBottom: '5px' }}>Ver Orden de Recogida</h3>
             <p className="text-muted" style={{ fontSize: '0.9rem' }}>Consulta las rutas asignadas a los choferes.</p>
           </div>
           
-          <div className="responsive-grid mb-4" style={{ gap: '15px' }}>
+          <div className="responsive-grid mb-4 no-print" style={{ gap: '15px' }}>
             <div className="form-group">
               <label>Seleccionar Chofer</label>
               <select className="form-control" value={orderFilterVehicle} onChange={e => setOrderFilterVehicle(e.target.value)}>
@@ -344,13 +344,13 @@ const DriversPage = () => {
             </div>
           </div>
           
-          <button className="btn btn-primary mb-4" style={{ width: '100%', padding: '12px' }} onClick={() => { setReportGenerated(true); addToast('Consulta generada exitosamente', 'success'); }}>
+          <button className="btn btn-primary mb-4 no-print" style={{ width: '100%', padding: '12px' }} onClick={() => { setReportGenerated(true); addToast('Consulta generada exitosamente', 'success'); }}>
             Generar Reporte de Recogida
           </button>
 
           {reportGenerated && (
             <>
-              <div className="d-flex justify-content-end mb-3 gap-2">
+              <div className="d-flex justify-content-end mb-3 gap-2 no-print">
                 <button className="btn btn-outline" onClick={() => window.print()} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Printer size={16}/> Imprimir Reporte
                 </button>
