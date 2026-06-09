@@ -70,7 +70,6 @@ const DashboardLayout = () => {
         { name: t('moduleAgencies'), path: '/agencies', icon: <Building size={20} />, module: 'agencies' },
         { name: t('moduleActivities'), path: '/activities', icon: <Zap size={20} />, module: 'activities' },
         { name: t('moduleSchedule'), path: '/schedule', icon: <CalendarClock size={20} />, module: 'schedule' },
-        { name: t('moduleOrders'), path: '/orders', icon: <ShoppingBag size={20} />, module: 'orders' },
       ]
     },
     // ---- Sección Administración ----

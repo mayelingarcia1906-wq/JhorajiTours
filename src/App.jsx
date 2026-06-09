@@ -20,7 +20,7 @@ import ActivitiesPage from './pages/ActivitiesPage';
 import AuditPage from './pages/AuditPage';
 import SchedulePage from './pages/SchedulePage';
 import AgenciesPage from './pages/AgenciesPage';
-import OrdersPage from './pages/OrdersPage';
+
 import FinancesPage from './pages/FinancesPage';
 
 function App() {
@@ -49,7 +49,7 @@ function App() {
                     <Route path="providers" element={<ProvidersPage />} />
                     <Route path="activities" element={<ActivitiesPage />} />
                     <Route path="agencies" element={<AgenciesPage />} />
-                    <Route path="orders" element={<OrdersPage />} />
+
                     <Route path="finances" element={<FinancesPage />} />
                     <Route path="audit" element={<AuditPage />} />
                     <Route path="schedule" element={<SchedulePage />} />
