@@ -361,7 +361,7 @@ const FinancesPage = () => {
             <Filter size={16} /> {t('search')}
           </button>
           <button className="btn btn-outline" onClick={handleClear} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <Eraser size={16} /> {t('clearLog')} {/* Or a separate clear string */}
+            <Eraser size={16} /> Limpiar
           </button>
         </div>
       </div>
