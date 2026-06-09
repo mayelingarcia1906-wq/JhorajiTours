@@ -479,6 +479,7 @@ const BookingsPage = () => {
 };
 
 const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, providers, toursList, agencies, drivers }) => {
+  const { t } = useLanguage();
   const [bookingType, setBookingType] = useState(editingBooking.type || 'ACTIVIDAD');
   const [isRoundTrip, setIsRoundTrip] = useState(!!editingBooking.isRoundTrip);
   const [selectedProvider, setSelectedProvider] = useState(editingBooking.provider || '');
@@ -692,13 +693,6 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
           </div>
         </form>
       </div>
-      <DeleteConfirmModal
-        isOpen={!!showDeleteConfirm}
-        onCancel={() => setShowDeleteConfirm(null)}
-        onConfirm={handleDelete}
-        title={t('deleteBookingTitle') || 'Eliminar Reserva'}
-        message={t('deleteBookingWarning') || '¿Estás seguro que deseas eliminar esta reserva? Esta acción no se puede deshacer.'}
-      />
     </div>
   );
 };
