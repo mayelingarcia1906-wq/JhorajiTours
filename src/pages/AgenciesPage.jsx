@@ -3,6 +3,7 @@ import { Edit3, MessageCircle, Plus, Trash2, X, Search, Eraser } from 'lucide-re
 import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
 import { useLanguage } from '../context/LanguageContext';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 const initialAgencies = Array.from({ length: 15 }, (_, i) => ({
   id: 1000 + i,
@@ -239,19 +240,13 @@ const AgenciesPage = () => {
         </div>
       )}
 
-      {/* Modal Eliminar */}
-      {showDeleteConfirm && (
-        <div className="modal-overlay" style={{ zIndex: 300 }}>
-          <div className="card" style={{ maxWidth: '420px', width: '90%', textAlign: 'center' }}>
-            <h3 style={{ marginBottom: '15px' }}>{t('deleteAgencyTitle')}</h3>
-            <p className="text-muted mb-4">¿Estás seguro que deseas eliminar esta agencia? Esta acción no se puede deshacer.</p>
-            <div className="d-flex justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
-              <button className="btn btn-outline" onClick={() => setShowDeleteConfirm(null)}>{t('cancel')}</button>
-              <button className="btn btn-danger" onClick={handleDelete}>{t('delete')}</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteConfirmModal
+        isOpen={!!showDeleteConfirm}
+        onCancel={() => setShowDeleteConfirm(null)}
+        onConfirm={handleDelete}
+        title={t('deleteAgencyTitle')}
+        message="¿Estás seguro que deseas eliminar esta agencia? Esta acción no se puede deshacer."
+      />
     </div>
   );
 };

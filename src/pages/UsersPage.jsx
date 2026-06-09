@@ -3,6 +3,7 @@ import { Edit3, Eraser, Plus, Search, Trash2, Shield, User, X, Eye, EyeOff, Aler
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 import usersData from '../data/users.json';
 
 const initialUsers = usersData.map((u, i) => ({
@@ -326,18 +327,13 @@ const UsersPage = () => {
         </div>
       )}
 
-      {showDeleteConfirm && (
-        <div className="modal-overlay" style={{ zIndex: 300 }}>
-          <div className="card" style={{ maxWidth: '420px', width: '90%', textAlign: 'center' }}>
-            <h3 style={{ marginBottom: '15px' }}>{t('deleteUserTitle') || 'Eliminar Usuario'}</h3>
-            <p className="text-muted mb-4">¿Estás seguro que deseas eliminar este usuario? Esta acción no se puede deshacer.</p>
-            <div className="d-flex justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
-              <button className="btn btn-outline" onClick={() => setShowDeleteConfirm(null)}>{t('cancel')}</button>
-              <button className="btn btn-danger" onClick={handleDelete}>{t('delete')}</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteConfirmModal
+        isOpen={!!showDeleteConfirm}
+        onCancel={() => setShowDeleteConfirm(null)}
+        onConfirm={handleDelete}
+        title={t('deleteUserTitle') || 'Eliminar Usuario'}
+        message="¿Estás seguro que deseas eliminar este usuario? Esta acción no se puede deshacer."
+      />
     </div>
   );
 };

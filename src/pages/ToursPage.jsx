@@ -6,6 +6,7 @@ import { Pagination } from '../components/Pagination';
 import { usePermissions } from '../context/PermissionsContext';
 import { useCurrency } from '../context/CurrencyContext';
 import { useNotifications } from '../context/NotificationsContext';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 const initialTours = [];
 
@@ -300,18 +301,13 @@ const ToursPage = () => {
         </div>
       )}
 
-      {showDeleteConfirm && (
-        <div className="modal-overlay" style={{ zIndex: 300 }}>
-          <div className="card" style={{ maxWidth: '420px', width: '90%', textAlign: 'center' }}>
-            <h3 style={{ marginBottom: '15px' }}>{t('deleteTourTitle')}</h3>
-            <p className="text-muted mb-4">{t('deleteTourText')}</p>
-            <div className="d-flex justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
-              <button className="btn btn-outline" onClick={() => setShowDeleteConfirm(null)}>{t('cancel')}</button>
-              <button className="btn btn-danger" onClick={handleDelete}>{t('delete')}</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteConfirmModal
+        isOpen={!!showDeleteConfirm}
+        onCancel={() => setShowDeleteConfirm(null)}
+        onConfirm={handleDelete}
+        title={t('deleteTourTitle')}
+        message={t('deleteTourText')}
+      />
     </div>
   );
 };

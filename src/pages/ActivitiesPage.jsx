@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Edit3, Plus, Trash2, X, Search, Eraser } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import { useLanguage } from '../context/LanguageContext';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 const initialActivities = [];
 
@@ -385,19 +386,13 @@ const ActivitiesPage = () => {
         </div>
       )}
 
-      {/* Modal Eliminar */}
-      {showDeleteConfirm && (
-        <div className="modal-overlay" style={{ zIndex: 300 }}>
-          <div className="card" style={{ maxWidth: '420px', width: '90%', textAlign: 'center' }}>
-            <h3 style={{ marginBottom: '15px' }}>{t('deleteActivityTitle')}</h3>
-            <p className="text-muted mb-4">¿Estás seguro que deseas eliminar esta actividad? Esta acción no se puede deshacer.</p>
-            <div className="d-flex justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
-              <button className="btn btn-outline" onClick={() => setShowDeleteConfirm(null)}>{t('cancel')}</button>
-              <button className="btn btn-danger" onClick={handleDelete}>{t('delete')}</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteConfirmModal
+        isOpen={!!showDeleteConfirm}
+        onCancel={() => setShowDeleteConfirm(null)}
+        onConfirm={handleDelete}
+        title={t('deleteActivityTitle')}
+        message="¿Estás seguro que deseas eliminar esta actividad? Esta acción no se puede deshacer."
+      />
     </div>
   );
 };

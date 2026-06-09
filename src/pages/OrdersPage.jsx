@@ -6,6 +6,7 @@ import { Pagination } from '../components/Pagination';
 import { usePermissions } from '../context/PermissionsContext';
 import { useNotifications } from '../context/NotificationsContext';
 import { useCurrency } from '../context/CurrencyContext';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 const initialOrders = [
   { id: 'RES-00101', date: '2026-06-10', time: '08:30', type: 'ACTIVIDAD', client: 'Carlos Mendoza', route: 'Punta Cana - Saona', service: 'Excursión VIP', adults: 2, children: 0, providerPrice: 'US$ 120.00', provider: '', driver: '' },
@@ -57,6 +58,7 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
 
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [editingOrder, setEditingOrder] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     const handleStorage = () => {
@@ -104,14 +106,17 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
     }
   };
 
-  const handleDeleteSelected = () => {
+  const confirmDeleteSelected = () => {
     if (selectedOrders.length === 0) return;
-    if (window.confirm(`${t('deleteConfirmOrders')} ${selectedOrders.length} ${t('selectedOrders')}`)) {
-      persistOrders(orders.filter(o => !selectedOrders.includes(o.id)));
-      logAudit('Eliminó órdenes', `${selectedOrders.length} órdenes eliminadas`);
-      addToast(`${selectedOrders.length} ${t('ordersDeleted')}`, 'success');
-      setSelectedOrders([]);
-    }
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteSelected = () => {
+    persistOrders(orders.filter(o => !selectedOrders.includes(o.id)));
+    logAudit('Eliminó órdenes', `${selectedOrders.length} órdenes eliminadas`);
+    addToast(`${selectedOrders.length} ${t('ordersDeleted')}`, 'success');
+    setSelectedOrders([]);
+    setShowDeleteConfirm(false);
   };
 
   const handlePrintSelected = () => {
@@ -209,7 +214,7 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
             <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-dark)' }}>{selectedOrders.length} seleccionada(s)</span>
             <div style={{ width: '1px', height: '20px', backgroundColor: 'var(--border-color)' }}></div>
             <button 
-              className="btn" 
+              className="btn no-print" 
               onClick={handlePrintSelected} 
               style={{ backgroundColor: 'transparent', color: '#a855f7', fontSize: '0.85rem', display: 'flex', gap: '6px', alignItems: 'center', padding: '4px 8px', fontWeight: 600, border: 'none' }}
               title="Imprimir"
@@ -218,8 +223,8 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
             </button>
             {canPerformAction('delete') && (
               <button 
-                className="btn" 
-                onClick={handleDeleteSelected} 
+                className="btn no-print" 
+                onClick={confirmDeleteSelected} 
                 style={{ backgroundColor: 'transparent', color: '#ef4444', fontSize: '0.85rem', display: 'flex', gap: '6px', alignItems: 'center', padding: '4px 8px', fontWeight: 600, border: 'none' }}
                 title="Eliminar"
               >
@@ -384,6 +389,14 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
           </div>
         </div>
       )}
+
+      <DeleteConfirmModal
+        isOpen={showDeleteConfirm}
+        onCancel={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteSelected}
+        title={t('deleteOrdersTitle') || 'Eliminar Órdenes'}
+        message={`${t('deleteConfirmOrders')} ${selectedOrders.length} ${t('selectedOrders')}? Esta acción no se puede deshacer.`}
+      />
     </div>
   );
 };

@@ -5,6 +5,8 @@ import { useToast } from '../context/ToastContext';
 import { usePermissions } from '../context/PermissionsContext';
 import { useNotifications } from '../context/NotificationsContext';
 import { useCurrency } from '../context/CurrencyContext';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import { useCurrency } from '../context/CurrencyContext';
 import OrdersPage from './OrdersPage';
 
 const emptyBooking = {
@@ -691,6 +693,13 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
           </div>
         </form>
       </div>
+      <DeleteConfirmModal
+        isOpen={!!showDeleteConfirm}
+        onCancel={() => setShowDeleteConfirm(null)}
+        onConfirm={handleDelete}
+        title={t('deleteBookingTitle') || 'Eliminar Reserva'}
+        message={t('deleteBookingWarning') || '¿Estás seguro que deseas eliminar esta reserva? Esta acción no se puede deshacer.'}
+      />
     </div>
   );
 };

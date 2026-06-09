@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Edit3, Eraser, Eye, Globe, Mail, Phone, Plus, Search, Trash2, User, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import { useToast } from '../context/ToastContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { Pagination } from '../components/Pagination';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import { useToast } from '../context/ToastContext';
 import { useNotifications } from '../context/NotificationsContext';
 
 const initialCustomers = [];
@@ -308,19 +310,13 @@ const CustomersPage = () => {
         </div>
       )}
 
-      {/* Delete Confirmation */}
-      {showDeleteConfirm && (
-        <div className="modal-overlay" style={{ zIndex: 300 }}>
-          <div className="card" style={{ maxWidth: '420px', width: '90%', textAlign: 'center' }}>
-            <h3 style={{ marginBottom: '15px' }}>{t('deleteCustomerTitle')}</h3>
-            <p className="text-muted mb-4">{t('deleteCustomerText')}</p>
-            <div className="d-flex justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
-              <button className="btn btn-outline" onClick={() => setShowDeleteConfirm(null)}>{t('cancel')}</button>
-              <button className="btn btn-danger" onClick={handleDelete}>{t('delete')}</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteConfirmModal
+        isOpen={!!showDeleteConfirm}
+        onCancel={() => setShowDeleteConfirm(null)}
+        onConfirm={handleDelete}
+        title={t('deleteCustomerTitle')}
+        message={t('deleteCustomerText')}
+      />
     </div>
   );
 };

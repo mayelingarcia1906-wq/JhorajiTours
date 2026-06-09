@@ -283,6 +283,12 @@ const DashboardLayout = () => {
 
         {/* Page Content */}
         <div className="dashboard-content">
+          {/* Print Header */}
+          <div className="print-header-official print-only">
+            <h1>Jhoraji Tours - Reporte Oficial</h1>
+            <p>Fecha de Impresión: {new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+            <p>Generado por: {currentUser.name} ({currentUser.role})</p>
+          </div>
           <Outlet />
         </div>
       </main>

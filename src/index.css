@@ -926,41 +926,92 @@ body:has(.modal-overlay) {
   border-color: #475569;
 }
 
+/* ── Print Styles ─────────────────────────────────────────── */
+.print-only { display: none; }
+
 @media print {
   /* Hide unnecessary elements */
   .dashboard-sidebar,
   .dashboard-header,
   .mobile-menu-btn,
   .page-header,
+  .page-toolbar,
   .tab-btn,
   .form-group,
   .btn,
   .toast-container,
-  .no-print {
+  .no-print,
+  .action-col,
+  .pagination-container,
+  .modal-overlay {
     display: none !important;
   }
   
+  /* Show print only elements */
+  .print-only {
+    display: block !important;
+  }
+
+  .print-header-official {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #000;
+  }
+  
+  .print-header-official h1 {
+    font-size: 24px;
+    margin: 0;
+    color: #000;
+  }
+  
+  .print-header-official p {
+    font-size: 14px;
+    color: #555;
+    margin: 5px 0 0 0;
+  }
+
   /* Reset margins and paddings */
   .dashboard-main,
   .dashboard-main.desktop-collapsed,
-  .dashboard-content {
+  .dashboard-content,
+  body {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
+    background-color: white !important;
+    color: black !important;
   }
 
   /* Make sure the printable card takes full width and has no shadows */
-  .print-card {
+  .print-card, .card {
     box-shadow: none !important;
     border: none !important;
     margin: 0 !important;
     padding: 0 !important;
     max-width: 100% !important;
+    background: transparent !important;
   }
 
-  /* Show a special print header if needed, or just let the table take over */
-  body {
-    background-color: white !important;
+  /* Optimize tables for print */
+  .table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+  .table th, .table td {
+    border: 1px solid #ddd !important;
+    padding: 8px !important;
     color: black !important;
+  }
+  .table th {
+    background-color: #f1f5f9 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .badge {
+    border: 1px solid #000;
+    color: #000 !important;
+    background: transparent !important;
   }
 }

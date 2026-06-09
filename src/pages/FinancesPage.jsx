@@ -4,6 +4,7 @@ import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 const initialExpenses = [
   { id: 201, date: '2026-06-05', category: 'Gasolina', desc: 'Llenado de tanque Van 1', amount: 45.00 },
@@ -37,6 +38,7 @@ const FinancesPage = () => {
   const [activeTab, setActiveTab] = useState('proveedores');
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [expenseCategory, setExpenseCategory] = useState('Gasolina');
   const [expenseCatOpen, setExpenseCatOpen] = useState(false);
   
@@ -226,14 +228,18 @@ const FinancesPage = () => {
     setShowExpenseModal(false);
   };
 
+  const confirmDeleteExpense = () => {
+    if (selectedExp.length === 0) return;
+    setShowDeleteConfirm(true);
+  };
+
   const handleDeleteExpense = () => {
     if (selectedExp.length === 0) return;
-    if (window.confirm(`¿Eliminar ${selectedExp.length} gastos seleccionados?`)) {
-      persistData('jhoraji_expenses', expenses.filter(e => !selectedExp.includes(e.id)), setExpenses);
-      logAudit('Eliminó Gastos', `${selectedExp.length} gastos eliminados`);
-      addToast('Gastos eliminados', 'success');
-      setSelectedExp([]);
-    }
+    persistData('jhoraji_expenses', expenses.filter(e => !selectedExp.includes(e.id)), setExpenses);
+    logAudit('Eliminó Gastos', `${selectedExp.length} gastos eliminados`);
+    addToast('Gastos eliminados', 'success');
+    setSelectedExp([]);
+    setShowDeleteConfirm(false);
   };
 
   const toggleProvStatus = (status) => {
@@ -513,15 +519,15 @@ const FinancesPage = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: '#f8fafc', padding: '10px 15px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '15px' }}>
                   <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem' }}>{selectedExp.length} seleccionada(s)</span>
                   <div style={{ width: '1px', height: '20px', backgroundColor: '#cbd5e1' }}></div>
-                  <button className="btn btn-link" style={{ color: '#a855f7', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Printer size={16}/> Imprimir</button>
-                  <button className="btn btn-link" onClick={handleDeleteExpense} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Trash2 size={16}/> Eliminar</button>
+                  <button className="btn btn-link no-print" style={{ color: '#a855f7', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Printer size={16}/> Imprimir</button>
+                  <button className="btn btn-link no-print" onClick={confirmDeleteExpense} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Trash2 size={16}/> Eliminar</button>
                 </div>
               )}
               <div className="table-wrapper">
                 <table className="table compact-table">
                   <thead>
                     <tr>
-                      <th style={{width: '30px'}}><input type="checkbox" onChange={e => setSelectedExp(e.target.checked ? filteredExpenses.map(ex=>ex.id) : [])} checked={filteredExpenses.length > 0 && selectedExp.length === filteredExpenses.length}/></th>
+                      <th className="no-print" style={{width: '30px'}}><input type="checkbox" onChange={e => setSelectedExp(e.target.checked ? filteredExpenses.map(ex=>ex.id) : [])} checked={filteredExpenses.length > 0 && selectedExp.length === filteredExpenses.length}/></th>
                       <th>{t('date')}</th>
                       <th>{t('category')}</th>
                       <th>{t('description')}</th>
@@ -698,6 +704,14 @@ const FinancesPage = () => {
           </div>
         </div>
       )}
+
+      <DeleteConfirmModal
+        isOpen={showDeleteConfirm}
+        onCancel={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteExpense}
+        title={t('deleteExpenseTitle') || 'Eliminar Gastos'}
+        message={`¿Estás seguro de que deseas eliminar ${selectedExp.length} gasto(s)? Esta acción no se puede deshacer.`}
+      />
     </div>
   );
 };

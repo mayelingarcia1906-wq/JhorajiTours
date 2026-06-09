@@ -3,6 +3,7 @@ import { Calendar, Truck, User, Edit3, Trash2, X, Plus, Printer } from 'lucide-r
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 const initialDrivers = [];
 
@@ -443,19 +444,13 @@ const DriversPage = () => {
         </div>
       )}
 
-      {/* Modal Eliminar */}
-      {showDeleteConfirm && (
-        <div className="modal-overlay" style={{ zIndex: 300 }}>
-          <div className="card" style={{ maxWidth: '420px', width: '90%', textAlign: 'center' }}>
-            <h3 style={{ marginBottom: '15px' }}>{t('deleteDriverTitle')}</h3>
-            <p className="text-muted mb-4">{t('deleteDriverWarning') || '¿Estás seguro que deseas eliminar este chofer? Esta acción no se puede deshacer y desvinculará sus asignaciones previas.'}</p>
-            <div className="d-flex justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
-              <button className="btn btn-outline" onClick={() => setShowDeleteConfirm(null)}>{t('cancel')}</button>
-              <button className="btn btn-danger" onClick={handleDelete}>{t('delete')}</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteConfirmModal
+        isOpen={!!showDeleteConfirm}
+        onCancel={() => setShowDeleteConfirm(null)}
+        onConfirm={handleDelete}
+        title={t('deleteDriverTitle') || 'Eliminar Chofer'}
+        message={t('deleteDriverWarning') || '¿Estás seguro que deseas eliminar este chofer? Esta acción no se puede deshacer y desvinculará sus asignaciones previas.'}
+      />
     </div>
   );
 };
