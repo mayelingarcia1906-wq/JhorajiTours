@@ -213,14 +213,7 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '10px 15px', backgroundColor: 'var(--bg-color)', borderRadius: '8px', marginBottom: '15px', border: '1px solid var(--border-color)' }}>
             <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-dark)' }}>{selectedOrders.length} seleccionada(s)</span>
             <div style={{ width: '1px', height: '20px', backgroundColor: 'var(--border-color)' }}></div>
-            <button 
-              className="btn no-print" 
-              onClick={handlePrintSelected} 
-              style={{ backgroundColor: 'transparent', color: '#a855f7', fontSize: '0.85rem', display: 'flex', gap: '6px', alignItems: 'center', padding: '4px 8px', fontWeight: 600, border: 'none' }}
-              title="Imprimir"
-            >
-              <Printer size={16}/> Imprimir
-            </button>
+
             {canPerformAction('delete') && (
               <button 
                 className="btn no-print" 

@@ -351,11 +351,7 @@ const DriversPage = () => {
 
           {reportGenerated && (
             <>
-              <div className="d-flex justify-content-end mb-3 gap-2 no-print">
-                <button className="btn btn-outline" onClick={() => window.print()} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Printer size={16}/> Imprimir Reporte
-                </button>
-              </div>
+
               <div className="table-wrapper">
               <table className="table">
                 <thead>
