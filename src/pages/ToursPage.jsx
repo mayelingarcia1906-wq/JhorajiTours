@@ -211,7 +211,7 @@ const ToursPage = () => {
         {currentItems.map((tour) => (
           <div key={tour.id} className="card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
             <div style={{ height: '180px', position: 'relative' }}>
-              <img src={tour.image || 'https://picsum.photos/seed/fallback/800/600'} alt={tour.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={tour.image || 'images/tour_saona.png'} alt={tour.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               {canPerformAction('edit') && (
                 <button className={`badge ${tour.active ? 'badge-success' : 'badge-danger'}`} style={{ position: 'absolute', top: '10px', right: '10px', backgroundColor: tour.active ? '#22c55e' : '#ef4444', color: 'white', cursor: 'pointer', border: 'none' }} onClick={() => toggleActive(tour.id)}>
                   {tour.active ? t('active') : t('inactive')}
@@ -255,7 +255,7 @@ const ToursPage = () => {
         <div className="modal-overlay">
           <div className="modal-content" onClick={(event) => event.stopPropagation()} style={{ padding: 0, display: 'flex', flexDirection: 'column' }}>
             <div style={{ height: '240px', position: 'relative', flexShrink: 0, borderTopLeftRadius: 'var(--radius-lg)', borderTopRightRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
-              <img src={selectedTour.image || 'https://picsum.photos/seed/fallback/800/600'} alt={selectedTour.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={selectedTour.image || 'images/tour_saona.png'} alt={selectedTour.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               <button onClick={() => setSelectedTour(null)} style={{ position: 'absolute', top: '15px', right: '15px', background: 'rgba(0,0,0,0.5)', color: 'white', borderRadius: '50%', padding: '5px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={24} /></button>
             </div>
             <div style={{ padding: '1.5rem', overflowY: 'auto' }}>

@@ -79,9 +79,9 @@ export const seedMockData = () => {
   ];
 
   const tours = [
-    { id: 1, title: 'Isla Saona Vip', location: 'Bayahibe', duration: 'Día Completo', price: 75, category: 'Aventura', createdBy: 'Administrador General', rating: 4.8, active: true, image: 'https://picsum.photos/seed/saona/800/600' },
-    { id: 2, title: 'Safari Buggies', location: 'Macao', duration: 'Medio Día', price: 45, category: 'Aventura', createdBy: 'Margarita Torres', rating: 4.5, active: true, image: 'https://picsum.photos/seed/safari/800/600' },
-    { id: 3, title: 'City Tour Santo Domingo', location: 'Santo Domingo', duration: 'Día Completo', price: 85, category: 'Cultura', createdBy: 'Administrador General', rating: 4.9, active: true, image: 'https://picsum.photos/seed/city/800/600' }
+    { id: 1, title: 'Isla Saona Vip', location: 'Bayahibe', duration: 'Día Completo', price: 75, category: 'Aventura', createdBy: 'Administrador General', rating: 4.8, active: true, image: 'images/tour_saona.png' },
+    { id: 2, title: 'Safari Buggies', location: 'Macao', duration: 'Medio Día', price: 45, category: 'Aventura', createdBy: 'Margarita Torres', rating: 4.5, active: true, image: 'images/tour_buggies.png' },
+    { id: 3, title: 'City Tour Santo Domingo', location: 'Santo Domingo', duration: 'Día Completo', price: 85, category: 'Cultura', createdBy: 'Administrador General', rating: 4.9, active: true, image: 'images/tour_city.png' }
   ];
 
   const customers = [
