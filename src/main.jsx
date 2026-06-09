@@ -2,6 +2,9 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
+import { seedMockData } from './data/seedData.js'
+
+seedMockData();
 
 // Aplicar el color guardado globalmente antes de que cargue React
 try {
