@@ -97,7 +97,7 @@ const BookingsPage = () => {
       const matchesStatus = activeTab === 'all' || b.status === activeTab;
       const term = appliedSearch.toLowerCase();
       const matchesSearch = [b.customer, b.id, b.email, b.tour, b.hotel]
-        .some((val) => (val || '').toLowerCase().includes(term));
+        .some((val) => String(val || '').toLowerCase().includes(term));
       return matchesStatus && matchesSearch;
     });
   }, [bookings, activeTab, appliedSearch]);

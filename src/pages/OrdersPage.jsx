@@ -153,7 +153,7 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
       // Si elige chofer, mostramos solo traslados de ese chofer
       if (driverFilter !== 'all' && String(o.driver) !== String(driverFilter)) match = false;
       
-      if (clientSearch && !(o.client || '').toLowerCase().includes(clientSearch.toLowerCase())) match = false;
+      if (clientSearch && !String(o.client || '').toLowerCase().includes(clientSearch.toLowerCase())) match = false;
       return match;
     });
   }, [orders, fromDate, toDate, providerFilter, driverFilter, clientSearch]);

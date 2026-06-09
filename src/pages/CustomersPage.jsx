@@ -63,7 +63,7 @@ const CustomersPage = () => {
       const matchesStatus = activeTab === 'all' || customer.status === activeTab;
       const term = appliedSearch.toLowerCase();
       const matchesSearch = [customer.name, customer.email, customer.country]
-        .some((value) => (value || '').toLowerCase().includes(term));
+        .some((value) => String(value || '').toLowerCase().includes(term));
       return matchesStatus && matchesSearch;
     });
   }, [customers, activeTab, appliedSearch]);

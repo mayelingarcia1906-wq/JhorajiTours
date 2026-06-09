@@ -60,7 +60,7 @@ const AuditPage = () => {
     return logs.filter(log => {
       const matchModule = moduleFilter === 'all' || log.module === moduleFilter;
       const term = appliedSearch.toLowerCase();
-      const matchSearch = !term || [log.action, log.detail, log.user, log.module].some(v => (v || '').toLowerCase().includes(term));
+      const matchSearch = !term || [log.action, log.detail, log.user, log.module].some(v => String(v || '').toLowerCase().includes(term));
       return matchModule && matchSearch;
     });
   }, [logs, moduleFilter, appliedSearch]);
