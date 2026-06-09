@@ -31,7 +31,7 @@ const logAudit = (action, detail) => {
 };
 
 const readStoredUsers = () => {
-  const saved = localStorage.getItem('jhoraji_users_list_v2');
+  const saved = localStorage.getItem('jhoraji_users_list_v3');
   if (!saved) return initialUsers;
   try {
     const parsed = JSON.parse(saved);
@@ -66,7 +66,7 @@ const UsersPage = () => {
 
   const persistUsers = (nextUsers) => {
     setUsers(nextUsers);
-    localStorage.setItem('jhoraji_users_list_v2', JSON.stringify(nextUsers));
+    localStorage.setItem('jhoraji_users_list_v3', JSON.stringify(nextUsers));
   };
 
   const filteredUsers = useMemo(() => {
