@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Activity, Edit3, Eraser, Plus, Search, ShieldCheck, Trash2, X } from 'lucide-react';
 import { Pagination } from '../components/Pagination';
+import { useLanguage } from '../context/LanguageContext';
 
 const MODULE_COLORS = {
   Usuarios: { bg: 'rgba(14,165,233,0.1)', color: 'var(--primary-color)' },
@@ -42,6 +43,7 @@ const formatDateTime = (iso) => {
 };
 
 const AuditPage = () => {
+  const { t } = useLanguage();
   const [logs, setLogs] = useState(readAuditLogs);
   const [searchQuery, setSearchQuery] = useState('');
   const [appliedSearch, setAppliedSearch] = useState('');
@@ -84,15 +86,15 @@ const AuditPage = () => {
     <div>
       <div className="page-header mb-4">
         <div>
-          <h2>Auditoría del Sistema</h2>
-          <p className="text-muted" style={{ margin: 0 }}>Registro de todas las acciones realizadas en el sistema</p>
+          <h2>{t('auditTitle')}</h2>
+          <p className="text-muted" style={{ margin: 0 }}>{t('auditSubtitle')}</p>
         </div>
         <div className="d-flex gap-2">
           <button className="btn btn-outline" onClick={refreshLogs}>
-            <Activity size={16} /> Actualizar
+            <Activity size={16} /> {t('update')}
           </button>
           <button className="btn btn-danger" onClick={() => setShowClearConfirm(true)}>
-            <Trash2 size={16} /> Limpiar Log
+            <Trash2 size={16} /> {t('clearLog')}
           </button>
         </div>
       </div>
@@ -101,31 +103,31 @@ const AuditPage = () => {
       <div className="stats-grid mb-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
         <div className="card" style={{ textAlign: 'center', padding: '1rem' }}>
           <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--primary-color)' }}>{logs.length}</div>
-          <div className="text-muted" style={{ fontSize: '0.8rem' }}>Total Acciones</div>
+          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{t('totalActions')}</div>
         </div>
         <div className="card" style={{ textAlign: 'center', padding: '1rem' }}>
           <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--success)' }}>
             {logs.filter(l => l.action?.startsWith('Creó')).length}
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem' }}>Creaciones</div>
+          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{t('creations')}</div>
         </div>
         <div className="card" style={{ textAlign: 'center', padding: '1rem' }}>
           <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--warning)' }}>
             {logs.filter(l => l.action?.startsWith('Editó')).length}
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem' }}>Ediciones</div>
+          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{t('editions')}</div>
         </div>
         <div className="card" style={{ textAlign: 'center', padding: '1rem' }}>
           <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--danger)' }}>
             {logs.filter(l => l.action?.startsWith('Eliminó')).length}
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem' }}>Eliminaciones</div>
+          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{t('deletions')}</div>
         </div>
         <div className="card" style={{ textAlign: 'center', padding: '1rem' }}>
           <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--primary-color)' }}>
             {logs.filter(l => l.action?.startsWith('Activó') || l.action?.startsWith('Desactivó')).length}
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem' }}>Cambios Estado</div>
+          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{t('statusChanges')}</div>
         </div>
       </div>
 
@@ -136,17 +138,17 @@ const AuditPage = () => {
             <Search size={16} className="search-icon" />
             <input
               type="text"
-              placeholder="Buscar en el log..."
+              placeholder={t('searchLog')}
               className="form-control"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSearch()}
             />
             <button className={`search-clear-btn ${searchQuery ? 'visible' : ''}`} onClick={clearSearch} type="button"><Eraser size={15} /></button>
-            <button className="search-btn-inner" onClick={handleSearch} type="button"><Search size={13} /> Buscar</button>
+            <button className="search-btn-inner" onClick={handleSearch} type="button"><Search size={13} /> {t('search')}</button>
           </div>
           <select className="form-control" style={{ width: 'min(100%, 200px)' }} value={moduleFilter} onChange={e => setModuleFilter(e.target.value)}>
-            {modules.map(m => <option key={m} value={m}>{m === 'all' ? 'Todos los módulos' : m}</option>)}
+            {modules.map(m => <option key={m} value={m}>{m === 'all' ? t('allModules') : m}</option>)}
           </select>
         </div>
       </div>
@@ -156,15 +158,15 @@ const AuditPage = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
           <h3 style={{ margin: 0, fontSize: '1rem' }}>
             <ShieldCheck size={18} style={{ marginRight: '8px', color: 'var(--primary-color)', verticalAlign: 'middle' }} />
-            {filteredLogs.length} registro{filteredLogs.length !== 1 ? 's' : ''}
+            {filteredLogs.length} {t('records')}
           </h3>
         </div>
 
         {filteredLogs.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-light)' }}>
             <ShieldCheck size={40} style={{ opacity: 0.3, marginBottom: '1rem' }} />
-            <p>No hay registros de auditoría todavía.</p>
-            <p style={{ fontSize: '0.85rem' }}>Las acciones realizadas en el sistema aparecerán aquí automáticamente.</p>
+            <p>{t('noAuditLogs')}</p>
+            <p style={{ fontSize: '0.85rem' }}>{t('auditLogsDesc')}</p>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -201,11 +203,11 @@ const AuditPage = () => {
       {showClearConfirm && (
         <div className="modal-overlay" style={{ zIndex: 300 }}>
           <div className="card" style={{ maxWidth: '420px', width: '90%', textAlign: 'center' }}>
-            <h3 style={{ marginBottom: '15px' }}>Limpiar Log de Auditoría</h3>
-            <p className="text-muted mb-4">Esta acción eliminará permanentemente todos los registros de auditoría. ¿Estás seguro?</p>
+            <h3 style={{ marginBottom: '15px' }}>{t('clearAuditLog')}</h3>
+            <p className="text-muted mb-4">{t('clearAuditLogConfirm')}</p>
             <div className="d-flex justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
-              <button className="btn btn-outline" onClick={() => setShowClearConfirm(false)}>Cancelar</button>
-              <button className="btn btn-danger" onClick={handleClearLogs}>Limpiar Todo</button>
+              <button className="btn btn-outline" onClick={() => setShowClearConfirm(false)}>{t('cancel')}</button>
+              <button className="btn btn-danger" onClick={handleClearLogs}>{t('clearAll')}</button>
             </div>
           </div>
         </div>

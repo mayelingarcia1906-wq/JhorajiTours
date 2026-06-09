@@ -24,7 +24,10 @@ const getWeekDates = (referenceDate) => {
 
 const formatDateKey = (date) => date.toISOString().split('T')[0];
 
+import { useLanguage } from '../context/LanguageContext';
+
 const SchedulePage = () => {
+  const { t } = useLanguage();
   const [currentWeekRef, setCurrentWeekRef] = useState(new Date());
   const [selectedBooking, setSelectedBooking] = useState(null);
 
@@ -73,15 +76,15 @@ const SchedulePage = () => {
     <div>
       <div className="page-header mb-4">
         <div>
-          <h2>Horario Semanal</h2>
-          <p className="text-muted" style={{ margin: 0 }}>Vista de servicios asignados por semana</p>
+          <h2>{t('scheduleTitle') || 'Horario Semanal'}</h2>
+          <p className="text-muted" style={{ margin: 0 }}>{t('scheduleSubtitle') || 'Vista de servicios asignados por semana'}</p>
         </div>
         <div className="d-flex gap-2">
           <button className="btn btn-outline" onClick={goToPrevWeek}>
             <ChevronLeft size={18} />
           </button>
           <button className="btn btn-outline" onClick={goToToday} style={{ fontWeight: 600 }}>
-            <Calendar size={16} /> Hoy
+            <Calendar size={16} /> {t('today')}
           </button>
           <button className="btn btn-outline" onClick={goToNextWeek}>
             <ChevronRight size={18} />
@@ -93,19 +96,19 @@ const SchedulePage = () => {
       <div className="d-flex gap-3 mb-4" style={{ flexWrap: 'wrap' }}>
         <div className="card" style={{ flex: 1, minWidth: '140px', padding: '1rem', textAlign: 'center' }}>
           <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--primary-color)' }}>{totalWeekBookings}</div>
-          <div className="text-muted" style={{ fontSize: '0.8rem' }}>Servicios esta semana</div>
+          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{t('servicesThisWeek') || 'Servicios esta semana'}</div>
         </div>
         <div className="card" style={{ flex: 1, minWidth: '140px', padding: '1rem', textAlign: 'center' }}>
           <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--success)' }}>
             {Object.values(bookingsByDate).flat().filter(b => b.status === 'paid').length}
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem' }}>Pagados</div>
+          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{t('paid') || 'Pagados'}</div>
         </div>
         <div className="card" style={{ flex: 1, minWidth: '140px', padding: '1rem', textAlign: 'center' }}>
           <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--warning)' }}>
             {Object.values(bookingsByDate).flat().filter(b => b.status === 'pending').length}
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem' }}>Pendientes</div>
+          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{t('pending') || 'Pendientes'}</div>
         </div>
         <div className="card" style={{ flex: 2, minWidth: '200px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Calendar size={20} color="var(--primary-color)" />
@@ -166,7 +169,7 @@ const SchedulePage = () => {
                 padding: '10px 6px',
               }}>
                 <span style={{ fontSize: '0.7rem', color: 'var(--text-light)', fontWeight: 600, writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}>
-                  SERVICIOS
+                  {t('servicesTitle') || 'SERVICIOS'}
                 </span>
               </div>
               {weekDates.map((date, i) => {
@@ -264,13 +267,13 @@ const SchedulePage = () => {
               )}
               <div>
                 <span className={`badge badge-${selectedBooking.status === 'paid' ? 'success' : selectedBooking.status === 'pending' ? 'warning' : 'danger'}`}>
-                  {selectedBooking.status === 'paid' ? 'Pagado' : selectedBooking.status === 'pending' ? 'Pendiente' : 'Cancelado'}
+                  {selectedBooking.status === 'paid' ? t('paid') : selectedBooking.status === 'pending' ? t('pending') : t('canceled')}
                 </span>
                 <span style={{ marginLeft: '8px', fontWeight: 700, color: 'var(--primary-color)' }}>{selectedBooking.amount}</span>
               </div>
             </div>
             <div className="modal-actions">
-              <button className="btn btn-outline" onClick={() => setSelectedBooking(null)}>Cerrar</button>
+              <button className="btn btn-outline" onClick={() => setSelectedBooking(null)}>{t('close')}</button>
             </div>
           </div>
         </div>

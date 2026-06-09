@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Edit3, Plus, Trash2, X, Search, Eraser } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const initialActivities = [];
 
@@ -26,6 +27,7 @@ const logAudit = (action, detail) => {
 
 const ActivitiesPage = () => {
   const { addToast } = useToast();
+  const { t } = useLanguage();
   const [activities, setActivities] = useState(() => readStoredData('jhoraji_act', initialActivities));
   const [providers] = useState(() => readStoredData('jhoraji_providers', initialProviders));
   const [editingActivity, setEditingActivity] = useState(null);
@@ -112,11 +114,11 @@ const ActivitiesPage = () => {
     <div>
       <div className="page-header mb-4">
         <div>
-          <h2>Actividades</h2>
-          <p className="text-muted" style={{ margin: 0 }}>Gestiona el catálogo de actividades turísticas</p>
+          <h2>{t('activitiesTitle')}</h2>
+          <p className="text-muted" style={{ margin: 0 }}>{t('activitiesSubtitle')}</p>
         </div>
         <button className="btn btn-primary" onClick={() => setEditingActivity({ ...emptyActivity })}>
-          <Plus size={18} /> Nueva Actividad
+          <Plus size={18} /> {t('newActivity')}
         </button>
       </div>
 
@@ -127,7 +129,7 @@ const ActivitiesPage = () => {
               <Search size={16} className="search-icon" />
               <input
                 type="text"
-                placeholder="Buscar actividad o proveedor..."
+                placeholder={t('searchActivity')}
                 className="form-control"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -142,7 +144,7 @@ const ActivitiesPage = () => {
                 <Eraser size={15} />
               </button>
               <button className="search-btn-inner" onClick={handleSearch} type="button">
-                <Search size={13} /> Buscar
+                <Search size={13} /> {t('search')}
               </button>
             </div>
           </div>
@@ -154,14 +156,14 @@ const ActivitiesPage = () => {
           <table className="table compact-table">
             <thead>
               <tr>
-                <th>ACTIVIDAD / PROVEEDOR</th>
+                <th>{t('activityName').toUpperCase()} / PROVEEDOR</th>
                 <th>COSTO</th>
                 <th>MODO</th>
                 <th>UNIDADES</th>
                 <th>COMISIONES</th>
                 <th>PRECIO FINAL</th>
-                <th>ESTADO</th>
-                <th style={{ textAlign: 'right' }}>ACCIONES</th>
+                <th>{t('status').toUpperCase()}</th>
+                <th style={{ textAlign: 'right' }}>{t('actions').toUpperCase()}</th>
               </tr>
             </thead>
             <tbody>
@@ -272,7 +274,7 @@ const ActivitiesPage = () => {
           <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '580px' }}>
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h3 style={{ margin: 0 }}>
-                {editingActivity.id ? 'Editar Actividad' : 'Nueva Actividad'}
+                {editingActivity.id ? t('editActivity') : t('newActivity')}
               </h3>
               <button onClick={() => setEditingActivity(null)} style={{ background: 'none', color: 'var(--text-light)' }}>
                 <X size={24} />
@@ -281,7 +283,7 @@ const ActivitiesPage = () => {
             <form onSubmit={handleSaveActivity}>
               <div className="responsive-grid" style={{ gap: '15px' }}>
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label>Nombre Actividad</label>
+                  <label>{t('activityName')}</label>
                   <input name="name" type="text" className="form-control" placeholder="Ej. Saona VIP" required value={editingActivity.name} onChange={handleFieldChange} />
                 </div>
                 <div className="form-group">
@@ -373,9 +375,9 @@ const ActivitiesPage = () => {
               </div>
 
               <div className="modal-actions">
-                <button type="button" className="btn btn-outline" onClick={() => setEditingActivity(null)}>Cancelar</button>
+                <button type="button" className="btn btn-outline" onClick={() => setEditingActivity(null)}>{t('cancel')}</button>
                 <button type="submit" className="btn btn-primary">
-                  {editingActivity.id ? 'Actualizar Actividad' : 'Crear Actividad'}
+                  {editingActivity.id ? t('update') : t('create')}
                 </button>
               </div>
             </form>
@@ -387,11 +389,11 @@ const ActivitiesPage = () => {
       {showDeleteConfirm && (
         <div className="modal-overlay" style={{ zIndex: 300 }}>
           <div className="card" style={{ maxWidth: '420px', width: '90%', textAlign: 'center' }}>
-            <h3 style={{ marginBottom: '15px' }}>Eliminar Actividad</h3>
+            <h3 style={{ marginBottom: '15px' }}>{t('deleteActivityTitle')}</h3>
             <p className="text-muted mb-4">¿Estás seguro que deseas eliminar esta actividad? Esta acción no se puede deshacer.</p>
             <div className="d-flex justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
-              <button className="btn btn-outline" onClick={() => setShowDeleteConfirm(null)}>Cancelar</button>
-              <button className="btn btn-danger" onClick={handleDelete}>Eliminar</button>
+              <button className="btn btn-outline" onClick={() => setShowDeleteConfirm(null)}>{t('cancel')}</button>
+              <button className="btn btn-danger" onClick={handleDelete}>{t('delete')}</button>
             </div>
           </div>
         </div>

@@ -3,10 +3,12 @@ import { ArrowUpRight, DollarSign, Eye, ShoppingCart, TrendingUp, Users, Downloa
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 const DashboardHome = () => {
   const { addToast } = useToast();
   const { t } = useLanguage();
+  const { formatPrice } = useCurrency();
   const navigate = useNavigate();
 
   const [isDownloading, setIsDownloading] = useState(false);
@@ -59,7 +61,7 @@ const DashboardHome = () => {
   }, [allBookings]);
 
   const stats = [
-    { title: t('totalRevenue'), value: `$${totalRevenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, change: '+12%', icon: <DollarSign size={24} color="var(--primary-color)" />, color: 'var(--primary-color)' },
+    { title: t('totalRevenue'), value: formatPrice(totalRevenue), change: '+12%', icon: <DollarSign size={24} color="var(--primary-color)" />, color: 'var(--primary-color)' },
     { title: t('todayBookings'), value: todayBookingsCount.toString(), change: '+5%', icon: <ShoppingCart size={24} color="var(--success)" />, color: 'var(--success)' },
     { title: t('newCustomers'), value: totalCustomers.toString(), change: '+18%', icon: <Users size={24} color="var(--warning)" />, color: 'var(--warning)' },
     { title: t('activeTours'), value: activeToursCount.toString(), change: '0%', icon: <TrendingUp size={24} color="var(--danger)" />, color: 'var(--danger)' },
@@ -93,7 +95,7 @@ const DashboardHome = () => {
       addToast('Reporte generado y descargado exitosamente', 'success');
       
       // Crear un archivo de texto de muestra para la descarga
-      const textContent = `REPORTE GENERAL - JHORAJI TOURS\nFecha: ${new Date().toLocaleDateString()}\n\n-- ESTADÍSTICAS --\nIngresos Totales: $${totalRevenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}\nReservas Hoy: ${todayBookingsCount}\nNuevos Clientes: ${totalCustomers}\nTours Activos: ${activeToursCount}\n\nEste es un reporte autogenerado por el sistema.`;
+      const textContent = `REPORTE GENERAL - JHORAJI TOURS\nFecha: ${new Date().toLocaleDateString()}\n\n-- ESTADÍSTICAS --\nIngresos Totales: ${formatPrice(totalRevenue)}\nReservas Hoy: ${todayBookingsCount}\nNuevos Clientes: ${totalCustomers}\nTours Activos: ${activeToursCount}\n\nEste es un reporte autogenerado por el sistema.`;
       const element = document.createElement("a");
       const file = new Blob([textContent], {type: 'text/plain;charset=utf-8'});
       element.href = URL.createObjectURL(file);
@@ -254,7 +256,7 @@ const DashboardHome = () => {
               </div>
               <div>
                 <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '4px' }}>Monto total</div>
-                <div className="d-flex align-items-center gap-1" style={{ fontWeight: 700, fontSize: '1.1rem' }}><DollarSign size={16} color="var(--primary-color)" /> {selectedBooking.amount}</div>
+                <div className="d-flex align-items-center gap-1" style={{ fontWeight: 700, fontSize: '1.1rem' }}>{selectedBooking.amount}</div>
               </div>
 
               {selectedBooking.notes && (

@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Edit3, MessageCircle, Plus, Trash2, X, Search, Eraser } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
+import { useLanguage } from '../context/LanguageContext';
 
 const initialAgencies = Array.from({ length: 15 }, (_, i) => ({
   id: 1000 + i,
@@ -27,6 +28,7 @@ const logAudit = (action, detail) => {
 
 const AgenciesPage = () => {
   const { addToast } = useToast();
+  const { t } = useLanguage();
   const [agencies, setAgencies] = useState(() => readStoredData('jhoraji_agencies', initialAgencies));
   const [editingAgency, setEditingAgency] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
@@ -111,11 +113,11 @@ const AgenciesPage = () => {
     <div>
       <div className="page-header mb-4">
         <div>
-          <h2>Agencias</h2>
-          <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
+          <h2>{t('agenciesTitle')}</h2>
+          <p className="text-muted" style={{ margin: 0 }}>{t('agenciesSubtitle')}</p>
         </div>
         <button className="btn btn-primary" onClick={() => setEditingAgency({ ...emptyAgency })}>
-          <Plus size={18} /> Nueva Agencia
+          <Plus size={18} /> {t('newAgency')}
         </button>
       </div>
 
@@ -126,7 +128,7 @@ const AgenciesPage = () => {
               <Search size={16} className="search-icon" />
               <input
                 type="text"
-                placeholder="Buscar por nombre o WhatsApp..."
+                placeholder={t('searchAgency')}
                 className="form-control"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -141,7 +143,7 @@ const AgenciesPage = () => {
                 <Eraser size={15} />
               </button>
               <button className="search-btn-inner" onClick={handleSearch} type="button">
-                <Search size={13} /> Buscar
+                <Search size={13} /> {t('search')}
               </button>
             </div>
           </div>
@@ -153,9 +155,9 @@ const AgenciesPage = () => {
           <table className="table">
             <thead>
               <tr>
-                <th>Nombre</th>
+                <th>{t('agencyName')}</th>
                 <th>WhatsApp</th>
-                <th style={{ textAlign: 'right' }}>Acciones</th>
+                <th style={{ textAlign: 'right' }}>{t('actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -211,7 +213,7 @@ const AgenciesPage = () => {
           <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px' }}>
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h3 style={{ margin: 0 }}>
-                {editingAgency.id ? 'Editar Agencia' : 'Nueva Agencia'}
+                {editingAgency.id ? t('editAgency') : t('newAgency')}
               </h3>
               <button onClick={() => setEditingAgency(null)} style={{ background: 'none', color: 'var(--text-light)' }}>
                 <X size={24} />
@@ -227,9 +229,9 @@ const AgenciesPage = () => {
                 <input name="whatsapp" type="text" className="form-control" defaultValue={editingAgency.whatsapp} />
               </div>
               <div className="modal-actions mt-4">
-                <button type="button" className="btn btn-outline" onClick={() => setEditingAgency(null)}>Cancelar</button>
+                <button type="button" className="btn btn-outline" onClick={() => setEditingAgency(null)}>{t('cancel')}</button>
                 <button type="submit" className="btn btn-primary">
-                  {editingAgency.id ? 'Actualizar' : 'Registrar'}
+                  {editingAgency.id ? t('update') : t('create')}
                 </button>
               </div>
             </form>
@@ -241,11 +243,11 @@ const AgenciesPage = () => {
       {showDeleteConfirm && (
         <div className="modal-overlay" style={{ zIndex: 300 }}>
           <div className="card" style={{ maxWidth: '420px', width: '90%', textAlign: 'center' }}>
-            <h3 style={{ marginBottom: '15px' }}>Eliminar Agencia</h3>
+            <h3 style={{ marginBottom: '15px' }}>{t('deleteAgencyTitle')}</h3>
             <p className="text-muted mb-4">¿Estás seguro que deseas eliminar esta agencia? Esta acción no se puede deshacer.</p>
             <div className="d-flex justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
-              <button className="btn btn-outline" onClick={() => setShowDeleteConfirm(null)}>Cancelar</button>
-              <button className="btn btn-danger" onClick={handleDelete}>Eliminar</button>
+              <button className="btn btn-outline" onClick={() => setShowDeleteConfirm(null)}>{t('cancel')}</button>
+              <button className="btn btn-danger" onClick={handleDelete}>{t('delete')}</button>
             </div>
           </div>
         </div>

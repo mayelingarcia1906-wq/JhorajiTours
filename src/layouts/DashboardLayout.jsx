@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
+import { usePermissions } from '../context/PermissionsContext';
+import { useNotifications } from '../context/NotificationsContext';
 import {
   LayoutDashboard, CalendarDays, Map, Users, Settings, Menu, X, Bell,
   UserCircle, LogOut, Sun, Moon, ChevronDown, CheckCheck, Trash2,
-  Truck, Briefcase, Shield, ShieldCheck, CalendarClock, Zap, Building, ClipboardList, DollarSign, BellOff
+  Truck, Briefcase, Shield, ShieldCheck, CalendarClock, Zap, Building, ClipboardList, DollarSign, BellOff, ShoppingBag
 } from 'lucide-react';
 
 const DashboardLayout = () => {
@@ -19,27 +21,15 @@ const DashboardLayout = () => {
       ? { name: 'Administrador', email: 'admin@jhorajitours.com', role: 'Administrador', phone: '829-580-8964', department: 'Administración', status: 'Activo', ...JSON.parse(savedUser) }
       : { name: 'Administrador', email: 'admin@jhorajitours.com', role: 'Administrador', phone: '829-580-8964', department: 'Administración', status: 'Activo' };
   });
-  const [isMuted, setIsMuted] = useState(() => localStorage.getItem('jhoraji_notif_muted') === 'true');
-  
-  const [notifications, setNotifications] = useState(() => {
-    const saved = localStorage.getItem('jhoraji_header_notifications');
-    if (saved) return JSON.parse(saved);
-    
-    // Generar notificaciones iniciales usando reservas reales del sistema
-    const bookingsData = localStorage.getItem('jhoraji_bookings');
-    if (bookingsData) {
-      try {
-        const bookings = JSON.parse(bookingsData).slice(0, 5);
-        return bookings.map((b, i) => ({
-          id: b.id || Date.now() + i,
-          text: `Nueva reserva de ${b.customer}`,
-          time: b.date,
-          read: false
-        }));
-      } catch (e) {}
-    }
-    return [];
-  });
+  const { 
+    notifications, 
+    unreadCount, 
+    isMuted, 
+    setIsMuted, 
+    markNotificationRead, 
+    markAllNotificationsRead, 
+    deleteNotification 
+  } = useNotifications();
   const { theme, toggleTheme } = useTheme();
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -56,75 +46,56 @@ const DashboardLayout = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // ── Determinar rol del usuario ─────────────────────────────────
-  const isAdmin = currentUser.role === 'Administrador' || currentUser.role === 'Admin';
-  const isOperaciones = !isAdmin;
+  const { canAccessModule } = usePermissions();
 
-  // ── Ítems de navegación con control de acceso por rol ──────────
+  // ── Ítems de navegación con control de acceso por permisos ──────────
   const navSections = [
     // ---- Sección compartida ----
     {
       label: null,
       items: [
-        { name: t('dashboard'), path: '/dashboard', icon: <LayoutDashboard size={20} />, roles: ['all'] },
+        { name: t('dashboard'), path: '/dashboard', icon: <LayoutDashboard size={20} />, module: 'dashboard' },
       ]
     },
-    // ---- Módulos operativos (Admin + Operaciones los ven) ----
+    // ---- Módulos operativos ----
     {
       label: 'Módulos',
       items: [
-        { name: t('bookings'), path: '/bookings', icon: <CalendarDays size={20} />, roles: ['all'] },
-        { name: 'Gastos & Liquidación', path: '/finances', icon: <DollarSign size={20} />, roles: ['Admin', 'Operaciones'] },
-        { name: t('tours'), path: '/tours', icon: <Map size={20} />, roles: ['all'] },
-        { name: t('customers'), path: '/customers', icon: <Users size={20} />, roles: ['all'] },
-        { name: t('moduleDrivers') || 'Choferes', path: '/drivers', icon: <Truck size={20} />, roles: ['all'] },
-        { name: 'Proveedores', path: '/providers', icon: <Briefcase size={20} />, roles: ['all'] },
-        { name: 'Agencias', path: '/agencies', icon: <Building size={20} />, roles: ['all'] },
-        { name: 'Actividades', path: '/activities', icon: <Zap size={20} />, roles: ['all'] },
-        { name: 'Horario', path: '/schedule', icon: <CalendarClock size={20} />, roles: ['Operaciones'] },
+        { name: t('bookings'), path: '/bookings', icon: <CalendarDays size={20} />, module: 'bookings' },
+        { name: t('moduleFinances'), path: '/finances', icon: <DollarSign size={20} />, module: 'finances' },
+        { name: t('tours'), path: '/tours', icon: <Map size={20} />, module: 'tours' },
+        { name: t('customers'), path: '/customers', icon: <Users size={20} />, module: 'customers' },
+        { name: t('moduleDrivers'), path: '/drivers', icon: <Truck size={20} />, module: 'drivers' },
+        { name: t('moduleProviders'), path: '/providers', icon: <Briefcase size={20} />, module: 'providers' },
+        { name: t('moduleAgencies'), path: '/agencies', icon: <Building size={20} />, module: 'agencies' },
+        { name: t('moduleActivities'), path: '/activities', icon: <Zap size={20} />, module: 'activities' },
+        { name: t('moduleSchedule'), path: '/schedule', icon: <CalendarClock size={20} />, module: 'schedule' },
+        { name: t('moduleOrders'), path: '/orders', icon: <ShoppingBag size={20} />, module: 'orders' },
       ]
     },
-    // ---- Sección Administración (solo Admin) ----
+    // ---- Sección Administración ----
     {
-      label: 'Administración',
+      label: t('adminPanel'),
       items: [
-        { name: t('moduleUsers') || 'Usuarios', path: '/users', icon: <Shield size={20} />, roles: ['Admin'] },
-        { name: 'Auditoría', path: '/audit', icon: <ShieldCheck size={20} />, roles: ['Admin'] },
+        { name: t('moduleUsers'), path: '/users', icon: <Shield size={20} />, module: 'users' },
+        { name: t('moduleAudit'), path: '/audit', icon: <ShieldCheck size={20} />, module: 'audit' },
       ]
     },
-    // ---- Configuración (todos) ----
+    // ---- Configuración ----
     {
       label: null,
       items: [
-        { name: t('settings'), path: '/settings', icon: <Settings size={20} />, roles: ['all'] },
+        { name: t('settings'), path: '/settings', icon: <Settings size={20} />, module: 'settings' },
       ]
     },
   ];
 
-  const roleKey = isAdmin ? 'Admin' : 'Operaciones';
   const filteredSections = navSections.map(section => ({
     ...section,
-    items: section.items.filter(item => item.roles.includes('all') || item.roles.includes(roleKey))
+    items: section.items.filter(item => canAccessModule(item.module))
   })).filter(section => section.items.length > 0);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const persistNotifications = (nextNotifications) => {
-    setNotifications(nextNotifications);
-    localStorage.setItem('jhoraji_header_notifications', JSON.stringify(nextNotifications));
-  };
-
-  const markNotificationRead = (id) => {
-    persistNotifications(notifications.map((n) => n.id === id ? { ...n, read: true } : n));
-  };
-
-  const markAllNotificationsRead = () => {
-    persistNotifications(notifications.map((n) => ({ ...n, read: true })));
-  };
-
-  const deleteNotification = (id) => {
-    persistNotifications(notifications.filter((n) => n.id !== id));
-  };
 
   return (
     <div className="dashboard-layout">
@@ -236,11 +207,7 @@ const DashboardLayout = () => {
                       <button 
                         type="button" 
                         title={isMuted ? "Activar notificaciones" : "Silenciar notificaciones"} 
-                        onClick={() => {
-                          const nextState = !isMuted;
-                          setIsMuted(nextState);
-                          localStorage.setItem('jhoraji_notif_muted', nextState);
-                        }} 
+                        onClick={() => setIsMuted(!isMuted)} 
                         style={{ background: isMuted ? 'rgba(239,68,68,0.1)' : 'var(--bg-color)', color: isMuted ? 'var(--danger)' : 'var(--text-light)', borderRadius: 'var(--radius-md)', padding: '6px', display: 'flex' }}
                       >
                         {isMuted ? <BellOff size={16} /> : <Bell size={16} />}
@@ -251,7 +218,12 @@ const DashboardLayout = () => {
                     </div>
                   </div>
                   <div style={{ maxHeight: '320px', overflowY: 'auto', padding: '10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {notifications.length === 0 && <div className="text-muted" style={{ padding: '16px', textAlign: 'center' }}>{t('notifications')}</div>}
+                    {notifications.length === 0 && (
+                      <div style={{ padding: '30px 16px', textAlign: 'center' }}>
+                        <Bell size={32} style={{ color: 'var(--text-light)', opacity: 0.3, marginBottom: '10px' }} />
+                        <div className="text-muted" style={{ fontSize: '0.85rem' }}>No tienes notificaciones</div>
+                      </div>
+                    )}
                     {notifications.map(n => (
                       <div key={n.id} style={{ padding: '12px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', backgroundColor: n.read ? 'var(--card-bg)' : 'var(--bg-color)', fontSize: '0.9rem' }}>
                         <div className="d-flex justify-content-between gap-2">

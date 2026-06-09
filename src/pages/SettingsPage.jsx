@@ -4,6 +4,7 @@ import { Bell, Building, Mail, Palette, Phone, Save, Shield, UserCircle, Users, 
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
+import { usePermissions } from '../context/PermissionsContext';
 
 const defaultSettings = {
   companyName: 'Jhoraji Tours',
@@ -69,21 +70,16 @@ const SettingsPage = () => {
   const activeSection = searchParams.get('section') || 'general';
   const [settings, setSettings] = useState(() => readStoredJson('jhoraji_settings', defaultSettings));
   const [sessions, setSessions] = useState(() => readStoredArray('jhoraji_sessions', defaultSessions));
-  const defaultPermissions = {
-    'Operador de Reservas': { 
-      modules: { dashboard: true, bookings: true, tours: false, customers: true, settings: false },
-      actions: { create: true, edit: true, delete: false }
-    },
-    'Agente de Ventas': { 
-      modules: { dashboard: true, bookings: true, tours: true, customers: false, settings: false },
-      actions: { create: true, edit: false, delete: false }
-    },
-  };
-  const [permissions, setPermissions] = useState(() => {
-    const saved = readStoredJson('jhoraji_permissions', null);
-    if (!saved || !saved['Operador de Reservas']?.modules) return defaultPermissions;
-    return saved;
-  });
+  
+  const { permissions, updatePermissions, isAdmin } = usePermissions();
+  
+  const allModules = [
+    'dashboard', 'bookings', 'finances', 'tours', 'customers', 'drivers', 
+    'providers', 'agencies', 'activities', 'schedule', 'users', 'audit', 
+    'orders', 'settings'
+  ];
+  
+  const allActions = ['create', 'edit', 'delete'];
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -109,11 +105,11 @@ const SettingsPage = () => {
       { id: 'notifications', name: t('notifications'), icon: <Bell size={20} /> },
       { id: 'security', name: t('security'), icon: <Shield size={20} /> },
     ];
-    if (currentUser.role === 'Administrador' || currentUser.role === 'Admin') {
+    if (isAdmin) {
       base.push({ id: 'permissions', name: t('permissions'), icon: <Unlock size={20} /> });
     }
     return base;
-  }, [t, currentUser.role]);
+  }, [t, isAdmin]);
 
   const notificationItems = [
     { key: 'emailNotif', title: t('emailNotifications'), desc: t('emailNotificationsDesc') },
@@ -134,6 +130,7 @@ const SettingsPage = () => {
   const handleSaveGeneral = (e) => {
     e.preventDefault();
     localStorage.setItem('jhoraji_settings', JSON.stringify(settings));
+    window.dispatchEvent(new Event('settings_updated'));
     addToast(t('changesSaved'), 'success');
   };
 
@@ -194,15 +191,7 @@ const SettingsPage = () => {
   };
 
   const handlePermissionChange = (role, category, item, checked) => {
-    const nextPerms = {
-      ...permissions,
-      [role]: { 
-        ...permissions[role], 
-        [category]: { ...permissions[role][category], [item]: checked } 
-      }
-    };
-    setPermissions(nextPerms);
-    localStorage.setItem('jhoraji_permissions', JSON.stringify(nextPerms));
+    updatePermissions(role, category, item, checked);
     addToast(t('preferenceUpdated'), 'success');
   };
 
@@ -439,7 +428,7 @@ const SettingsPage = () => {
               </form>
             )}
 
-            {activeSection === 'permissions' && (currentUser.role === 'Administrador' || currentUser.role === 'Admin') && (
+            {activeSection === 'permissions' && isAdmin && (
               <div>
                 <h3 className="mb-4">{t('permissions')}</h3>
                 <p className="text-muted mb-4">{t('permissionsDesc')}</p>
@@ -451,26 +440,32 @@ const SettingsPage = () => {
                       
                       <div style={{ marginBottom: '10px', fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.95rem' }}>{t('moduleAccess')}</div>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '20px' }}>
-                        {Object.entries(roleData.modules).map(([module, isGranted]) => (
-                          <div key={module} className="d-flex align-items-center gap-2" style={{ cursor: 'pointer' }} onClick={() => handlePermissionChange(role, 'modules', module, !isGranted)}>
-                            {isGranted ? <CheckSquare size={18} color="var(--primary-color)" /> : <Square size={18} color="var(--text-light)" />}
-                            <span style={{ fontWeight: 500, color: isGranted ? 'var(--text-dark)' : 'var(--text-light)' }}>
-                              {t('module' + module.charAt(0).toUpperCase() + module.slice(1))}
-                            </span>
-                          </div>
-                        ))}
+                        {allModules.map((module) => {
+                          const isGranted = roleData.modules?.[module] || false;
+                          return (
+                            <div key={module} className="d-flex align-items-center gap-2" style={{ cursor: 'pointer' }} onClick={() => handlePermissionChange(role, 'modules', module, !isGranted)}>
+                              {isGranted ? <CheckSquare size={18} color="var(--primary-color)" /> : <Square size={18} color="var(--text-light)" />}
+                              <span style={{ fontWeight: 500, color: isGranted ? 'var(--text-dark)' : 'var(--text-light)' }}>
+                                {t('module' + module.charAt(0).toUpperCase() + module.slice(1))}
+                              </span>
+                            </div>
+                          );
+                        })}
                       </div>
 
                       <div style={{ marginBottom: '10px', fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.95rem' }}>{t('actionPermissions')}</div>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
-                        {Object.entries(roleData.actions).map(([action, isGranted]) => (
-                          <div key={action} className="d-flex align-items-center gap-2" style={{ cursor: 'pointer' }} onClick={() => handlePermissionChange(role, 'actions', action, !isGranted)}>
-                            {isGranted ? <CheckSquare size={18} color="var(--primary-color)" /> : <Square size={18} color="var(--text-light)" />}
-                            <span style={{ fontWeight: 500, color: isGranted ? 'var(--text-dark)' : 'var(--text-light)' }}>
-                              {t('action' + action.charAt(0).toUpperCase() + action.slice(1))}
-                            </span>
-                          </div>
-                        ))}
+                        {allActions.map((action) => {
+                          const isGranted = roleData.actions?.[action] || false;
+                          return (
+                            <div key={action} className="d-flex align-items-center gap-2" style={{ cursor: 'pointer' }} onClick={() => handlePermissionChange(role, 'actions', action, !isGranted)}>
+                              {isGranted ? <CheckSquare size={18} color="var(--primary-color)" /> : <Square size={18} color="var(--text-light)" />}
+                              <span style={{ fontWeight: 500, color: isGranted ? 'var(--text-dark)' : 'var(--text-light)' }}>
+                                {t('action' + action.charAt(0).toUpperCase() + action.slice(1))}
+                              </span>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   ))}

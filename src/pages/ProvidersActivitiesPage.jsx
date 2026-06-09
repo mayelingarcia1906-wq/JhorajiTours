@@ -58,12 +58,12 @@ const ProvidersActivitiesPage = () => {
 
     persistProviders(nextProviders);
     setEditingProvider({ ...emptyProvider });
-    addToast('Proveedor guardado', 'success');
+    addToast(t('providerSaved'), 'success');
   };
 
   const handleDeleteProvider = (id) => {
     persistProviders(providers.filter(p => p.id !== id));
-    addToast('Proveedor eliminado', 'success');
+    addToast(t('providerDeleted'), 'success');
   };
 
   const handleSaveActivity = (event) => {
@@ -91,20 +91,20 @@ const ProvidersActivitiesPage = () => {
 
     persistActivities(nextActivities);
     setEditingActivity({ ...emptyActivity });
-    addToast('Actividad guardada', 'success');
+    addToast(t('activitySaved'), 'success');
   };
 
   const handleDeleteActivity = (id) => {
     persistActivities(activities.filter(a => a.id !== id));
-    addToast('Actividad eliminada', 'success');
+    addToast(t('activityDeleted'), 'success');
   };
 
   return (
     <div>
       <div className="page-header mb-4">
         <div>
-          <h2>Proveedores y actividades</h2>
-          <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
+          <h2>{t('providersAndActivities')}</h2>
+          <p className="text-muted" style={{ margin: 0 }}>{t('adminPanel')}</p>
         </div>
       </div>
 
@@ -115,14 +115,14 @@ const ProvidersActivitiesPage = () => {
             style={{ borderRadius: 0, border: 'none', borderBottom: activeTab === 'providers' ? '2px solid var(--primary-color)' : '2px solid transparent', padding: '1rem 0', background: 'none' }}
             onClick={() => setActiveTab('providers')}
           >
-            Proveedores
+            {t('providers')}
           </button>
           <button 
             className={`tab-btn ${activeTab === 'activities' ? 'active' : ''}`} 
             style={{ borderRadius: 0, border: 'none', borderBottom: activeTab === 'activities' ? '2px solid var(--primary-color)' : '2px solid transparent', padding: '1rem 0', background: 'none' }}
             onClick={() => setActiveTab('activities')}
           >
-            Actividades
+            {t('activities')}
           </button>
         </div>
       </div>
@@ -132,46 +132,46 @@ const ProvidersActivitiesPage = () => {
           {/* Form */}
           <div className="card" style={{ alignSelf: 'flex-start' }}>
             <h3 style={{ fontSize: '1.1rem', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-color)' }}>
-              <Plus size={20} /> {editingProvider.id ? 'Editar Proveedor' : 'Nuevo Proveedor'}
+              <Plus size={20} /> {editingProvider.id ? t('editProviderTitle') : t('newProviderTitle')}
             </h3>
             <form onSubmit={handleSaveProvider} key={editingProvider.id || 'new'}>
               <div className="form-group">
-                <label>Nombre Empresa / Persona</label>
+                <label>{t('companyPersonName')}</label>
                 <input name="name" type="text" className="form-control" placeholder="Ej. Buggies Macao" required defaultValue={editingProvider.name} />
               </div>
               <div className="responsive-grid" style={{ gap: '15px' }}>
                 <div className="form-group">
-                  <label>Teléfono</label>
+                  <label>{t('phone')}</label>
                   <input name="phone" type="tel" className="form-control" defaultValue={editingProvider.phone} />
                 </div>
                 <div className="form-group">
-                  <label>Correo</label>
+                  <label>{t('email')}</label>
                   <input name="email" type="email" className="form-control" defaultValue={editingProvider.email} />
                 </div>
               </div>
               <div className="form-group">
-                <label>Notas internas</label>
-                <textarea name="notes" className="form-control" rows="3" placeholder="Detalles de contacto, cuentas bancarias..." defaultValue={editingProvider.notes}></textarea>
+                <label>{t('internalNotes')}</label>
+                <textarea name="notes" className="form-control" rows="3" defaultValue={editingProvider.notes}></textarea>
               </div>
               <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-                {editingProvider.id ? 'Actualizar Proveedor' : 'Crear Proveedor'}
+                {editingProvider.id ? t('updateProvider') : t('createProvider')}
               </button>
               {editingProvider.id && (
-                <button type="button" className="btn btn-outline mt-2" style={{ width: '100%' }} onClick={() => setEditingProvider({ ...emptyProvider })}>Cancelar</button>
+                <button type="button" className="btn btn-outline mt-2" style={{ width: '100%' }} onClick={() => setEditingProvider({ ...emptyProvider })}>{t('cancel')}</button>
               )}
             </form>
           </div>
 
           {/* List */}
           <div className="card">
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '15px' }}>Listado de Proveedores</h3>
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '15px' }}>{t('providerList')}</h3>
             <div className="table-wrapper">
               <table className="table">
                 <thead>
                   <tr>
-                    <th>Nombre</th>
-                    <th>Contacto</th>
-                    <th style={{ textAlign: 'right' }}>Acciones</th>
+                    <th>{t('name')}</th>
+                    <th>{t('contact')}</th>
+                    <th style={{ textAlign: 'right' }}>{t('actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -204,51 +204,51 @@ const ProvidersActivitiesPage = () => {
           {/* Form */}
           <div className="card" style={{ alignSelf: 'flex-start' }}>
             <h3 style={{ fontSize: '1.1rem', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-color)' }}>
-              <Plus size={20} /> {editingActivity.id ? 'Editar Actividad' : 'Nueva Actividad'}
+              <Plus size={20} /> {editingActivity.id ? t('editActivityTitle') : t('newActivityTitle')}
             </h3>
             <form onSubmit={handleSaveActivity} key={editingActivity.id || 'new'}>
               <div className="responsive-grid" style={{ gap: '15px' }}>
                 <div className="form-group">
-                  <label>Proveedor</label>
+                  <label>{t('provider') || 'Proveedor'}</label>
                   <select name="providerId" className="form-control" required defaultValue={editingActivity.providerId}>
-                    <option value="">-- Seleccionar --</option>
+                    <option value="">-- {t('search') || 'Seleccionar'} --</option>
                     {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>Costo Base (US$)</label>
+                  <label>{t('baseCostField')}</label>
                   <input name="costBase" type="number" min="0" step="0.01" className="form-control" required defaultValue={editingActivity.costBase} />
                 </div>
                 <div className="form-group">
-                  <label>Modo Cobro</label>
+                  <label>{t('chargeMode')}</label>
                   <select name="chargeMode" className="form-control" defaultValue={editingActivity.chargeMode}>
-                    <option value="PAX">Por Persona (PAX)</option>
-                    <option value="TRIP">Por Viaje (TRIP)</option>
+                    <option value="PAX">{t('perPerson')}</option>
+                    <option value="TRIP">{t('perTrip')}</option>
                   </select>
                 </div>
               </div>
               
               <div className="responsive-grid" style={{ gap: '15px' }}>
                 <div className="form-group">
-                  <label>Nombre Actividad</label>
+                  <label>{t('activityName')}</label>
                   <input name="name" type="text" className="form-control" placeholder="Ej. Saona VIP" required defaultValue={editingActivity.name} />
                 </div>
                 <div className="form-group">
-                  <label>Estado</label>
+                  <label>{t('status')}</label>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
                     <input type="checkbox" id="actActive" name="active" defaultChecked={editingActivity.active} />
-                    <label htmlFor="actActive" style={{ margin: 0 }}>Actividad Disponible</label>
+                    <label htmlFor="actActive" style={{ margin: 0 }}>{t('activityAvailable')}</label>
                   </div>
                 </div>
               </div>
 
               <div className="form-group">
-                <label>Descripción</label>
+                <label>{t('description')}</label>
                 <textarea name="description" className="form-control" rows="3" defaultValue={editingActivity.description}></textarea>
               </div>
 
               <div className="form-group mt-4">
-                <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '10px' }}>Configuración de Comisiones (Plataformas)</label>
+                <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '10px' }}>{t('commissionConfig')}</label>
                 <div className="card" style={{ padding: '1rem', backgroundColor: 'var(--secondary-color)', boxShadow: 'none' }}>
                   <div className="responsive-grid" style={{ gap: '15px' }}>
                     
@@ -277,7 +277,7 @@ const ProvidersActivitiesPage = () => {
                     </div>
 
                     <div style={{ textAlign: 'center' }}>
-                      <label style={{ color: 'var(--text-dark)', fontSize: '0.85rem', fontWeight: 600 }}>Otras / Directo</label>
+                      <label style={{ color: 'var(--text-dark)', fontSize: '0.85rem', fontWeight: 600 }}>{t('otherDirect')}</label>
                       <div className="search-field" style={{ width: '100%' }}>
                         <input name="direct" type="number" className="form-control text-center" defaultValue={editingActivity.commissions?.direct} />
                         <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }}>%</span>
@@ -289,25 +289,25 @@ const ProvidersActivitiesPage = () => {
               </div>
 
               <button type="submit" className="btn btn-primary mt-4" style={{ width: '100%' }}>
-                {editingActivity.id ? 'Actualizar Actividad' : 'Guardar Actividad'}
+                {editingActivity.id ? t('updateActivity') : t('saveActivity')}
               </button>
               {editingActivity.id && (
-                <button type="button" className="btn btn-outline mt-2" style={{ width: '100%' }} onClick={() => setEditingActivity({ ...emptyActivity })}>Cancelar</button>
+                <button type="button" className="btn btn-outline mt-2" style={{ width: '100%' }} onClick={() => setEditingActivity({ ...emptyActivity })}>{t('cancel')}</button>
               )}
             </form>
           </div>
 
           {/* List */}
           <div className="card">
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '15px' }}>Listado de Actividades</h3>
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '15px' }}>{t('activityList')}</h3>
             <div className="table-wrapper">
               <table className="table">
                 <thead>
                   <tr>
-                    <th>Actividad</th>
-                    <th>Proveedor</th>
-                    <th>Costo</th>
-                    <th style={{ textAlign: 'right' }}>Acciones</th>
+                    <th>{t('activity') || 'Actividad'}</th>
+                    <th>{t('provider') || 'Proveedor'}</th>
+                    <th>{t('cost')}</th>
+                    <th style={{ textAlign: 'right' }}>{t('actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -318,10 +318,10 @@ const ProvidersActivitiesPage = () => {
                         <td>
                           <div className="font-bold">{a.name}</div>
                           <span className={`badge ${a.active ? 'badge-success' : 'badge-danger'}`} style={{ fontSize: '0.7rem', padding: '0.1rem 0.5rem' }}>
-                            {a.active ? 'Activa' : 'Inactiva'}
+                            {a.active ? t('active') : t('inactive')}
                           </span>
                         </td>
-                        <td>{provider?.name || 'Desconocido'}</td>
+                        <td>{provider?.name || t('unknown')}</td>
                         <td className="font-bold text-muted">${a.costBase}</td>
                         <td>
                           <div className="action-buttons" style={{ justifyContent: 'flex-end' }}>

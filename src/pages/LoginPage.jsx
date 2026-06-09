@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import usersData from '../data/users.json';
 import { useToast } from '../context/ToastContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -8,6 +8,12 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { addToast } = useToast();
   const { t } = useLanguage();
+
+  // If already logged in, redirect to dashboard immediately
+  const existingUser = localStorage.getItem('jhoraji_user');
+  if (existingUser) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const rememberedEmail = localStorage.getItem('jhoraji_remembered_email') || '';
   const [email, setEmail] = useState(rememberedEmail);

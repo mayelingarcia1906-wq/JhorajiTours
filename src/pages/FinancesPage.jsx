@@ -2,6 +2,8 @@ import { useState, useMemo } from 'react';
 import { Calendar as CalendarIcon, DollarSign, Edit3, Printer, Trash2, X, Plus, Filter, Eraser, CheckCircle, AlertCircle, Fuel, Wrench, Users, Briefcase, FileText, ChevronDown } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
+import { useCurrency } from '../context/CurrencyContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const initialExpenses = [
   { id: 201, date: '2026-06-05', category: 'Gasolina', desc: 'Llenado de tanque Van 1', amount: 45.00 },
@@ -30,6 +32,8 @@ const logAudit = (action, detail) => {
 
 const FinancesPage = () => {
   const { addToast } = useToast();
+  const { formatPrice } = useCurrency();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('proveedores');
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
@@ -271,15 +275,15 @@ const FinancesPage = () => {
     <div>
       <div className="page-header mb-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
         <div>
-          <h2>Gastos Empresa & Liquidación</h2>
-          <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
+          <h2>{t('financesTitle')}</h2>
+          <p className="text-muted" style={{ margin: 0 }}>{t('adminPanel')}</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <button className="btn btn-resumen" onClick={() => setShowSummaryModal(true)}>
-            <FileText size={18} /> Resumen
+            <FileText size={18} /> {t('summary')}
           </button>
           <button className="btn btn-primary" onClick={() => { setExpenseCategory('Gasolina'); setExpenseCatOpen(false); setShowExpenseModal(true); }}>
-            <Plus size={18} /> Registrar Gasto
+            <Plus size={18} /> {t('registerExpense')}
           </button>
         </div>
       </div>
@@ -287,33 +291,33 @@ const FinancesPage = () => {
       {/* METRICS ROW */}
       <div className="metrics-row mb-4" style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
         <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>INGRESO BRUTO</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-dark)', margin: '5px 0' }}>US$ {totalBruto.toFixed(2)}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>Total pagado por clientes</div>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>{t('grossIncome')}</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-dark)', margin: '5px 0' }}>{formatPrice(totalBruto)}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>{t('grossIncomeDesc')}</div>
         </div>
         <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>PROV. (PAGOS)</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ef4444', margin: '5px 0' }}>US$ {totalProv.toFixed(2)}</div>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>{t('provPayments')}</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ef4444', margin: '5px 0' }}>{formatPrice(totalProv)}</div>
         </div>
         <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>OTA</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f59e0b', margin: '5px 0' }}>US$ {totalOta.toFixed(2)}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>Comisiones plataformas</div>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>{t('otaCommissions')}</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f59e0b', margin: '5px 0' }}>{formatPrice(totalOta)}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>{t('otaDesc')}</div>
         </div>
         <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>CHOFERES</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#3b82f6', margin: '5px 0' }}>US$ {totalDriver.toFixed(2)}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>Pagos a conductores</div>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>{t('drivers')}</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#3b82f6', margin: '5px 0' }}>{formatPrice(totalDriver)}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>{t('driversDesc')}</div>
         </div>
         <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>GASTOS OPER.</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-dark)', margin: '5px 0' }}>US$ {totalGastos.toFixed(2)}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>Incluye Nómina</div>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>{t('operExpenses')}</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-dark)', margin: '5px 0' }}>{formatPrice(totalGastos)}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>{t('operExpensesDesc')}</div>
         </div>
         <div className="card card-ganancia" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
-          <div className="ganancia-title" style={{ fontSize: '0.7rem', fontWeight: 700 }}>GANANCIA REAL</div>
-          <div className="ganancia-amount" style={{ fontSize: '1.5rem', fontWeight: 800, margin: '5px 0' }}>US$ {gananciaReal.toFixed(2)}</div>
-          <div className="ganancia-subtitle" style={{ fontSize: '0.75rem', paddingTop: '5px' }}>Ingresos - Gastos</div>
+          <div className="ganancia-title" style={{ fontSize: '0.7rem', fontWeight: 700 }}>{t('realProfit')}</div>
+          <div className="ganancia-amount" style={{ fontSize: '1.5rem', fontWeight: 800, margin: '5px 0' }}>{formatPrice(gananciaReal)}</div>
+          <div className="ganancia-subtitle" style={{ fontSize: '0.75rem', paddingTop: '5px' }}>{t('profitDesc')}</div>
         </div>
       </div>
 
@@ -348,10 +352,10 @@ const FinancesPage = () => {
           )}
 
           <button className="btn btn-primary" onClick={handleRefresh} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <Filter size={16} /> Buscar
+            <Filter size={16} /> {t('search')}
           </button>
           <button className="btn btn-outline" onClick={handleClear} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <Eraser size={16} /> Limpiar
+            <Eraser size={16} /> {t('clearLog')} {/* Or a separate clear string */}
           </button>
         </div>
       </div>
@@ -370,7 +374,7 @@ const FinancesPage = () => {
                 textTransform: 'uppercase', fontSize: '0.85rem'
               }}
             >
-              {tab === 'proveedores' ? 'Proveedores y Comisiones' : tab === 'choferes' ? 'Liquidación de Choferes' : 'Bitácora de Gastos'}
+              {tab === 'proveedores' ? t('provAndComm') : tab === 'choferes' ? t('driverLiq') : t('expenseLog')}
             </button>
           ))}
         </div>
@@ -382,11 +386,11 @@ const FinancesPage = () => {
             <div>
               {selectedProv.length > 0 && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: '#f8fafc', padding: '10px 15px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '15px' }}>
-                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem' }}>{selectedProv.length} seleccionada(s)</span>
+                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem' }}>{selectedProv.length} {t('selected')}</span>
                   <div style={{ width: '1px', height: '20px', backgroundColor: '#cbd5e1' }}></div>
-                  <button className="btn btn-link" onClick={() => toggleProvStatus('Pagado')} style={{ color: '#10b981', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><CheckCircle size={16}/> Pagar</button>
-                  <button className="btn btn-link" onClick={() => toggleProvStatus('Pendiente')} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><AlertCircle size={16}/> Pendiente</button>
-                  <button className="btn btn-link" style={{ color: '#a855f7', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Printer size={16}/> Imprimir</button>
+                  <button className="btn btn-link" onClick={() => toggleProvStatus('Pagado')} style={{ color: '#10b981', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><CheckCircle size={16}/> {t('pay')}</button>
+                  <button className="btn btn-link" onClick={() => toggleProvStatus('Pendiente')} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><AlertCircle size={16}/> {t('pending')}</button>
+                  <button className="btn btn-link" style={{ color: '#a855f7', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Printer size={16}/> {t('print')}</button>
                 </div>
               )}
               <div className="table-wrapper" style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
@@ -394,16 +398,16 @@ const FinancesPage = () => {
                   <thead style={{ backgroundColor: '#f8fafc', color: '#64748b', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '1px solid #e2e8f0' }}>
                     <tr>
                       <th style={{width: '40px', padding: '15px'}}><input type="checkbox" onChange={e => setSelectedProv(e.target.checked ? filteredProvLiq.map(p=>p.id) : [])} checked={filteredProvLiq.length > 0 && selectedProv.length === filteredProvLiq.length}/></th>
-                      <th style={{ padding: '15px' }}>FECHA</th>
-                      <th style={{ padding: '15px' }}>CLIENTE</th>
-                      <th style={{ padding: '15px' }}>PROVEEDOR</th>
-                      <th style={{ padding: '15px' }}>COSTO BASE</th>
-                      <th style={{ padding: '15px' }}>EXTRAS</th>
-                      <th style={{ padding: '15px' }}>COSTO TOTAL</th>
-                      <th style={{ padding: '15px' }}>PRECIO CL.</th>
-                      <th style={{ padding: '15px' }}>OTA</th>
-                      <th style={{ padding: '15px' }}>GANANCIA</th>
-                      <th style={{ padding: '15px' }}>ESTADO</th>
+                      <th style={{ padding: '15px' }}>{t('date')}</th>
+                      <th style={{ padding: '15px' }}>{t('client')}</th>
+                      <th style={{ padding: '15px' }}>{t('provider')}</th>
+                      <th style={{ padding: '15px' }}>{t('baseCost')}</th>
+                      <th style={{ padding: '15px' }}>{t('extras')}</th>
+                      <th style={{ padding: '15px' }}>{t('totalCost')}</th>
+                      <th style={{ padding: '15px' }}>{t('clientPrice')}</th>
+                      <th style={{ padding: '15px' }}>{t('otaCommissions')}</th>
+                      <th style={{ padding: '15px' }}>{t('profit')}</th>
+                      <th style={{ padding: '15px' }}>{t('status')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -413,31 +417,31 @@ const FinancesPage = () => {
                         <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>{p.date}</td>
                         <td style={{ padding: '15px', color: '#1e293b', fontSize: '0.9rem' }}>{p.client}</td>
                         <td style={{ padding: '15px', fontWeight: '700', color: '#0f172a', fontSize: '0.95rem' }}>{p.provider}</td>
-                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>US$ {p.costBase.toFixed(2)}</td>
-                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>US$ {p.extras.toFixed(2)}</td>
-                        <td style={{ padding: '15px', fontWeight: '800', color: '#0f172a', fontSize: '0.95rem' }}>US$ {p.costTotal.toFixed(2)}</td>
-                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>US$ {p.priceClient.toFixed(2)}</td>
-                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>US$ {p.ota.toFixed(2)}</td>
-                        <td style={{ padding: '15px', color: '#16a34a', fontWeight: '800', fontSize: '0.95rem' }}>US$ {p.profit.toFixed(2)}</td>
+                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>{formatPrice(p.costBase)}</td>
+                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>{formatPrice(p.extras)}</td>
+                        <td style={{ padding: '15px', fontWeight: '800', color: '#0f172a', fontSize: '0.95rem' }}>{formatPrice(p.costTotal)}</td>
+                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>{formatPrice(p.priceClient)}</td>
+                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>{formatPrice(p.ota)}</td>
+                        <td style={{ padding: '15px', color: '#16a34a', fontWeight: '800', fontSize: '0.95rem' }}>{formatPrice(p.profit)}</td>
                         <td style={{ padding: '15px' }}>
                           {p.status === 'Pagado' ? (
                             <span style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: '#ecfdf5', color: '#059669', padding: '4px 10px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px' }}>
-                              PAGADO
+                              {t('paid').toUpperCase()}
                             </span>
                           ) : (
                             <span style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: '#fef2f2', color: '#ef4444', padding: '4px 10px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px' }}>
-                              PENDIENTE
+                              {t('pending').toUpperCase()}
                             </span>
                           )}
                         </td>
                       </tr>
                     ))}
                     <tr style={{ backgroundColor: '#f8fafc', color: '#0f172a' }}>
-                      <td colSpan="6" style={{ padding: '16px 15px', textAlign: 'right', fontWeight: '700', fontSize: '0.85rem', letterSpacing: '0.5px', color: '#64748b' }}>TOTALES:</td>
-                      <td style={{ padding: '16px 15px', fontWeight: '800', fontSize: '0.95rem' }}>US$ {totalProv.toFixed(2)}</td>
-                      <td style={{ padding: '16px 15px', fontWeight: '700', fontSize: '0.9rem' }}>US$ {totalBruto.toFixed(2)}</td>
-                      <td style={{ padding: '16px 15px', color: '#f59e0b', fontWeight: '800', fontSize: '0.95rem' }}>US$ {totalOta.toFixed(2)}</td>
-                      <td style={{ padding: '16px 15px', color: '#16a34a', fontWeight: '800', fontSize: '0.95rem' }}>US$ {(totalBruto - totalProv - totalOta).toFixed(2)}</td>
+                      <td colSpan="6" style={{ padding: '16px 15px', textAlign: 'right', fontWeight: '700', fontSize: '0.85rem', letterSpacing: '0.5px', color: '#64748b' }}>{t('totals')}</td>
+                      <td style={{ padding: '16px 15px', fontWeight: '800', fontSize: '0.95rem' }}>{formatPrice(totalProv)}</td>
+                      <td style={{ padding: '16px 15px', fontWeight: '700', fontSize: '0.9rem' }}>{formatPrice(totalBruto)}</td>
+                      <td style={{ padding: '16px 15px', color: '#f59e0b', fontWeight: '800', fontSize: '0.95rem' }}>{formatPrice(totalOta)}</td>
+                      <td style={{ padding: '16px 15px', color: '#16a34a', fontWeight: '800', fontSize: '0.95rem' }}>{formatPrice(totalBruto - totalProv - totalOta)}</td>
                       <td style={{ padding: '16px 15px' }}></td>
                     </tr>
                   </tbody>
@@ -452,11 +456,11 @@ const FinancesPage = () => {
             <div>
               {selectedDriver.length > 0 && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: '#f8fafc', padding: '10px 15px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '15px' }}>
-                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem' }}>{selectedDriver.length} seleccionada(s)</span>
+                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem' }}>{selectedDriver.length} {t('selected')}</span>
                   <div style={{ width: '1px', height: '20px', backgroundColor: '#cbd5e1' }}></div>
-                  <button className="btn btn-link" onClick={() => toggleDriverStatus('Pagado')} style={{ color: '#10b981', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><CheckCircle size={16}/> Pagar</button>
-                  <button className="btn btn-link" onClick={() => toggleDriverStatus('Pendiente')} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><AlertCircle size={16}/> Pendiente</button>
-                  <button className="btn btn-link" style={{ color: '#a855f7', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Printer size={16}/> Imprimir</button>
+                  <button className="btn btn-link" onClick={() => toggleDriverStatus('Pagado')} style={{ color: '#10b981', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><CheckCircle size={16}/> {t('pay')}</button>
+                  <button className="btn btn-link" onClick={() => toggleDriverStatus('Pendiente')} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><AlertCircle size={16}/> {t('pending')}</button>
+                  <button className="btn btn-link" style={{ color: '#a855f7', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Printer size={16}/> {t('print')}</button>
                 </div>
               )}
               <div className="table-wrapper">
@@ -464,14 +468,14 @@ const FinancesPage = () => {
                   <thead>
                     <tr>
                       <th style={{width: '30px'}}><input type="checkbox" onChange={e => setSelectedDriver(e.target.checked ? filteredDriverLiq.map(d=>d.id) : [])} checked={filteredDriverLiq.length > 0 && selectedDriver.length === filteredDriverLiq.length}/></th>
-                      <th>FECHA</th>
-                      <th>CHOFER</th>
-                      <th>CLIENTE</th>
-                      <th>SERVICIO</th>
-                      <th>ADULTOS</th>
-                      <th>NIÑOS</th>
-                      <th>MONTO</th>
-                      <th>ESTADO</th>
+                      <th>{t('date')}</th>
+                      <th>{t('driver')}</th>
+                      <th>{t('client')}</th>
+                      <th>{t('service')}</th>
+                      <th>{t('adults')}</th>
+                      <th>{t('children')}</th>
+                      <th>{t('amountCol')}</th>
+                      <th>{t('status')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -484,7 +488,7 @@ const FinancesPage = () => {
                         <td>{d.service}</td>
                         <td>{d.adults}</td>
                         <td>{d.children}</td>
-                        <td style={{fontWeight: '700', color: '#3b82f6'}}>US$ {d.amount.toFixed(2)}</td>
+                        <td style={{fontWeight: '700', color: '#3b82f6'}}>{formatPrice(d.amount)}</td>
                         <td>
                           <span className={`badge badge-${d.status === 'Pagado' ? 'success' : 'danger'}`}>{d.status}</span>
                         </td>
@@ -492,7 +496,7 @@ const FinancesPage = () => {
                     ))}
                     <tr style={{ backgroundColor: '#f8fafc', fontWeight: 'bold' }}>
                       <td colSpan="7" style={{ textAlign: 'right' }}>TOTAL CHOFERES:</td>
-                      <td style={{color: '#3b82f6'}}>US$ {totalDriver.toFixed(2)}</td>
+                      <td style={{color: '#3b82f6'}}>{formatPrice(totalDriver)}</td>
                       <td></td>
                     </tr>
                   </tbody>
@@ -518,10 +522,10 @@ const FinancesPage = () => {
                   <thead>
                     <tr>
                       <th style={{width: '30px'}}><input type="checkbox" onChange={e => setSelectedExp(e.target.checked ? filteredExpenses.map(ex=>ex.id) : [])} checked={filteredExpenses.length > 0 && selectedExp.length === filteredExpenses.length}/></th>
-                      <th>FECHA</th>
-                      <th>CATEGORÍA</th>
-                      <th>DESCRIPCIÓN</th>
-                      <th>MONTO</th>
+                      <th>{t('date')}</th>
+                      <th>{t('category')}</th>
+                      <th>{t('description')}</th>
+                      <th>{t('amountCol')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -531,12 +535,12 @@ const FinancesPage = () => {
                         <td>{ex.date}</td>
                         <td style={{fontWeight: '600'}}>{ex.category}</td>
                         <td>{ex.desc}</td>
-                        <td style={{fontWeight: '700', color: '#ef4444'}}>US$ {ex.amount.toFixed(2)}</td>
+                        <td style={{fontWeight: '700', color: '#ef4444'}}>{formatPrice(ex.amount)}</td>
                       </tr>
                     ))}
                     <tr style={{ backgroundColor: '#f8fafc', fontWeight: 'bold' }}>
                       <td colSpan="4" style={{ textAlign: 'right' }}>TOTAL GASTOS:</td>
-                      <td style={{color: '#ef4444'}}>US$ {totalGastos.toFixed(2)}</td>
+                      <td style={{color: '#ef4444'}}>{formatPrice(totalGastos)}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -554,64 +558,64 @@ const FinancesPage = () => {
             <div className="card" style={{ width: '100%', margin: 0, padding: '20px', backgroundColor: '#fff', border: 'none', borderRadius: '12px', boxShadow: 'none' }}>
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <h3 style={{ color: '#0f172a', fontSize: '0.95rem', fontWeight: 700, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  RESUMEN DEL PERÍODO
+                  {t('periodSummary')}
                 </h3>
                 <button onClick={() => setShowSummaryModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 0, display: 'flex' }}><X size={20} /></button>
               </div>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
-          <span style={{ color: '#333' }}>Total Reservas:</span>
+          <span style={{ color: '#333' }}>{t('totalBookingsLabel')}</span>
           <span style={{ fontWeight: 'bold', color: '#000' }}>{allBookings.length}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
-          <span style={{ color: '#333' }}>Ingreso Bruto:</span>
-          <span style={{ fontWeight: 'bold', color: '#10b981' }}>US$ {totalBruto.toFixed(2)}</span>
+          <span style={{ color: '#333' }}>{t('grossIncomeLabel')}</span>
+          <span style={{ fontWeight: 'bold', color: '#10b981' }}>{formatPrice(totalBruto)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
-          <span style={{ color: '#333' }}>Pago Proveedores:</span>
-          <span style={{ fontWeight: 'bold', color: '#ef4444' }}>US$ {totalProv.toFixed(2)}</span>
+          <span style={{ color: '#333' }}>{t('provPaymentLabel')}</span>
+          <span style={{ fontWeight: 'bold', color: '#ef4444' }}>{formatPrice(totalProv)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
-          <span style={{ color: '#333' }}>Comisiones OTA:</span>
-          <span style={{ fontWeight: 'bold', color: '#f59e0b' }}>US$ {totalOta.toFixed(2)}</span>
+          <span style={{ color: '#333' }}>{t('otaCommLabel')}</span>
+          <span style={{ fontWeight: 'bold', color: '#f59e0b' }}>{formatPrice(totalOta)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
-          <span style={{ color: '#333' }}>Pagos Choferes:</span>
-          <span style={{ fontWeight: 'bold', color: '#3b82f6' }}>US$ {totalDriver.toFixed(2)}</span>
+          <span style={{ color: '#333' }}>{t('driverPayLabel')}</span>
+          <span style={{ fontWeight: 'bold', color: '#3b82f6' }}>{formatPrice(totalDriver)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '0.9rem' }}>
-          <span style={{ color: '#333' }}>Gastos Operativos:</span>
-          <span style={{ fontWeight: 'bold', color: '#000' }}>US$ {totalGastos.toFixed(2)}</span>
+          <span style={{ color: '#333' }}>{t('operExpLabel')}</span>
+          <span style={{ fontWeight: 'bold', color: '#000' }}>{formatPrice(totalGastos)}</span>
         </div>
 
         <div style={{ fontWeight: 'bold', marginBottom: '12px', fontSize: '0.95rem', color: '#000' }}>
-          Desglose Gastos:
+          {t('expBreakdown')}
         </div>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
-          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>⛽ Gasolina:</span>
-          <span style={{ color: '#333' }}>US$ {gasTotal.toFixed(2)}</span>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>⛽ {t('gas')}</span>
+          <span style={{ color: '#333' }}>{formatPrice(gasTotal)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
-          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>🔧 Mantenimiento:</span>
-          <span style={{ color: '#333' }}>US$ {mantTotal.toFixed(2)}</span>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>🔧 {t('maintenance')}</span>
+          <span style={{ color: '#333' }}>{formatPrice(mantTotal)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
-          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>👥 Pago Guías:</span>
-          <span style={{ color: '#333' }}>US$ {guiasTotal.toFixed(2)}</span>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>👥 {t('guidePay')}</span>
+          <span style={{ color: '#333' }}>{formatPrice(guiasTotal)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
-          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>💼 Pago Nómina:</span>
-          <span style={{ color: '#333' }}>US$ {nominaTotal.toFixed(2)}</span>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>💼 {t('payroll')}</span>
+          <span style={{ color: '#333' }}>{formatPrice(nominaTotal)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '0.85rem' }}>
-          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>📝 Otros:</span>
-          <span style={{ color: '#333' }}>US$ {otrosTotal.toFixed(2)}</span>
+          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>📝 {t('others')}</span>
+          <span style={{ color: '#333' }}>{formatPrice(otrosTotal)}</span>
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px', paddingTop: '15px', borderTop: '1px solid #e2e8f0', fontSize: '0.95rem' }}>
-          <span style={{ fontWeight: '800', color: '#000' }}>GANANCIA REAL:</span>
-          <span style={{ fontWeight: '800', color: '#10b981' }}>US$ {gananciaReal.toFixed(2)}</span>
+          <span style={{ fontWeight: '800', color: '#000' }}>{t('realProfitLabel')}</span>
+          <span style={{ fontWeight: '800', color: '#10b981' }}>{formatPrice(gananciaReal)}</span>
         </div>
             </div>
           </div>
@@ -623,7 +627,7 @@ const FinancesPage = () => {
         <div className="modal-overlay">
           <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px' }}>
             <div className="d-flex justify-content-between align-items-center mb-4">
-              <h3 style={{ margin: 0 }}>Registrar Gasto</h3>
+              <h3 style={{ margin: 0 }}>{t('registerExpense')}</h3>
               <button onClick={() => setShowExpenseModal(false)} style={{ background: 'none', color: 'var(--text-light)' }}><X size={24} /></button>
             </div>
             <form onSubmit={handleSaveExpense}>
@@ -675,20 +679,20 @@ const FinancesPage = () => {
                 )}
               </div>
               <div className="form-group">
-                <label>Monto US$</label>
+                <label>{t('expenseAmount')}</label>
                 <input name="amount" type="number" step="0.01" min="0" className="form-control" required placeholder="0.00" />
               </div>
               <div className="form-group">
-                <label>Detalle</label>
-                <textarea name="desc" className="form-control" rows="2" placeholder="Descripción del gasto..." required></textarea>
+                <label>{t('expenseDetail')}</label>
+                <textarea name="desc" className="form-control" rows="2" placeholder="..." required></textarea>
               </div>
               <div className="form-group">
-                <label>Fecha</label>
+                <label>{t('date')}</label>
                 <input name="date" type="date" className="form-control" required defaultValue={new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]} min={new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]} />
               </div>
               <div className="modal-actions mt-4">
-                <button type="button" className="btn btn-outline" onClick={() => setShowExpenseModal(false)}>Cancelar</button>
-                <button type="submit" className="btn btn-primary">GUARDAR</button>
+                <button type="button" className="btn btn-outline" onClick={() => setShowExpenseModal(false)}>{t('cancel')}</button>
+                <button type="submit" className="btn btn-primary">{t('save').toUpperCase()}</button>
               </div>
             </form>
           </div>

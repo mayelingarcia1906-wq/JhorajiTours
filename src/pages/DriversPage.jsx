@@ -150,24 +150,24 @@ const DriversPage = () => {
     <div>
       <div className="page-header mb-4">
         <div>
-          <h2>Control de choferes</h2>
-          <p className="text-muted" style={{ margin: 0 }}>Gestión de personal y asignación de rutas</p>
+          <h2>{t('driversTitle')}</h2>
+          <p className="text-muted" style={{ margin: 0 }}>{t('driversSubtitle')}</p>
         </div>
         <button className="btn btn-primary" onClick={() => setEditingDriver({ ...emptyDriver })}>
-          <Plus size={18} /> Nuevo Chofer
+          <Plus size={18} /> {t('newDriver')}
         </button>
       </div>
 
       <div className="card mb-4 no-print" style={{ padding: '0.5rem' }}>
         <div className="d-flex gap-2" style={{ overflowX: 'auto', padding: '0.5rem' }}>
           <button className={`tab-btn ${activeTab === 'assign' ? 'active' : ''}`} onClick={() => setActiveTab('assign')}>
-            Reservas Asignadas
+            {t('assignedBookings') || 'Reservas Asignadas'}
           </button>
           <button className={`tab-btn ${activeTab === 'directory' ? 'active' : ''}`} onClick={() => setActiveTab('directory')}>
-            Directorio de Choferes
+            {t('driversDirectory') || 'Directorio'}
           </button>
           <button className={`tab-btn ${activeTab === 'orders' ? 'active' : ''}`} onClick={() => setActiveTab('orders')}>
-            Órdenes de Recogida
+            {t('pickupOrders') || 'Órdenes'}
           </button>
         </div>
       </div>
@@ -175,7 +175,7 @@ const DriversPage = () => {
       {activeTab === 'assign' && (
         <div className="card">
           <div className="page-toolbar mb-4" style={{ alignItems: 'flex-start' }}>
-            <h3 style={{ fontSize: '1.1rem', margin: 0, marginTop: '8px' }}>Reservas Asignadas</h3>
+            <h3 style={{ fontSize: '1.1rem', margin: 0, marginTop: '8px' }}>{t('assignedBookings') || 'Reservas Asignadas'}</h3>
             <div className="d-flex gap-2" style={{ flexWrap: 'wrap', flex: 1, justifyContent: 'flex-end' }}>
               <select className="form-control" style={{ width: 'auto' }} value={assignFilterAct} onChange={e => setAssignFilterAct(e.target.value)}>
                 <option value="all">Todas las Actividades</option>
@@ -189,7 +189,7 @@ const DriversPage = () => {
                 <Calendar size={18} />
                 <input type="date" className="form-control" value={assignFilterDateEnd} onChange={e => setAssignFilterDateEnd(e.target.value)} />
               </div>
-              <button className="btn btn-primary">Filtrar</button>
+              <button className="btn btn-primary">{t('filter') || 'Filtrar'}</button>
             </div>
           </div>
 
@@ -197,9 +197,9 @@ const DriversPage = () => {
             <table className="table" style={{ minWidth: '800px' }}>
               <thead>
                 <tr>
-                  <th style={{ width: '25%' }}>Fecha / Cliente</th>
-                  <th style={{ width: '30%' }}>Actividad</th>
-                  <th style={{ width: '45%' }}>Asignación (Hora / Chofer / Pago)</th>
+                  <th style={{ width: '25%' }}>{t('dateCustomer') || 'Fecha / Cliente'}</th>
+                  <th style={{ width: '30%' }}>{t('activity') || 'Actividad'}</th>
+                  <th style={{ width: '45%' }}>{t('assignment') || 'Asignación (Hora / Chofer / Pago)'}</th>
                 </tr>
               </thead>
               <tbody>
@@ -253,17 +253,17 @@ const DriversPage = () => {
       {activeTab === 'directory' && (
         <div className="card">
           <div className="page-toolbar mb-4">
-            <h3 style={{ fontSize: '1.1rem', margin: 0 }}>Directorio de Choferes Registrados</h3>
+            <h3 style={{ fontSize: '1.1rem', margin: 0 }}>{t('driversDirectory') || 'Directorio de Choferes Registrados'}</h3>
           </div>
           <div className="table-wrapper">
             <table className="table" style={{ minWidth: '100%' }}>
               <thead>
                 <tr>
-                  <th>Chofer</th>
-                  <th>Contacto (WhatsApp)</th>
-                  <th>Vehículo Asignado</th>
-                  <th>Estado</th>
-                  <th style={{ textAlign: 'right' }}>Acciones</th>
+                  <th>{t('driverName')}</th>
+                  <th>{t('contactWhatsapp') || 'Contacto (WhatsApp)'}</th>
+                  <th>{t('vehicle')}</th>
+                  <th>{t('status')}</th>
+                  <th style={{ textAlign: 'right' }}>{t('actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -316,27 +316,27 @@ const DriversPage = () => {
       {activeTab === 'orders' && (
         <div className="card print-card" style={{ maxWidth: '1000px', margin: '0 auto' }}>
           <div className="no-print" style={{ textAlign: 'center', marginBottom: '20px' }}>
-            <h3 style={{ fontSize: '1.2rem', color: 'var(--primary-color)', marginBottom: '5px' }}>Ver Orden de Recogida</h3>
-            <p className="text-muted" style={{ fontSize: '0.9rem' }}>Consulta las rutas asignadas a los choferes.</p>
+            <h3 style={{ fontSize: '1.2rem', color: 'var(--primary-color)', marginBottom: '5px' }}>{t('viewPickupOrder') || 'Ver Orden de Recogida'}</h3>
+            <p className="text-muted" style={{ fontSize: '0.9rem' }}>{t('viewPickupSubtitle') || 'Consulta las rutas asignadas a los choferes.'}</p>
           </div>
           
           <div className="responsive-grid mb-4 no-print" style={{ gap: '15px' }}>
             <div className="form-group">
-              <label>Seleccionar Chofer</label>
+              <label>{t('selectDriver') || 'Seleccionar Chofer'}</label>
               <select className="form-control" value={orderFilterVehicle} onChange={e => setOrderFilterVehicle(e.target.value)}>
                 <option value="">-- Todos los choferes --</option>
                 {drivers.map(d => <option key={d.id} value={d.id}>{d.name} ({d.vehicle})</option>)}
               </select>
             </div>
             <div className="form-group">
-              <label>Fecha Desde</label>
+              <label>{t('dateFrom') || 'Fecha Desde'}</label>
               <div className="search-field" style={{ width: '100%' }}>
                 <Calendar size={18} />
                 <input type="date" className="form-control" value={orderFilterDateStart} onChange={e => setOrderFilterDateStart(e.target.value)} />
               </div>
             </div>
             <div className="form-group">
-              <label>Fecha Hasta</label>
+              <label>{t('dateTo') || 'Fecha Hasta'}</label>
               <div className="search-field" style={{ width: '100%' }}>
                 <Calendar size={18} />
                 <input type="date" className="form-control" value={orderFilterDateEnd} onChange={e => setOrderFilterDateEnd(e.target.value)} />
@@ -345,7 +345,7 @@ const DriversPage = () => {
           </div>
           
           <button className="btn btn-primary mb-4 no-print" style={{ width: '100%', padding: '12px' }} onClick={() => { setReportGenerated(true); addToast('Consulta generada exitosamente', 'success'); }}>
-            Generar Reporte de Recogida
+            {t('generatePickupReport') || 'Generar Reporte de Recogida'}
           </button>
 
           {reportGenerated && (
@@ -412,12 +412,12 @@ const DriversPage = () => {
         <div className="modal-overlay">
           <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px' }}>
             <div className="d-flex justify-content-between align-items-center mb-4">
-              <h3 style={{ margin: 0 }}>{editingDriver.id ? 'Editar Chofer' : 'Nuevo Chofer'}</h3>
+              <h3 style={{ margin: 0 }}>{editingDriver.id ? t('editDriver') : t('newDriver')}</h3>
               <button onClick={() => setEditingDriver(null)} style={{ background: 'none', color: 'var(--text-light)' }}><X size={24} /></button>
             </div>
             <form onSubmit={handleSaveDriver}>
               <div className="form-group">
-                <label>Nombre del Chofer</label>
+                <label>{t('driverName')}</label>
                 <input name="name" type="text" className="form-control" placeholder="Ej. Carlos Transporte" required defaultValue={editingDriver.name} />
               </div>
               <div className="responsive-grid" style={{ gap: '15px' }}>
@@ -432,11 +432,11 @@ const DriversPage = () => {
               </div>
               <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '15px' }}>
                 <input type="checkbox" id="driverActive" name="active" defaultChecked={editingDriver.active} />
-                <label htmlFor="driverActive" style={{ margin: 0 }}>Chofer Activo (disponible para asignaciones)</label>
+                <label htmlFor="driverActive" style={{ margin: 0 }}>{t('driverActive') || 'Chofer Activo (disponible para asignaciones)'}</label>
               </div>
               <div className="modal-actions mt-4">
-                <button type="button" className="btn btn-outline" onClick={() => setEditingDriver(null)}>Cancelar</button>
-                <button type="submit" className="btn btn-primary">{editingDriver.id ? 'Actualizar Chofer' : 'Guardar Chofer'}</button>
+                <button type="button" className="btn btn-outline" onClick={() => setEditingDriver(null)}>{t('cancel')}</button>
+                <button type="submit" className="btn btn-primary">{editingDriver.id ? t('update') : t('create')}</button>
               </div>
             </form>
           </div>
@@ -447,11 +447,11 @@ const DriversPage = () => {
       {showDeleteConfirm && (
         <div className="modal-overlay" style={{ zIndex: 300 }}>
           <div className="card" style={{ maxWidth: '420px', width: '90%', textAlign: 'center' }}>
-            <h3 style={{ marginBottom: '15px' }}>Eliminar Chofer</h3>
-            <p className="text-muted mb-4">¿Estás seguro que deseas eliminar este chofer? Esta acción no se puede deshacer y desvinculará sus asignaciones previas.</p>
+            <h3 style={{ marginBottom: '15px' }}>{t('deleteDriverTitle')}</h3>
+            <p className="text-muted mb-4">{t('deleteDriverWarning') || '¿Estás seguro que deseas eliminar este chofer? Esta acción no se puede deshacer y desvinculará sus asignaciones previas.'}</p>
             <div className="d-flex justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
-              <button className="btn btn-outline" onClick={() => setShowDeleteConfirm(null)}>Cancelar</button>
-              <button className="btn btn-danger" onClick={handleDelete}>Eliminar Chofer</button>
+              <button className="btn btn-outline" onClick={() => setShowDeleteConfirm(null)}>{t('cancel')}</button>
+              <button className="btn btn-danger" onClick={handleDelete}>{t('delete')}</button>
             </div>
           </div>
         </div>

@@ -139,10 +139,10 @@ const UsersPage = () => {
       <div className="page-header mb-4">
         <div>
           <h2>{t('moduleUsers') || 'Gestión de Usuarios'}</h2>
-          <p className="text-muted" style={{ margin: 0 }}>Administra los accesos al sistema</p>
+          <p className="text-muted" style={{ margin: 0 }}>{t('usersSubtitle') || 'Administra los accesos al sistema'}</p>
         </div>
         <button className="btn btn-primary" onClick={() => setEditingUser({ ...emptyUser })}>
-          <Plus size={18} /> Nuevo Usuario
+          <Plus size={18} /> {t('newUser') || 'Nuevo Usuario'}
         </button>
       </div>
 
@@ -153,7 +153,7 @@ const UsersPage = () => {
               <Search size={16} className="search-icon" />
               <input
                 type="text"
-                placeholder="Buscar usuarios..."
+                placeholder={t('searchUser') || 'Buscar usuarios...'}
                 className="form-control"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -168,7 +168,7 @@ const UsersPage = () => {
                 <Eraser size={15} />
               </button>
               <button className="search-btn-inner" onClick={handleSearch} type="button">
-                <Search size={13} /> Buscar
+                <Search size={13} /> {t('search') || 'Buscar'}
               </button>
             </div>
           </div>
@@ -177,10 +177,10 @@ const UsersPage = () => {
             <table className="table">
               <thead>
                 <tr>
-                  <th>Usuario</th>
-                  <th>Rol</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
+                  <th>{t('user') || 'Usuario'}</th>
+                  <th>{t('role') || 'Rol'}</th>
+                  <th>{t('status') || 'Estado'}</th>
+                  <th>{t('actions') || 'Acciones'}</th>
                 </tr>
               </thead>
               <tbody>
@@ -230,7 +230,7 @@ const UsersPage = () => {
         <div className="modal-overlay">
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '450px' }}>
             <div className="d-flex justify-content-between align-items-center mb-4">
-              <h3 style={{ margin: 0 }}>{editingUser.id ? 'Editar Usuario' : 'Nuevo Usuario'}</h3>
+              <h3 style={{ margin: 0 }}>{editingUser.id ? (t('editUser') || 'Editar Usuario') : (t('newUser') || 'Nuevo Usuario')}</h3>
               <button onClick={() => setEditingUser(null)} style={{ background: 'none', color: 'var(--text-light)' }}><X size={24} /></button>
             </div>
             <form onSubmit={handleSaveUser}>
@@ -310,7 +310,7 @@ const UsersPage = () => {
 
               <div className="modal-actions mt-4">
                 <button type="button" className="btn btn-outline" onClick={() => { setEditingUser(null); setShowPassword(false); setShowConfirmPassword(false); setCapsLockOn(false); setFocusedField(null); }}>{t('cancel')}</button>
-                <button type="submit" className="btn btn-primary">Guardar</button>
+                <button type="submit" className="btn btn-primary">{editingUser.id ? t('update') : t('create')}</button>
               </div>
             </form>
           </div>
@@ -320,7 +320,7 @@ const UsersPage = () => {
       {showDeleteConfirm && (
         <div className="modal-overlay" style={{ zIndex: 300 }}>
           <div className="card" style={{ maxWidth: '420px', width: '90%', textAlign: 'center' }}>
-            <h3 style={{ marginBottom: '15px' }}>Eliminar Usuario</h3>
+            <h3 style={{ marginBottom: '15px' }}>{t('deleteUserTitle') || 'Eliminar Usuario'}</h3>
             <p className="text-muted mb-4">¿Estás seguro que deseas eliminar este usuario? Esta acción no se puede deshacer.</p>
             <div className="d-flex justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
               <button className="btn btn-outline" onClick={() => setShowDeleteConfirm(null)}>{t('cancel')}</button>

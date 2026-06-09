@@ -3,6 +3,9 @@ import { Clock, DollarSign, Edit3, Eraser, Eye, MapPin, Plus, Search, Star, Tras
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
+import { usePermissions } from '../context/PermissionsContext';
+import { useCurrency } from '../context/CurrencyContext';
+import { useNotifications } from '../context/NotificationsContext';
 
 const initialTours = [];
 
@@ -41,6 +44,9 @@ const readStoredTours = () => {
 const ToursPage = () => {
   const { addToast } = useToast();
   const { t } = useLanguage();
+  const { canPerformAction } = usePermissions();
+  const { formatPrice } = useCurrency();
+  const { addNotification } = useNotifications();
   const [searchQuery, setSearchQuery] = useState('');
   const [appliedSearch, setAppliedSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -134,11 +140,15 @@ const ToursPage = () => {
       active: formData.get('active') === 'true',
     };
 
-    const nextTours = editingTour.id
-      ? tours.map((tour) => (tour.id === editingTour.id ? submitted : tour))
-      : [submitted, ...tours];
+    const isNew = !editingTour.id;
+    const nextTours = isNew
+      ? [submitted, ...tours]
+      : tours.map((tour) => (tour.id === editingTour.id ? submitted : tour));
 
     persistTours(nextTours);
+    if (isNew) {
+      addNotification(`Nuevo tour creado: ${submitted.title}`);
+    }
     setEditingTour(null);
     addToast(t('tourSaved'), 'success');
   };
@@ -173,9 +183,11 @@ const ToursPage = () => {
           <h2>{t('toursTitle')}</h2>
           <p className="text-muted" style={{ margin: 0 }}>{t('toursSubtitle')}</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setEditingTour({ ...emptyTour })}>
-          <Plus size={18} /> {t('newTour')}
-        </button>
+        {canPerformAction('create') && (
+          <button className="btn btn-primary" onClick={() => setEditingTour({ ...emptyTour })}>
+            <Plus size={18} /> {t('newTour')}
+          </button>
+        )}
       </div>
 
       <div className="card mb-4">
@@ -199,14 +211,21 @@ const ToursPage = () => {
           <div key={tour.id} className="card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
             <div style={{ height: '180px', position: 'relative' }}>
               <img src={tour.image} alt={tour.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <button className={`badge ${tour.active ? 'badge-success' : 'badge-danger'}`} style={{ position: 'absolute', top: '10px', right: '10px', backgroundColor: tour.active ? '#22c55e' : '#ef4444', color: 'white' }} onClick={() => toggleActive(tour.id)}>
-                {tour.active ? t('active') : t('inactive')}
-              </button>
+              {canPerformAction('edit') && (
+                <button className={`badge ${tour.active ? 'badge-success' : 'badge-danger'}`} style={{ position: 'absolute', top: '10px', right: '10px', backgroundColor: tour.active ? '#22c55e' : '#ef4444', color: 'white', cursor: 'pointer', border: 'none' }} onClick={() => toggleActive(tour.id)}>
+                  {tour.active ? t('active') : t('inactive')}
+                </button>
+              )}
+              {!canPerformAction('edit') && (
+                <span className={`badge ${tour.active ? 'badge-success' : 'badge-danger'}`} style={{ position: 'absolute', top: '10px', right: '10px', backgroundColor: tour.active ? '#22c55e' : '#ef4444', color: 'white' }}>
+                  {tour.active ? t('active') : t('inactive')}
+                </span>
+              )}
             </div>
             <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
               <div className="d-flex justify-content-between align-items-center mb-2" style={{ gap: '12px' }}>
                 <h3 style={{ fontSize: '1.05rem', margin: 0 }}>{tour.title}</h3>
-                <span style={{ fontWeight: 700, color: 'var(--primary-color)', whiteSpace: 'nowrap' }}>{tour.price}</span>
+                <span style={{ fontWeight: 700, color: 'var(--primary-color)', whiteSpace: 'nowrap' }}>{formatPrice(tour.price)}</span>
               </div>
               <div className="d-flex gap-3 text-muted mb-4" style={{ fontSize: '0.85rem', flexWrap: 'wrap' }}>
                 <div className="d-flex align-items-center gap-1"><MapPin size={14} /> {t(tour.category)}</div>
@@ -215,8 +234,12 @@ const ToursPage = () => {
               </div>
               <div style={{ marginTop: 'auto', display: 'flex', gap: '10px', borderTop: '1px solid var(--border-color)', paddingTop: '15px', flexWrap: 'wrap' }}>
                 <button className="btn btn-outline" style={{ flex: '1 1 90px', padding: '0.5rem' }} onClick={() => setSelectedTour(tour)}><Eye size={16} /> {t('view')}</button>
-                <button className="btn btn-outline" style={{ flex: '1 1 90px', padding: '0.5rem' }} onClick={() => openEditTour(tour)}><Edit3 size={16} /> {t('edit')}</button>
-                <button className="btn btn-outline" style={{ flex: '1 1 90px', padding: '0.5rem', color: 'var(--danger)', borderColor: 'var(--danger)' }} onClick={() => setShowDeleteConfirm(tour.id)}><Trash2 size={16} /> {t('delete')}</button>
+                {canPerformAction('edit') && (
+                  <button className="btn btn-outline" style={{ flex: '1 1 90px', padding: '0.5rem' }} onClick={() => openEditTour(tour)}><Edit3 size={16} /> {t('edit')}</button>
+                )}
+                {canPerformAction('delete') && (
+                  <button className="btn btn-outline" style={{ flex: '1 1 90px', padding: '0.5rem', color: 'var(--danger)', borderColor: 'var(--danger)' }} onClick={() => setShowDeleteConfirm(tour.id)}><Trash2 size={16} /> {t('delete')}</button>
+                )}
               </div>
             </div>
           </div>
@@ -241,8 +264,8 @@ const ToursPage = () => {
               </div>
               <p className="text-muted mb-4">{selectedTour.description}</p>
               <div className="responsive-grid">
-                <div><p className="text-muted mb-1">{t('adultPrice')}</p><div className="font-bold d-flex align-items-center gap-1"><DollarSign size={16} color="var(--primary-color)"/>{selectedTour.price}</div></div>
-                <div><p className="text-muted mb-1">{t('childPrice')}</p><div className="font-bold d-flex align-items-center gap-1"><DollarSign size={16} color="var(--primary-color)"/>{selectedTour.priceChild}</div></div>
+                <div><p className="text-muted mb-1">{t('adultPrice')}</p><div className="font-bold d-flex align-items-center gap-1"><DollarSign size={16} color="var(--primary-color)"/>{formatPrice(selectedTour.price)}</div></div>
+                <div><p className="text-muted mb-1">{t('childPrice')}</p><div className="font-bold d-flex align-items-center gap-1"><DollarSign size={16} color="var(--primary-color)"/>{formatPrice(selectedTour.priceChild)}</div></div>
                 <div><p className="text-muted mb-1">{t('category')}</p><div className="d-flex align-items-center gap-2"><MapPin size={16}/>{t(selectedTour.category)}</div></div>
                 <div><p className="text-muted mb-1">{t('duration')}</p><div className="d-flex align-items-center gap-2"><Clock size={16}/>{t(selectedTour.duration)}</div></div>
                 <div><p className="text-muted mb-1">{t('rating')}</p><div className="d-flex align-items-center gap-2" style={{ color: 'var(--warning)' }}><Star size={16} fill="currentColor"/>{selectedTour.rating}</div></div>
@@ -250,7 +273,9 @@ const ToursPage = () => {
               </div>
               <div className="modal-actions">
                 <button className="btn btn-outline" onClick={() => setSelectedTour(null)}>{t('close')}</button>
-                <button className="btn btn-primary" onClick={() => { setSelectedTour(null); openEditTour(selectedTour); }}>{t('editTour')}</button>
+                {canPerformAction('edit') && (
+                  <button className="btn btn-primary" onClick={() => { setSelectedTour(null); openEditTour(selectedTour); }}>{t('editTour')}</button>
+                )}
               </div>
             </div>
           </div>

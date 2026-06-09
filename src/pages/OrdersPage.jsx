@@ -1,7 +1,11 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Printer, Trash2, Edit3, MessageCircle, X, Plus, Filter, Eye } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Pagination } from '../components/Pagination';
+import { usePermissions } from '../context/PermissionsContext';
+import { useNotifications } from '../context/NotificationsContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 const initialOrders = [
   { id: 'RES-00101', date: '2026-06-10', time: '08:30', type: 'ACTIVIDAD', client: 'Carlos Mendoza', route: 'Punta Cana - Saona', service: 'Excursión VIP', adults: 2, children: 0, providerPrice: 'US$ 120.00', provider: '', driver: '' },
@@ -34,6 +38,10 @@ const formatDate = (dateStr) => {
 
 const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
   const { addToast } = useToast();
+  const { t } = useLanguage();
+  const { canPerformAction } = usePermissions();
+  const { addNotification } = useNotifications();
+  const { formatPrice } = useCurrency();
   const [orders, setOrders] = useState(() => readStoredData('jhoraji_orders', initialOrders));
   const providers = readStoredData('jhoraji_providers', []);
   const drivers = readStoredData('jhoraji_drivers', []);
@@ -89,22 +97,26 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
     persistOrders(nextOrders);
     logAudit(isNew ? 'Creó orden' : 'Editó orden', submitted.client);
     setEditingOrder(null);
-    addToast(isNew ? 'Orden creada exitosamente' : 'Orden actualizada', 'success');
+    addToast(isNew ? t('orderCreated') : t('orderUpdated'), 'success');
+    
+    if (isNew) {
+      addNotification(`Nueva orden generada para ${submitted.client}`);
+    }
   };
 
   const handleDeleteSelected = () => {
     if (selectedOrders.length === 0) return;
-    if (window.confirm(`¿Estás seguro de que deseas eliminar las ${selectedOrders.length} órdenes seleccionadas?`)) {
+    if (window.confirm(`${t('deleteConfirmOrders')} ${selectedOrders.length} ${t('selectedOrders')}`)) {
       persistOrders(orders.filter(o => !selectedOrders.includes(o.id)));
       logAudit('Eliminó órdenes', `${selectedOrders.length} órdenes eliminadas`);
-      addToast(`${selectedOrders.length} órdenes eliminadas`, 'success');
+      addToast(`${selectedOrders.length} ${t('ordersDeleted')}`, 'success');
       setSelectedOrders([]);
     }
   };
 
   const handlePrintSelected = () => {
     if (selectedOrders.length === 0) return;
-    addToast('Imprimiendo órdenes seleccionadas...', 'success');
+    addToast(t('printingOrders'), 'success');
     logAudit('Imprimió órdenes', `${selectedOrders.length} órdenes impresas`);
   };
 
@@ -154,17 +166,19 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
       {!hideHeader && (
         <div className="page-header mb-4">
           <div>
-            <h2>Control de órdenes</h2>
-            <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
+            <h2>{t('ordersTitle')}</h2>
+            <p className="text-muted" style={{ margin: 0 }}>{t('adminPanel')}</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
-            <button className="btn btn-primary" onClick={() => {
-              const d = new Date();
-              d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-              setEditingOrder({ ...emptyOrder, date: d.toISOString().split('T')[0] });
-            }}>
-              <Plus size={18} /> Nueva Orden
-            </button>
+            {canPerformAction('create') && (
+              <button className="btn btn-primary" onClick={() => {
+                const d = new Date();
+                d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+                setEditingOrder({ ...emptyOrder, date: d.toISOString().split('T')[0] });
+              }}>
+                <Plus size={18} /> {t('newOrder')}
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -176,17 +190,17 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
             <input type="date" className="form-control" style={{ minWidth: '130px', flex: 1 }} value={fromDate} onChange={e => setFromDate(e.target.value)} title="Desde" />
             <input type="date" className="form-control" style={{ minWidth: '130px', flex: 1 }} value={toDate} onChange={e => setToDate(e.target.value)} title="Hasta" />
             
-            <select className="form-control" style={{ minWidth: '150px', flex: 1.5 }} value={providerFilter} onChange={e => setProviderFilter(e.target.value)} title="*Si eliges un proveedor, aún verás traslados.">
-              <option value="all">-- Proveedor --</option>
+            <select className="form-control" style={{ minWidth: '150px', flex: 1.5 }} value={providerFilter} onChange={e => setProviderFilter(e.target.value)}>
+              <option value="all">-- {t('provider') || 'Proveedor'} --</option>
               {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
             
-            <select className="form-control" style={{ minWidth: '180px', flex: 1.5 }} value={driverFilter} onChange={e => setDriverFilter(e.target.value)} title="*Si eliges un chofer, verás solo los traslados de ese chofer.">
-              <option value="all">-- Chofer (Traslados) --</option>
+            <select className="form-control" style={{ minWidth: '180px', flex: 1.5 }} value={driverFilter} onChange={e => setDriverFilter(e.target.value)}>
+              <option value="all">-- {t('driver') || 'Chofer'} --</option>
               {drivers.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
             
-            <input type="text" className="form-control" style={{ minWidth: '150px', flex: 1.5 }} placeholder="Nombre cliente" value={clientSearch} onChange={e => setClientSearch(e.target.value)} />
+            <input type="text" className="form-control" style={{ minWidth: '150px', flex: 1.5 }} placeholder={t('clientName')} value={clientSearch} onChange={e => setClientSearch(e.target.value)} />
           </div>
         </div>
 
@@ -202,14 +216,16 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
             >
               <Printer size={16}/> Imprimir
             </button>
-            <button 
-              className="btn" 
-              onClick={handleDeleteSelected} 
-              style={{ backgroundColor: 'transparent', color: '#ef4444', fontSize: '0.85rem', display: 'flex', gap: '6px', alignItems: 'center', padding: '4px 8px', fontWeight: 600, border: 'none' }}
-              title="Eliminar"
-            >
-              <Trash2 size={16}/> Eliminar
-            </button>
+            {canPerformAction('delete') && (
+              <button 
+                className="btn" 
+                onClick={handleDeleteSelected} 
+                style={{ backgroundColor: 'transparent', color: '#ef4444', fontSize: '0.85rem', display: 'flex', gap: '6px', alignItems: 'center', padding: '4px 8px', fontWeight: 600, border: 'none' }}
+                title="Eliminar"
+              >
+                <Trash2 size={16}/> Eliminar
+              </button>
+            )}
           </div>
         )}
 
@@ -218,25 +234,25 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
             <thead>
               <tr style={{ color: 'var(--text-light)', fontSize: '0.85rem', borderBottom: '1px solid var(--border-color)' }}>
                 <th style={{ width: '40px' }}><input type="checkbox" onChange={toggleSelectAll} checked={filteredOrders.length > 0 && selectedOrders.length === filteredOrders.length} /></th>
-                <th>Ref.</th>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Tipo</th>
-                <th>Cliente</th>
-                <th>Ruta</th>
-                <th>Servicio</th>
-                <th>Adultos</th>
-                <th>Niños</th>
-                <th>Precio Prov.</th>
-                <th>Pago</th>
-                <th style={{ textAlign: 'right' }}>Acciones</th>
+                <th>{t('ref')}</th>
+                <th>{t('date')}</th>
+                <th>{t('time')}</th>
+                <th>{t('type')}</th>
+                <th>{t('customer')}</th>
+                <th>{t('route')}</th>
+                <th>{t('service')}</th>
+                <th>{t('adults')}</th>
+                <th>{t('children')}</th>
+                <th>{t('providerPrice')}</th>
+                <th>{t('payment')}</th>
+                <th style={{ textAlign: 'right' }}>{t('actions')}</th>
               </tr>
             </thead>
             <tbody>
               {filteredOrders.length === 0 && (
                 <tr>
                   <td colSpan="12" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-light)' }}>
-                    No hay órdenes que coincidan con los filtros.
+                    {t('noOrdersMatch')}
                   </td>
                 </tr>
               )}
@@ -256,7 +272,7 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
                   <td style={{ color: 'var(--text-dark)', fontSize: '0.85rem' }}>{o.service}</td>
                   <td style={{ color: 'var(--text-dark)', fontSize: '0.9rem' }}>{o.adults}</td>
                   <td style={{ color: 'var(--text-dark)', fontSize: '0.9rem' }}>{o.children}</td>
-                  <td style={{ color: 'var(--text-dark)', fontWeight: 700, fontSize: '0.9rem' }}>{o.providerPrice}</td>
+                  <td style={{ color: 'var(--text-dark)', fontWeight: 700, fontSize: '0.9rem' }}>{formatPrice(o.providerPrice)}</td>
                   <td>
                     {o.paymentDone ? (
                       <span style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: '#ecfdf5', color: '#059669', padding: '4px 8px', borderRadius: '6px', border: '1px solid #a7f3d0', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px' }}>
@@ -273,7 +289,9 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
                       {onViewOrder && (
                         <button className="btn" onClick={() => onViewOrder(o)} title="Ver detalles" style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', padding: '6px', borderRadius: '8px', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Eye size={16} /></button>
                       )}
-                      <button className="btn" onClick={() => onEditOrder ? onEditOrder(o) : setEditingOrder(o)} title="Editar" style={{ backgroundColor: 'rgba(20, 184, 166, 0.1)', color: '#14b8a6', padding: '6px', borderRadius: '8px', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Edit3 size={16} /></button>
+                      {canPerformAction('edit') && (
+                        <button className="btn" onClick={() => onEditOrder ? onEditOrder(o) : setEditingOrder(o)} title="Editar" style={{ backgroundColor: 'rgba(20, 184, 166, 0.1)', color: '#14b8a6', padding: '6px', borderRadius: '8px', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Edit3 size={16} /></button>
+                      )}
                       <button className="btn" title="WhatsApp" style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)', color: '#22c55e', padding: '6px', borderRadius: '8px', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MessageCircle size={16} /></button>
                     </div>
                   </td>
@@ -292,7 +310,7 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
         <div className="modal-overlay">
           <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px' }}>
             <div className="d-flex justify-content-between align-items-center mb-4">
-              <h3 style={{ margin: 0 }}>{editingOrder.id ? 'Editar Orden' : 'Nueva Orden'}</h3>
+              <h3 style={{ margin: 0 }}>{editingOrder.id ? t('editOrder') : t('newOrder')}</h3>
               <button onClick={() => setEditingOrder(null)} style={{ background: 'none', color: 'var(--text-light)' }}><X size={24} /></button>
             </div>
             <form onSubmit={handleSaveOrder}>
@@ -359,8 +377,8 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
               </div>
               
               <div className="modal-actions mt-4">
-                <button type="button" className="btn btn-outline" onClick={() => setEditingOrder(null)}>Cancelar</button>
-                <button type="submit" className="btn btn-primary">Guardar Orden</button>
+                <button type="button" className="btn btn-outline" onClick={() => setEditingOrder(null)}>{t('cancel')}</button>
+                <button type="submit" className="btn btn-primary">{t('saveOrder')}</button>
               </div>
             </form>
           </div>

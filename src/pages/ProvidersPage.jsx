@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Edit3, Mail, Phone, Plus, Trash2, X, Search, Eraser } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
+import { useLanguage } from '../context/LanguageContext';
 
 const initialProviders = [];
 
@@ -21,6 +22,7 @@ const logAudit = (action, detail) => {
 
 const ProvidersPage = () => {
   const { addToast } = useToast();
+  const { t } = useLanguage();
   const [providers, setProviders] = useState(() => readStoredData('jhoraji_providers', initialProviders));
   const [editingProvider, setEditingProvider] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
@@ -94,11 +96,11 @@ const ProvidersPage = () => {
     <div>
       <div className="page-header mb-4">
         <div>
-          <h2>Proveedores</h2>
-          <p className="text-muted" style={{ margin: 0 }}>Administra los proveedores del sistema</p>
+          <h2>{t('providersTitle')}</h2>
+          <p className="text-muted" style={{ margin: 0 }}>{t('providersSubtitle')}</p>
         </div>
         <button className="btn btn-primary" onClick={() => setEditingProvider({ ...emptyProvider })}>
-          <Plus size={18} /> Nuevo Proveedor
+          <Plus size={18} /> {t('newProvider')}
         </button>
       </div>
 
@@ -109,7 +111,7 @@ const ProvidersPage = () => {
               <Search size={16} className="search-icon" />
               <input
                 type="text"
-                placeholder="Buscar proveedor, teléfono o correo..."
+                placeholder={t('searchProvider')}
                 className="form-control"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -124,7 +126,7 @@ const ProvidersPage = () => {
                 <Eraser size={15} />
               </button>
               <button className="search-btn-inner" onClick={handleSearch} type="button">
-                <Search size={13} /> Buscar
+                <Search size={13} /> {t('search')}
               </button>
             </div>
           </div>
@@ -136,10 +138,10 @@ const ProvidersPage = () => {
           <table className="table">
             <thead>
               <tr>
-                <th>Nombre</th>
-                <th>Contacto</th>
-                <th>Notas</th>
-                <th style={{ textAlign: 'right' }}>Acciones</th>
+                <th>{t('providerName')}</th>
+                <th>{t('contact')}</th>
+                <th>{t('notes')}</th>
+                <th style={{ textAlign: 'right' }}>{t('actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -204,7 +206,7 @@ const ProvidersPage = () => {
           <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px' }}>
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h3 style={{ margin: 0 }}>
-                {editingProvider.id ? 'Editar Proveedor' : 'Nuevo Proveedor'}
+                {editingProvider.id ? t('editProvider') : t('newProvider')}
               </h3>
               <button onClick={() => setEditingProvider(null)} style={{ background: 'none', color: 'var(--text-light)' }}>
                 <X size={24} />
@@ -230,9 +232,9 @@ const ProvidersPage = () => {
                 <textarea name="notes" className="form-control" rows="3" placeholder="Detalles de contacto, cuentas bancarias..." defaultValue={editingProvider.notes}></textarea>
               </div>
               <div className="modal-actions">
-                <button type="button" className="btn btn-outline" onClick={() => setEditingProvider(null)}>Cancelar</button>
+                <button type="button" className="btn btn-outline" onClick={() => setEditingProvider(null)}>{t('cancel')}</button>
                 <button type="submit" className="btn btn-primary">
-                  {editingProvider.id ? 'Actualizar Proveedor' : 'Crear Proveedor'}
+                  {editingProvider.id ? t('update') : t('create')}
                 </button>
               </div>
             </form>
@@ -244,11 +246,11 @@ const ProvidersPage = () => {
       {showDeleteConfirm && (
         <div className="modal-overlay" style={{ zIndex: 300 }}>
           <div className="card" style={{ maxWidth: '420px', width: '90%', textAlign: 'center' }}>
-            <h3 style={{ marginBottom: '15px' }}>Eliminar Proveedor</h3>
+            <h3 style={{ marginBottom: '15px' }}>{t('deleteProviderTitle')}</h3>
             <p className="text-muted mb-4">¿Estás seguro que deseas eliminar este proveedor? Esta acción no se puede deshacer.</p>
             <div className="d-flex justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
-              <button className="btn btn-outline" onClick={() => setShowDeleteConfirm(null)}>Cancelar</button>
-              <button className="btn btn-danger" onClick={handleDelete}>Eliminar</button>
+              <button className="btn btn-outline" onClick={() => setShowDeleteConfirm(null)}>{t('cancel')}</button>
+              <button className="btn btn-danger" onClick={handleDelete}>{t('delete')}</button>
             </div>
           </div>
         </div>

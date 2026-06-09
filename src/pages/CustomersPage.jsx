@@ -3,6 +3,7 @@ import { Edit3, Eraser, Eye, Globe, Mail, Phone, Plus, Search, Trash2, User, X }
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
+import { useNotifications } from '../context/NotificationsContext';
 
 const initialCustomers = [];
 
@@ -37,6 +38,7 @@ const statusBadge = {
 const CustomersPage = () => {
   const { addToast } = useToast();
   const { t } = useLanguage();
+  const { addNotification } = useNotifications();
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [appliedSearch, setAppliedSearch] = useState('');
@@ -117,6 +119,10 @@ const CustomersPage = () => {
     persistCustomers(nextCustomers);
     setEditingCustomer(null);
     addToast(t('customerSaved'), 'success');
+    
+    if (!editingCustomer.id) {
+      addNotification(`Nuevo cliente registrado: ${submitted.name}`);
+    }
   };
 
   const handleDelete = () => {

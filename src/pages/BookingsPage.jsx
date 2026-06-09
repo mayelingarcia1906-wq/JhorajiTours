@@ -2,6 +2,9 @@ import { useMemo, useState, useEffect } from 'react';
 import { Calendar, DollarSign, Edit3, Eraser, Eye, MapPin, Plus, Search, Trash2, User, Users, X, ArrowLeft, FileText, Clock, Plane, Briefcase, CheckCircle, AlertCircle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
+import { usePermissions } from '../context/PermissionsContext';
+import { useNotifications } from '../context/NotificationsContext';
+import { useCurrency } from '../context/CurrencyContext';
 import OrdersPage from './OrdersPage';
 
 const emptyBooking = {
@@ -45,6 +48,9 @@ const statusBadge = { paid: 'success', pending: 'warning', canceled: 'danger' };
 const BookingsPage = () => {
   const { addToast } = useToast();
   const { t } = useLanguage();
+  const { canPerformAction } = usePermissions();
+  const { addNotification } = useNotifications();
+  const { formatPrice } = useCurrency();
   
   const [mainTab, setMainTab] = useState('bookings');
   
@@ -134,7 +140,7 @@ const BookingsPage = () => {
       paymentDone: isPaid,
       notes: formData.get('notes') ? formData.get('notes').trim() : '',
       status: isPaid ? 'paid' : 'pending',
-      amount: `$${clientPrice.toFixed(2)}`,
+      amount: formatPrice(clientPrice),
       email: editingBooking.email || '',
       // Traslado specific
       driver: formData.get('driver') || '',
@@ -168,7 +174,7 @@ const BookingsPage = () => {
           service: submitted.type === 'TRASLADO' ? 'Traslado' : submitted.tour,
           adults: submitted.pax,
           children: submitted.children,
-          providerPrice: `US$ ${submitted.providerCost.toFixed(2)}`,
+          providerPrice: formatPrice(submitted.providerCost),
           provider: submitted.provider,
           driver: submitted.driver,
           paymentDone: submitted.paymentDone
@@ -189,7 +195,7 @@ const BookingsPage = () => {
             service: 'Traslado (Regreso)',
             adults: submitted.pax,
             children: submitted.children,
-            providerPrice: `US$ ${submitted.providerCost.toFixed(2)}`,
+            providerPrice: formatPrice(submitted.providerCost),
             provider: submitted.provider,
             driver: submitted.driver,
             paymentDone: submitted.paymentDone
@@ -217,7 +223,7 @@ const BookingsPage = () => {
               service: submitted.type === 'TRASLADO' ? 'Traslado' : submitted.tour,
               adults: submitted.pax,
               children: submitted.children,
-              providerPrice: `US$ ${submitted.providerCost.toFixed(2)}`,
+              providerPrice: formatPrice(submitted.providerCost),
               provider: submitted.provider,
               driver: submitted.driver,
               paymentDone: submitted.paymentDone
@@ -234,6 +240,10 @@ const BookingsPage = () => {
 
     setEditingBooking(null);
     addToast(t('bookingSaved'), 'success');
+    
+    if (isNew) {
+      addNotification(`Nueva reserva creada para ${submitted.customer}`);
+    }
   };
 
   const handleDelete = () => {
@@ -306,9 +316,11 @@ const BookingsPage = () => {
           <h2>{t('bookingsTitle')}</h2>
           <p className="text-muted" style={{ margin: 0 }}>{t('bookingsSubtitle')}</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setEditingBooking({ ...emptyBooking })}>
-          <Plus size={18} /> {t('newBooking')}
-        </button>
+        {canPerformAction('create') && (
+          <button className="btn btn-primary" onClick={() => setEditingBooking({ ...emptyBooking })}>
+            <Plus size={18} /> {t('newBooking')}
+          </button>
+        )}
       </div>
 
       <OrdersPage hideHeader={true} onEditOrder={handleEditOrder} onViewOrder={handleViewOrder} />
@@ -418,11 +430,11 @@ const BookingsPage = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed var(--border-color)', paddingBottom: '8px' }}>
                         <span style={{ color: 'var(--text-light)', fontSize: '0.9rem' }}>Costo Proveedor:</span>
-                        <span style={{ fontWeight: 600, color: 'var(--text-dark)' }}>US$ {Number(viewingBooking.providerCost || 0).toFixed(2)}</span>
+                        <span style={{ fontWeight: 600, color: 'var(--text-dark)' }}>{formatPrice(viewingBooking.providerCost || 0)}</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '8px' }}>
                         <span style={{ color: 'var(--text-light)', fontSize: '0.9rem' }}>Precio Cliente:</span>
-                        <span style={{ fontWeight: 700, color: '#10b981', fontSize: '1.1rem' }}>US$ {Number(viewingBooking.clientPrice || 0).toFixed(2)}</span>
+                        <span style={{ fontWeight: 700, color: '#10b981', fontSize: '1.1rem' }}>{formatPrice(viewingBooking.clientPrice || 0)}</span>
                       </div>
                     </div>
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', paddingLeft: '10px' }}>
@@ -455,7 +467,7 @@ const BookingsPage = () => {
             
             <div style={{ padding: '15px 25px', borderTop: '1px solid var(--border-color)', backgroundColor: '#f8fafc', display: 'flex', justifyContent: 'flex-end' }}>
               <button className="btn" style={{ backgroundColor: 'white', border: '1px solid #cbd5e1', color: '#475569', padding: '8px 24px', borderRadius: 'var(--radius-full)', fontWeight: 600 }} onClick={() => setViewingBooking(null)}>
-                Cerrar
+                {t('close') || 'Cerrar'}
               </button>
             </div>
           </div>
@@ -481,8 +493,8 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
           <ArrowLeft size={20} />
         </button>
         <div>
-          <h2 style={{ margin: 0 }}>{editingBooking.id ? 'Editar reserva' : 'Nueva reserva'}</h2>
-          <p className="text-muted" style={{ margin: 0 }}>Panel de administración</p>
+          <h2 style={{ margin: 0 }}>{editingBooking.id ? (t('editBooking') || 'Editar reserva') : (t('newBooking') || 'Nueva reserva')}</h2>
+          <p className="text-muted" style={{ margin: 0 }}>{t('adminPanel') || 'Panel de administración'}</p>
         </div>
       </div>
 
@@ -674,7 +686,7 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
 
           <div style={{ marginTop: '30px' }}>
             <button type="submit" className="btn" style={{ backgroundColor: '#14b8a6', color: 'white', padding: '10px 24px', borderRadius: 'var(--radius-full)', fontWeight: 600, border: 'none' }}>
-              Guardar reserva
+              {t('save') || 'Guardar reserva'}
             </button>
           </div>
         </form>
