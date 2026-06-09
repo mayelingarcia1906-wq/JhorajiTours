@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { ArrowUpRight, DollarSign, Eye, ShoppingCart, TrendingUp, Users, Download, Loader2, X, User, MapPin, Calendar } from 'lucide-react';
+import { ArrowUpRight, DollarSign, Eye, ShoppingCart, TrendingUp, Users, X, User, MapPin, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
@@ -11,7 +11,6 @@ const DashboardHome = () => {
   const { formatPrice } = useCurrency();
   const navigate = useNavigate();
 
-  const [isDownloading, setIsDownloading] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
 
   const statusBadgeMap = {
@@ -87,25 +86,6 @@ const DashboardHome = () => {
       }));
   }, [allBookings]);
 
-  const handleDownloadReport = () => {
-    setIsDownloading(true);
-    // Simular el proceso de generar un reporte real
-    setTimeout(() => {
-      setIsDownloading(false);
-      addToast('Reporte generado y descargado exitosamente', 'success');
-      
-      // Crear un archivo de texto de muestra para la descarga
-      const textContent = `REPORTE GENERAL - JHORAJI TOURS\nFecha: ${new Date().toLocaleDateString()}\n\n-- ESTADÍSTICAS --\nIngresos Totales: ${formatPrice(totalRevenue)}\nReservas Hoy: ${todayBookingsCount}\nNuevos Clientes: ${totalCustomers}\nTours Activos: ${activeToursCount}\n\nEste es un reporte autogenerado por el sistema.`;
-      const element = document.createElement("a");
-      const file = new Blob([textContent], {type: 'text/plain;charset=utf-8'});
-      element.href = URL.createObjectURL(file);
-      element.download = `Reporte_General_${new Date().toISOString().split('T')[0]}.txt`;
-      document.body.appendChild(element); // Requerido para Firefox
-      element.click();
-      document.body.removeChild(element);
-    }, 1500);
-  };
-
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4" style={{ flexWrap: 'wrap', gap: '15px' }}>
@@ -115,14 +95,6 @@ const DashboardHome = () => {
             {new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
-        <button 
-          className="btn btn-primary d-flex align-items-center gap-2" 
-          onClick={handleDownloadReport}
-          disabled={isDownloading}
-        >
-          {isDownloading ? <Loader2 size={18} className="spin" /> : <Download size={18} />}
-          {isDownloading ? 'Generando Reporte...' : t('downloadReport')}
-        </button>
       </div>
 
       <div className="stats-grid mb-4">
