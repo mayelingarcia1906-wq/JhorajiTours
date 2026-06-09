@@ -72,7 +72,10 @@ const BookingsPage = () => {
   const [bookings, setBookings] = useState(() => readStoredData('jhoraji_bookings', []));
   const providers = readStoredData('jhoraji_providers', []);
   const toursList = readStoredData('jhoraji_act', []);
-  const agencies = readStoredData('jhoraji_agencies', []);
+  const agencies = readStoredData('jhoraji_agencies', Array.from({ length: 15 }, (_, i) => ({
+    id: 1000 + i,
+    name: `Agencia ${i + 1} ${['VIP', 'Tours', 'Travel', 'Punta Cana'][i % 4]}`
+  })));
   const drivers = readStoredData('jhoraji_drivers', []);
 
   const statusTabs = ['all', 'paid', 'pending', 'canceled'];
