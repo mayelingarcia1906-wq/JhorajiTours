@@ -214,7 +214,7 @@ const translations = {
     auditTitle: 'Auditoría del Sistema',
     auditSubtitle: 'Registro de todas las acciones realizadas en el sistema',
     update: 'Actualizar',
-    clearLog: 'Limpiar Log',
+    clearLog: 'Limpiar',
     totalActions: 'Total Acciones',
     creations: 'Creaciones',
     editions: 'Ediciones',
