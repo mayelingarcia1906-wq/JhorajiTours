@@ -6,7 +6,6 @@ import { usePermissions } from '../context/PermissionsContext';
 import { useNotifications } from '../context/NotificationsContext';
 import { useCurrency } from '../context/CurrencyContext';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
-import { useCurrency } from '../context/CurrencyContext';
 import OrdersPage from './OrdersPage';
 
 const emptyBooking = {
