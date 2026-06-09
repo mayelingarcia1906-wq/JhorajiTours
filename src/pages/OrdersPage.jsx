@@ -169,7 +169,7 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
             <h2>{t('ordersTitle')}</h2>
             <p className="text-muted" style={{ margin: 0 }}>{t('adminPanel')}</p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
+          <div className="filter-row" style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
             {canPerformAction('create') && (
               <button className="btn btn-primary" onClick={() => {
                 const d = new Date();

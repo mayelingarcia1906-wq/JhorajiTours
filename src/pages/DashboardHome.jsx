@@ -222,7 +222,7 @@ const DashboardHome = () => {
               <button onClick={() => setSelectedBooking(null)} style={{ background: 'none', color: '#94a3b8', border: 'none', cursor: 'pointer' }}><X size={20} /></button>
             </div>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
               <div>
                 <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '4px' }}>Cliente</div>
                 <div className="d-flex align-items-center gap-2" style={{ fontWeight: 500 }}><User size={16} /> {selectedBooking.customer}</div>

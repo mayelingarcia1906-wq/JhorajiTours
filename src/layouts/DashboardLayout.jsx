@@ -200,55 +200,59 @@ const DashboardLayout = () => {
                 {!isMuted && unreadCount > 0 && <span style={{ position: 'absolute', top: '-4px', right: '-5px', minWidth: '16px', height: '16px', padding: '0 4px', backgroundColor: 'var(--danger)', borderRadius: '999px', color: '#fff', fontSize: '0.65rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{unreadCount}</span>}
               </button>
               {notifOpen && (
-                <div style={{ position: 'absolute', top: '100%', right: '0', marginTop: '10px', width: '340px', backgroundColor: 'var(--card-bg)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border-color)', zIndex: 60, overflow: 'hidden' }}>
-                  <div className="d-flex justify-content-between align-items-center" style={{ padding: '15px', borderBottom: '1px solid var(--border-color)', fontWeight: '600' }}>
-                    <span>{t('notifications')}</span>
-                    <div className="d-flex gap-2">
-                      <button 
-                        type="button" 
-                        title={isMuted ? "Activar notificaciones" : "Silenciar notificaciones"} 
-                        onClick={() => setIsMuted(!isMuted)} 
-                        style={{ background: isMuted ? 'rgba(239,68,68,0.1)' : 'var(--bg-color)', color: isMuted ? 'var(--danger)' : 'var(--text-light)', borderRadius: 'var(--radius-md)', padding: '6px', display: 'flex' }}
-                      >
-                        {isMuted ? <BellOff size={16} /> : <Bell size={16} />}
-                      </button>
-                      <button type="button" title="Marcar todas" onClick={markAllNotificationsRead} style={{ background: 'var(--bg-color)', color: 'var(--primary-color)', borderRadius: 'var(--radius-md)', padding: '6px', display: 'flex' }}>
-                        <CheckCheck size={16} />
-                      </button>
-                    </div>
-                  </div>
-                  <div style={{ maxHeight: '320px', overflowY: 'auto', padding: '10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {notifications.length === 0 && (
-                      <div style={{ padding: '30px 16px', textAlign: 'center' }}>
-                        <Bell size={32} style={{ color: 'var(--text-light)', opacity: 0.3, marginBottom: '10px' }} />
-                        <div className="text-muted" style={{ fontSize: '0.85rem' }}>No tienes notificaciones</div>
+                <>
+                  {/* Mobile overlay for notification panel */}
+                  <div className="hide-desktop" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 55 }} onClick={() => setNotifOpen(false)} />
+                  <div style={{ position: window.innerWidth <= 768 ? 'fixed' : 'absolute', top: window.innerWidth <= 768 ? 'auto' : '100%', bottom: window.innerWidth <= 768 ? '0' : 'auto', left: window.innerWidth <= 768 ? '0' : 'auto', right: window.innerWidth <= 768 ? '0' : '0', marginTop: window.innerWidth <= 768 ? '0' : '10px', width: window.innerWidth <= 768 ? '100%' : '340px', maxHeight: window.innerWidth <= 768 ? '80vh' : 'none', backgroundColor: 'var(--card-bg)', borderRadius: window.innerWidth <= 768 ? 'var(--radius-lg) var(--radius-lg) 0 0' : 'var(--radius-md)', boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border-color)', zIndex: 60, overflow: 'hidden' }}>
+                    <div className="d-flex justify-content-between align-items-center" style={{ padding: '15px', borderBottom: '1px solid var(--border-color)', fontWeight: '600' }}>
+                      <span>{t('notifications')}</span>
+                      <div className="d-flex gap-2">
+                        <button 
+                          type="button" 
+                          title={isMuted ? "Activar notificaciones" : "Silenciar notificaciones"} 
+                          onClick={() => setIsMuted(!isMuted)} 
+                          style={{ background: isMuted ? 'rgba(239,68,68,0.1)' : 'var(--bg-color)', color: isMuted ? 'var(--danger)' : 'var(--text-light)', borderRadius: 'var(--radius-md)', padding: '6px', display: 'flex' }}
+                        >
+                          {isMuted ? <BellOff size={16} /> : <Bell size={16} />}
+                        </button>
+                        <button type="button" title="Marcar todas" onClick={markAllNotificationsRead} style={{ background: 'var(--bg-color)', color: 'var(--primary-color)', borderRadius: 'var(--radius-md)', padding: '6px', display: 'flex' }}>
+                          <CheckCheck size={16} />
+                        </button>
                       </div>
-                    )}
-                    {notifications.map(n => (
-                      <div key={n.id} style={{ padding: '12px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', backgroundColor: n.read ? 'var(--card-bg)' : 'var(--bg-color)', fontSize: '0.9rem' }}>
-                        <div className="d-flex justify-content-between gap-2">
-                          <div>
-                            <div style={{ color: 'var(--text-dark)', marginBottom: '5px', fontWeight: n.read ? 500 : 700 }}>{n.text}</div>
-                            <div style={{ color: 'var(--text-light)', fontSize: '0.75rem' }}>{n.time}</div>
-                          </div>
-                          <div className="d-flex gap-1">
-                            {!n.read && (
-                              <button type="button" title="Leída" onClick={() => markNotificationRead(n.id)} style={{ background: 'transparent', color: 'var(--primary-color)', padding: '2px' }}>
-                                <CheckCheck size={16} />
+                    </div>
+                    <div style={{ maxHeight: window.innerWidth <= 768 ? 'calc(80vh - 120px)' : '320px', overflowY: 'auto', padding: '10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {notifications.length === 0 && (
+                        <div style={{ padding: '30px 16px', textAlign: 'center' }}>
+                          <Bell size={32} style={{ color: 'var(--text-light)', opacity: 0.3, marginBottom: '10px' }} />
+                          <div className="text-muted" style={{ fontSize: '0.85rem' }}>No tienes notificaciones</div>
+                        </div>
+                      )}
+                      {notifications.map(n => (
+                        <div key={n.id} style={{ padding: '12px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', backgroundColor: n.read ? 'var(--card-bg)' : 'var(--bg-color)', fontSize: '0.9rem' }}>
+                          <div className="d-flex justify-content-between gap-2">
+                            <div>
+                              <div style={{ color: 'var(--text-dark)', marginBottom: '5px', fontWeight: n.read ? 500 : 700 }}>{n.text}</div>
+                              <div style={{ color: 'var(--text-light)', fontSize: '0.75rem' }}>{n.time}</div>
+                            </div>
+                            <div className="d-flex gap-1">
+                              {!n.read && (
+                                <button type="button" title="Leída" onClick={() => markNotificationRead(n.id)} style={{ background: 'transparent', color: 'var(--primary-color)', padding: '2px' }}>
+                                  <CheckCheck size={16} />
+                                </button>
+                              )}
+                              <button type="button" title="Eliminar" onClick={() => deleteNotification(n.id)} style={{ background: 'transparent', color: 'var(--danger)', padding: '2px' }}>
+                                <Trash2 size={16} />
                               </button>
-                            )}
-                            <button type="button" title="Eliminar" onClick={() => deleteNotification(n.id)} style={{ background: 'transparent', color: 'var(--danger)', padding: '2px' }}>
-                              <Trash2 size={16} />
-                            </button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                    <div style={{ padding: '10px', textAlign: 'center' }}>
+                      <button type="button" className="btn btn-primary" onClick={() => { setNotifOpen(false); navigate('/settings?section=notifications'); }} style={{ width: '100%', padding: '10px', fontSize: '0.9rem', fontWeight: 600, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', borderRadius: 'var(--radius-md)' }}><Settings size={18} /> Configurar alertas</button>
+                    </div>
                   </div>
-                  <div style={{ padding: '10px', textAlign: 'center' }}>
-                    <button type="button" className="btn btn-primary" onClick={() => { setNotifOpen(false); navigate('/settings?section=notifications'); }} style={{ width: '100%', padding: '10px', fontSize: '0.9rem', fontWeight: 600, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', borderRadius: 'var(--radius-md)' }}><Settings size={18} /> Configurar alertas</button>
-                  </div>
-                </div>
+                </>
               )}
             </div>
 

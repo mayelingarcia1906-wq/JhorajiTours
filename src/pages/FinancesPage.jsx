@@ -289,7 +289,7 @@ const FinancesPage = () => {
       </div>
 
       {/* METRICS ROW */}
-      <div className="metrics-row mb-4" style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+      <div className="metrics-row filter-row mb-4" style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
         <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
           <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>{t('grossIncome')}</div>
           <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-dark)', margin: '5px 0' }}>{formatPrice(totalBruto)}</div>

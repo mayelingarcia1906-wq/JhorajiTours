@@ -176,7 +176,7 @@ const DriversPage = () => {
         <div className="card">
           <div className="page-toolbar mb-4" style={{ alignItems: 'flex-start' }}>
             <h3 style={{ fontSize: '1.1rem', margin: 0, marginTop: '8px' }}>{t('assignedBookings') || 'Reservas Asignadas'}</h3>
-            <div className="d-flex gap-2" style={{ flexWrap: 'wrap', flex: 1, justifyContent: 'flex-end' }}>
+            <div className="d-flex gap-2 filter-row" style={{ flexWrap: 'wrap', flex: 1, justifyContent: 'flex-end' }}>
               <select className="form-control" style={{ width: 'auto' }} value={assignFilterAct} onChange={e => setAssignFilterAct(e.target.value)}>
                 <option value="all">Todas las Actividades</option>
                 {uniqueTours.map(t => <option key={t} value={t}>{t}</option>)}
