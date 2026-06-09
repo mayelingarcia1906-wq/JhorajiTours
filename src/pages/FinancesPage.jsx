@@ -396,7 +396,7 @@ const FinancesPage = () => {
                   <div style={{ width: '1px', height: '20px', backgroundColor: '#cbd5e1' }}></div>
                   <button className="btn btn-link" onClick={() => toggleProvStatus('Pagado')} style={{ color: '#10b981', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><CheckCircle size={16}/> {t('pay')}</button>
                   <button className="btn btn-link" onClick={() => toggleProvStatus('Pendiente')} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><AlertCircle size={16}/> {t('pending')}</button>
-                  <button className="btn btn-link" style={{ color: '#a855f7', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Printer size={16}/> {t('print')}</button>
+                  <button className="btn btn-link no-print" onClick={() => window.print()} style={{ color: '#a855f7', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Printer size={16}/> {t('print')}</button>
                 </div>
               )}
               <div className="table-wrapper" style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
@@ -466,7 +466,7 @@ const FinancesPage = () => {
                   <div style={{ width: '1px', height: '20px', backgroundColor: '#cbd5e1' }}></div>
                   <button className="btn btn-link" onClick={() => toggleDriverStatus('Pagado')} style={{ color: '#10b981', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><CheckCircle size={16}/> {t('pay')}</button>
                   <button className="btn btn-link" onClick={() => toggleDriverStatus('Pendiente')} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><AlertCircle size={16}/> {t('pending')}</button>
-                  <button className="btn btn-link" style={{ color: '#a855f7', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Printer size={16}/> {t('print')}</button>
+                  <button className="btn btn-link no-print" onClick={() => window.print()} style={{ color: '#a855f7', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Printer size={16}/> {t('print')}</button>
                 </div>
               )}
               <div className="table-wrapper">
@@ -519,7 +519,7 @@ const FinancesPage = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: '#f8fafc', padding: '10px 15px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '15px' }}>
                   <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem' }}>{selectedExp.length} seleccionada(s)</span>
                   <div style={{ width: '1px', height: '20px', backgroundColor: '#cbd5e1' }}></div>
-                  <button className="btn btn-link no-print" style={{ color: '#a855f7', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Printer size={16}/> Imprimir</button>
+                  <button className="btn btn-link no-print" onClick={() => window.print()} style={{ color: '#a855f7', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Printer size={16}/> Imprimir</button>
                   <button className="btn btn-link no-print" onClick={confirmDeleteExpense} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Trash2 size={16}/> Eliminar</button>
                 </div>
               )}
@@ -709,7 +709,7 @@ const FinancesPage = () => {
         isOpen={showDeleteConfirm}
         onCancel={() => setShowDeleteConfirm(false)}
         onConfirm={handleDeleteExpense}
-        title={t('deleteExpenseTitle') || 'Eliminar Gastos'}
+        title="Eliminar Gastos"
         message={`¿Estás seguro de que deseas eliminar ${selectedExp.length} gasto(s)? Esta acción no se puede deshacer.`}
       />
     </div>
