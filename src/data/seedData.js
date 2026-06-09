@@ -1,6 +1,6 @@
 export const seedMockData = () => {
-  // Solo seeder si no existe la version de seed v4
-  if (localStorage.getItem('jhoraji_seed_v4')) return;
+  // Solo seeder si no existe la version de seed v5
+  if (localStorage.getItem('jhoraji_seed_v5')) return;
 
   const users = [
     { name: 'Administrador General', role: 'Administrador' },
@@ -79,9 +79,9 @@ export const seedMockData = () => {
   ];
 
   const tours = [
-    { id: 1, name: 'Isla Saona Vip', location: 'Bayahibe', duration: 'Día Completo', price: 75, category: 'Aventura', createdBy: 'Administrador General' },
-    { id: 2, name: 'Safari Buggies', location: 'Macao', duration: 'Medio Día', price: 45, category: 'Aventura', createdBy: 'Margarita Torres' },
-    { id: 3, name: 'City Tour Santo Domingo', location: 'Santo Domingo', duration: 'Día Completo', price: 85, category: 'Cultura', createdBy: 'Administrador General' }
+    { id: 1, title: 'Isla Saona Vip', location: 'Bayahibe', duration: 'Día Completo', price: 75, category: 'Aventura', createdBy: 'Administrador General', rating: 4.8, active: true, image: 'https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?auto=format&fit=crop&q=80&w=800' },
+    { id: 2, title: 'Safari Buggies', location: 'Macao', duration: 'Medio Día', price: 45, category: 'Aventura', createdBy: 'Margarita Torres', rating: 4.5, active: true, image: 'https://images.unsplash.com/photo-1544253331-5079a09919f9?auto=format&fit=crop&q=80&w=800' },
+    { id: 3, title: 'City Tour Santo Domingo', location: 'Santo Domingo', duration: 'Día Completo', price: 85, category: 'Cultura', createdBy: 'Administrador General', rating: 4.9, active: true, image: 'https://images.unsplash.com/photo-1588726591039-4ab3493e9619?auto=format&fit=crop&q=80&w=800' }
   ];
 
   const customers = [
@@ -146,5 +146,5 @@ export const seedMockData = () => {
   localStorage.setItem('jhoraji_orders', JSON.stringify(orders));
   localStorage.setItem('jhoraji_audit', JSON.stringify(audit));
 
-  localStorage.setItem('jhoraji_seed_v4', 'true');
+  localStorage.setItem('jhoraji_seed_v5', 'true');
 };
