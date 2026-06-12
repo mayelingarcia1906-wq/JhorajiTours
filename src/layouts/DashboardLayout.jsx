@@ -28,7 +28,8 @@ const DashboardLayout = () => {
     setIsMuted, 
     markNotificationRead, 
     markAllNotificationsRead, 
-    deleteNotification 
+    deleteNotification,
+    clearAllNotifications
   } = useNotifications();
   const { theme, toggleTheme } = useTheme();
   const { t } = useLanguage();
@@ -216,6 +217,9 @@ const DashboardLayout = () => {
                         </button>
                         <button type="button" title="Marcar todas" onClick={markAllNotificationsRead} style={{ background: 'var(--bg-color)', color: 'var(--primary-color)', borderRadius: 'var(--radius-md)', padding: '6px', display: 'flex' }}>
                           <CheckCheck size={16} />
+                        </button>
+                        <button type="button" title="Limpiar todas" onClick={clearAllNotifications} style={{ background: 'var(--bg-color)', color: 'var(--danger)', borderRadius: 'var(--radius-md)', padding: '6px', display: 'flex' }}>
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </div>

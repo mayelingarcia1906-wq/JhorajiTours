@@ -126,7 +126,7 @@ const SchedulePage = () => {
         <div style={{ overflowX: 'auto' }}>
           <div style={{ minWidth: '700px' }}>
             {/* Header */}
-            <div style={{ display: 'grid', gridTemplateColumns: '70px repeat(7, 1fr)', borderBottom: '2px solid var(--border-color)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '70px repeat(7, minmax(0, 1fr))', borderBottom: '2px solid var(--border-color)' }}>
               <div style={{ padding: '12px', backgroundColor: 'var(--secondary-color)', borderRight: '1px solid var(--border-color)' }}></div>
               {weekDates.map((date, i) => {
                 const key = formatDateKey(date);
@@ -161,7 +161,7 @@ const SchedulePage = () => {
             </div>
 
             {/* Body */}
-            <div style={{ display: 'grid', gridTemplateColumns: '70px repeat(7, 1fr)', minHeight: '300px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '70px repeat(7, minmax(0, 1fr))', minHeight: '300px' }}>
               <div style={{
                 backgroundColor: 'var(--secondary-color)',
                 borderRight: '1px solid var(--border-color)',
