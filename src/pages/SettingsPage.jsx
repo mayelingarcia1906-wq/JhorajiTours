@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Bell, Building, Mail, Palette, Phone, Save, Shield, UserCircle, Users, Globe, Unlock, CheckSquare, Square } from 'lucide-react';
+import { Bell, Building, Mail, Palette, Phone, Save, Shield, UserCircle, Users, Globe, Unlock, CheckSquare, Square, Database, Download, Upload } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
@@ -107,6 +107,7 @@ const SettingsPage = () => {
     ];
     if (isAdmin) {
       base.push({ id: 'permissions', name: t('permissions'), icon: <Unlock size={20} /> });
+      base.push({ id: 'backup', name: 'Respaldo', icon: <Database size={20} /> });
     }
     return base;
   }, [t, isAdmin]);
@@ -193,6 +194,62 @@ const SettingsPage = () => {
   const handlePermissionChange = (role, category, item, checked) => {
     updatePermissions(role, category, item, checked);
     addToast(t('preferenceUpdated'), 'success');
+  };
+
+  const handleExportData = () => {
+    const dataToExport = {
+      tours: JSON.parse(localStorage.getItem('jhoraji_tours') || '[]'),
+      customers: JSON.parse(localStorage.getItem('jhoraji_customers') || '[]'),
+      drivers: JSON.parse(localStorage.getItem('jhoraji_drivers') || '[]'),
+      agencies: JSON.parse(localStorage.getItem('jhoraji_agencies') || '[]'),
+      providers: JSON.parse(localStorage.getItem('jhoraji_providers') || '[]'),
+      activities: JSON.parse(localStorage.getItem('jhoraji_act') || '[]'),
+      bookings: JSON.parse(localStorage.getItem('jhoraji_bookings') || '[]'),
+      orders: JSON.parse(localStorage.getItem('jhoraji_orders') || '[]'),
+      expenses: JSON.parse(localStorage.getItem('jhoraji_expenses') || '[]'),
+      audit: JSON.parse(localStorage.getItem('jhoraji_audit') || '[]'),
+    };
+    
+    const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `jhoraji_backup_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    addToast('Copia de seguridad descargada exitosamente', 'success');
+  };
+
+  const handleImportData = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedData = JSON.parse(e.target.result);
+        if (!importedData.bookings) throw new Error('Formato inválido');
+        
+        localStorage.setItem('jhoraji_tours', JSON.stringify(importedData.tours || []));
+        localStorage.setItem('jhoraji_customers', JSON.stringify(importedData.customers || []));
+        localStorage.setItem('jhoraji_drivers', JSON.stringify(importedData.drivers || []));
+        localStorage.setItem('jhoraji_agencies', JSON.stringify(importedData.agencies || []));
+        localStorage.setItem('jhoraji_providers', JSON.stringify(importedData.providers || []));
+        localStorage.setItem('jhoraji_act', JSON.stringify(importedData.activities || []));
+        localStorage.setItem('jhoraji_bookings', JSON.stringify(importedData.bookings || []));
+        localStorage.setItem('jhoraji_orders', JSON.stringify(importedData.orders || []));
+        localStorage.setItem('jhoraji_expenses', JSON.stringify(importedData.expenses || []));
+        localStorage.setItem('jhoraji_audit', JSON.stringify(importedData.audit || []));
+        
+        addToast('Datos restaurados correctamente. Recargando...', 'success');
+        setTimeout(() => window.location.reload(), 1500);
+      } catch (error) {
+        addToast('Error al importar. El archivo no es un respaldo válido.', 'error');
+      }
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -469,6 +526,34 @@ const SettingsPage = () => {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {activeSection === 'backup' && isAdmin && (
+              <div>
+                <h3 className="mb-4">Respaldo y Recuperación (JSON)</h3>
+                <p className="text-muted mb-4">Protege tu información exportando tus datos periódicamente. Si alguna vez pierdes información, puedes restaurarla subiendo el archivo JSON de respaldo.</p>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                  <div className="card" style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
+                    <Download size={48} color="var(--primary-color)" style={{ marginBottom: '15px' }} />
+                    <h4 style={{ marginBottom: '10px' }}>Exportar Datos</h4>
+                    <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '20px' }}>Descarga un archivo JSON con todas tus reservas, clientes, choferes y configuraciones.</p>
+                    <button onClick={handleExportData} className="btn btn-primary" style={{ width: '100%' }}>
+                      Descargar Copia (JSON)
+                    </button>
+                  </div>
+
+                  <div className="card" style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
+                    <Upload size={48} color="var(--warning)" style={{ marginBottom: '15px' }} />
+                    <h4 style={{ marginBottom: '10px' }}>Importar / Restaurar</h4>
+                    <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '20px' }}>Sube tu archivo JSON previamente descargado para restaurar el sistema completo.</p>
+                    <label className="btn btn-outline" style={{ width: '100%', cursor: 'pointer', display: 'block' }}>
+                      Subir Archivo JSON
+                      <input type="file" accept=".json" style={{ display: 'none' }} onChange={handleImportData} />
+                    </label>
+                  </div>
                 </div>
               </div>
             )}
