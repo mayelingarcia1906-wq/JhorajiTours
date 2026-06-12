@@ -156,6 +156,21 @@ const UsersPage = () => {
         </button>
       </div>
 
+      <div className="d-flex gap-3 mb-4 flex-wrap">
+        <div className="card flex-fill" style={{ minWidth: '150px' }}>
+          <div className="text-muted" style={{ fontSize: '0.85rem', fontWeight: 600 }}>Total de Usuarios</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--primary-color)' }}>{users.length}</div>
+        </div>
+        <div className="card flex-fill" style={{ minWidth: '150px' }}>
+          <div className="text-muted" style={{ fontSize: '0.85rem', fontWeight: 600 }}>Administradores</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--danger)' }}>{users.filter(u => u.role === 'Admin').length}</div>
+        </div>
+        <div className="card flex-fill" style={{ minWidth: '150px' }}>
+          <div className="text-muted" style={{ fontSize: '0.85rem', fontWeight: 600 }}>Operaciones</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--success)' }}>{users.filter(u => u.role === 'Operaciones').length}</div>
+        </div>
+      </div>
+
       <div className="dashboard-grid-2" style={{ gridTemplateColumns: '1fr', gap: '20px' }}>
         <div className="card">
           <div className="page-toolbar mb-4">
