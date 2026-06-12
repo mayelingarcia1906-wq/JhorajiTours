@@ -488,6 +488,43 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
   const activeProviderId = activeProvider ? String(activeProvider.id) : null;
   const availableTours = activeProviderId ? toursList.filter(t => String(t.providerId) === activeProviderId) : [];
 
+  const [selectedTour, setSelectedTour] = useState(editingBooking.tour || '');
+  const [selectedPlatform, setSelectedPlatform] = useState(editingBooking.platform || 'Directo / sin plataforma');
+  const [providerCost, setProviderCost] = useState(editingBooking.providerCost || 0);
+  const [platformPercent, setPlatformPercent] = useState(editingBooking.platformPercent || 0);
+
+  const updatePlatformPercent = (plat, tourObj) => {
+    let key = 'direct';
+    if (plat === 'Viator') key = 'viator';
+    else if (plat === 'Civitatis') key = 'civitatis';
+    else if (plat === 'GetYourGuide') key = 'getYourGuide';
+    
+    if (tourObj.commissions && tourObj.commissions[key] !== undefined) {
+      setPlatformPercent(tourObj.commissions[key]);
+    } else {
+      setPlatformPercent(0);
+    }
+  };
+
+  const handleTourChange = (e) => {
+    const newTour = e.target.value;
+    setSelectedTour(newTour);
+    const tourObj = availableTours.find(t => t.name === newTour);
+    if (tourObj) {
+      setProviderCost(tourObj.costBase || 0);
+      updatePlatformPercent(selectedPlatform, tourObj);
+    }
+  };
+
+  const handlePlatformChange = (e) => {
+    const newPlat = e.target.value;
+    setSelectedPlatform(newPlat);
+    const tourObj = availableTours.find(t => t.name === selectedTour);
+    if (tourObj) {
+      updatePlatformPercent(newPlat, tourObj);
+    }
+  };
+
   return (
     <div style={{ backgroundColor: 'var(--bg-color)', minHeight: '100%' }}>
       <div className="page-header mb-4" style={{ display: 'flex', alignItems: 'center', gap: '15px', justifyContent: 'flex-start' }}>
@@ -542,7 +579,7 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
                 </div>
                 <div className="form-group mb-0">
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Actividad / Tour</label>
-                  <select name="tour" className="form-control" required defaultValue={editingBooking.tour}>
+                  <select name="tour" className="form-control" required value={selectedTour} onChange={handleTourChange}>
                     <option value="">Seleccionar</option>
                     {availableTours.map(t => <option key={t.id} value={t.name}>{t.name}</option>)}
                   </select>
@@ -638,7 +675,7 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
             </div>
             <div className="form-group mb-0">
               <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Costo del Traslado / Proveedor</label>
-              <input name="providerCost" type="number" step="0.01" min="0" className="form-control" required defaultValue={editingBooking.providerCost || 0} />
+              <input name="providerCost" type="number" step="0.01" min="0" className="form-control" required value={providerCost} onChange={e => setProviderCost(e.target.value)} />
             </div>
 
             <div className="form-group mb-0">
@@ -650,7 +687,7 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
               <>
                 <div className="form-group mb-0">
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>Plataforma</label>
-                  <select name="platform" className="form-control" defaultValue={editingBooking.platform || 'Directo / sin plataforma'}>
+                  <select name="platform" className="form-control" value={selectedPlatform} onChange={handlePlatformChange}>
                     <option>Directo / sin plataforma</option>
                     <option>Civitatis</option>
                     <option>GetYourGuide</option>
@@ -660,7 +697,7 @@ const BookingForm = ({ editingBooking, handleSaveBooking, setEditingBooking, pro
                 </div>
                 <div className="form-group mb-0">
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '5px' }}>% Plataforma</label>
-                  <input name="platformPercent" type="number" step="0.01" min="0" className="form-control" required defaultValue={editingBooking.platformPercent || 0} />
+                  <input name="platformPercent" type="number" step="0.01" min="0" className="form-control" required value={platformPercent} onChange={e => setPlatformPercent(e.target.value)} />
                 </div>
               </>
             )}

@@ -64,6 +64,8 @@ const FinancesPage = () => {
     .map(b => {
       const costBase = Number(b.providerCost) || 0;
       const priceClient = parseFloat((b.amount || '').replace(/[^0-9.-]+/g, "")) || 0;
+      const extras = Number(b.extras) || 0;
+      const ota = (priceClient * (Number(b.platformPercent) || 0)) / 100;
       return {
         id: `prov_${b.id}`,
         bookingId: b.id,
@@ -71,11 +73,11 @@ const FinancesPage = () => {
         client: b.customer,
         provider: b.provider,
         costBase: costBase,
-        extras: 0,
-        costTotal: costBase,
+        extras: extras,
+        costTotal: costBase + extras,
         priceClient: priceClient,
-        ota: 0,
-        profit: priceClient - costBase,
+        ota: ota,
+        profit: priceClient - costBase - extras - ota,
         status: liqStatus[`prov_${b.id}`] || 'Pendiente'
       };
     });
@@ -92,21 +94,27 @@ const FinancesPage = () => {
         service: `Traslado ${b.pickupLocation || ''} - ${b.dropoffLocation || ''}`,
         adults: b.pax || 0,
         children: b.children || 0,
-        amount: 0,
+        amount: Number(b.driverPayment) || 0,
         status: liqStatus[`drv_${b.id}`] || 'Pendiente'
       };
     });
 
-  const [fromDate, setFromDate] = useState('2026-06-05');
-  const [toDate, setToDate] = useState('2026-06-05');
+  const now = new Date();
+  const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const lastOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const defaultFrom = firstOfMonth.toISOString().split('T')[0];
+  const defaultTo = lastOfMonth.toISOString().split('T')[0];
+
+  const [fromDate, setFromDate] = useState(defaultFrom);
+  const [toDate, setToDate] = useState(defaultTo);
   const [driverFilter, setDriverFilter] = useState('all');
   const [providerFilter, setProviderFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [clientFilter, setClientFilter] = useState('');
 
   const [appliedFilters, setAppliedFilters] = useState({
-    fromDate: '2026-06-05',
-    toDate: '2026-06-05',
+    fromDate: defaultFrom,
+    toDate: defaultTo,
     driver: 'all',
     provider: 'all',
     category: 'all',
@@ -131,15 +139,15 @@ const FinancesPage = () => {
   };
 
   const handleClear = () => {
-    setFromDate('2026-06-05');
-    setToDate('2026-06-05');
+    setFromDate(defaultFrom);
+    setToDate(defaultTo);
     setDriverFilter('all');
     setProviderFilter('all');
     setCategoryFilter('all');
     setClientFilter('');
     setAppliedFilters({
-      fromDate: '2026-06-05',
-      toDate: '2026-06-05',
+      fromDate: defaultFrom,
+      toDate: defaultTo,
       driver: 'all',
       provider: 'all',
       category: 'all',

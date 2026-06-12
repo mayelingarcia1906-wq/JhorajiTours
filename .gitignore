@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Ignore Reporte Semanal
+Reporte_Semanal*.html
+Reporte_Semanal*.txt

@@ -37,6 +37,7 @@ const DriversPage = () => {
   // Forms
   const [editingDriver, setEditingDriver] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
+  const [assigningBooking, setAssigningBooking] = useState(null);
   
   // Assignment Filters
   const today = new Date().toISOString().split('T')[0];
@@ -46,8 +47,8 @@ const DriversPage = () => {
 
   // Search Order Filters
   const [orderFilterVehicle, setOrderFilterVehicle] = useState('');
-  const [orderFilterDateStart, setOrderFilterDateStart] = useState(today);
-  const [orderFilterDateEnd, setOrderFilterDateEnd] = useState(today);
+  const [orderFilterDateStart, setOrderFilterDateStart] = useState('');
+  const [orderFilterDateEnd, setOrderFilterDateEnd] = useState('');
 
   // Pagination states
   const [currentPageAssign, setCurrentPageAssign] = useState(1);
@@ -60,8 +61,6 @@ const DriversPage = () => {
     setCurrentPageDirectory(1);
   }, [activeTab]);
 
-  const [reportGenerated, setReportGenerated] = useState(false);
-
   const reportBookings = useMemo(() => {
     return bookings.filter(b => {
       const bDriver = b.driverId || b.driver;
@@ -71,10 +70,6 @@ const DriversPage = () => {
       return bDriver && matchDriver && matchDate && b.status !== 'canceled';
     });
   }, [bookings, orderFilterVehicle, orderFilterDateStart, orderFilterDateEnd]);
-
-  useEffect(() => {
-    setReportGenerated(false);
-  }, [orderFilterVehicle, orderFilterDateStart, orderFilterDateEnd]);
 
   const persistDrivers = (nextDrivers) => {
     setDrivers(nextDrivers);
@@ -231,11 +226,24 @@ const DriversPage = () => {
                           </div>
                           <div style={{ flex: 1, minWidth: '200px' }}>
                             <div style={{ fontSize: '0.65rem', color: 'var(--text-light)', marginBottom: '2px', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Chofer Asignado</div>
-                            <div style={{ fontWeight: 500, color: 'var(--text-dark)' }}>{drivers.find(d => String(d.id) === String(b.driverId || b.driver))?.name || 'Sin Chofer'}</div>
+                            <div style={{ fontWeight: 500, color: 'var(--text-dark)' }}>
+                              {(() => {
+                                const dVal = b.driverId || b.driver;
+                                if (!dVal) return 'Sin Chofer';
+                                const found = drivers.find(d => String(d.id) === String(dVal) || d.name === dVal);
+                                return found ? found.name : dVal;
+                              })()}
+                            </div>
                           </div>
                           <div style={{ width: '120px' }}>
-                            <div style={{ fontSize: '0.65rem', color: 'var(--text-light)', marginBottom: '2px', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Pago Prov.</div>
+                            <div style={{ fontSize: '0.65rem', color: 'var(--text-light)', marginBottom: '2px', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Pago Chofer</div>
                             <div style={{ fontWeight: 600, color: 'var(--text-dark)' }}>$ {b.driverPayment || '0.00'}</div>
+                          </div>
+                          <div style={{ width: '120px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }}>
+                            <button className="btn btn-primary btn-sm" onClick={() => setAssigningBooking(b)} style={{ padding: '4px 12px', fontSize: '0.8rem', borderRadius: '4px' }}>
+                              <Edit3 size={14} style={{ marginRight: '4px' }} />
+                              Asignar
+                            </button>
                           </div>
                         </div>
                       </td>
@@ -344,13 +352,6 @@ const DriversPage = () => {
               </div>
             </div>
           </div>
-          
-          <button className="btn btn-primary mb-4 no-print" style={{ width: '100%', padding: '12px' }} onClick={() => { setReportGenerated(true); addToast('Consulta generada exitosamente', 'success'); }}>
-            {t('generatePickupReport') || 'Generar Reporte de Recogida'}
-          </button>
-
-          {reportGenerated && (
-            <>
 
               <div className="table-wrapper">
               <table className="table">
@@ -374,15 +375,15 @@ const DriversPage = () => {
                   ) : (
                     reportBookings.map(b => {
                       const bDriver = b.driverId || b.driver;
-                      const d = drivers.find(drv => String(drv.id) === String(bDriver));
+                      const d = drivers.find(drv => String(drv.id) === String(bDriver) || drv.name === bDriver);
                       return (
                         <tr key={b.id}>
                           <td>
                             <div className="font-bold">{b.date}</div>
-                            <div className="text-muted">{b.pickupTime || '--:--'}</div>
+                            <div className="text-muted">{b.pickupTime || b.time || '--:--'}</div>
                           </td>
                           <td>
-                            <div className="font-bold">{d ? d.name : 'Desconocido'}</div>
+                            <div className="font-bold">{d ? d.name : (typeof bDriver === 'string' && bDriver ? bDriver : 'Desconocido')}</div>
                             <div className="text-muted" style={{ fontSize: '0.8rem' }}>{d ? d.vehicle : ''}</div>
                           </td>
                           <td>
@@ -399,8 +400,6 @@ const DriversPage = () => {
                 </tbody>
               </table>
             </div>
-            </>
-          )}
         </div>
       )}
 
@@ -434,6 +433,57 @@ const DriversPage = () => {
               <div className="modal-actions mt-4">
                 <button type="button" className="btn btn-outline" onClick={() => setEditingDriver(null)}>{t('cancel')}</button>
                 <button type="submit" className="btn btn-primary">{editingDriver.id ? t('update') : t('create')}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Asignar Chofer */}
+      {assigningBooking && (
+        <div className="modal-overlay">
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h3 style={{ margin: 0 }}>Asignar Chofer</h3>
+              <button onClick={() => setAssigningBooking(null)} style={{ background: 'none', color: 'var(--text-light)' }}><X size={24} /></button>
+            </div>
+            <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f8fafc', borderRadius: '4px', border: '1px solid #e2e8f0' }}>
+              <div style={{ fontWeight: 'bold' }}>{assigningBooking.tour || 'Traslado'} - {assigningBooking.customer}</div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-light)' }}>{assigningBooking.date} • {assigningBooking.hotel || assigningBooking.pickupLocation}</div>
+            </div>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              handleAssignDriver(
+                assigningBooking.id,
+                formData.get('driverId'),
+                formData.get('pickupTime'),
+                Number(formData.get('payment')) || 0
+              );
+              setAssigningBooking(null);
+            }}>
+              <div className="form-group">
+                <label>Chofer</label>
+                <select name="driverId" className="form-control" required defaultValue={assigningBooking.driverId || assigningBooking.driver || ''}>
+                  <option value="">Seleccionar Chofer</option>
+                  {drivers.filter(d => d.active).map(d => (
+                    <option key={d.id} value={d.id}>{d.name} ({d.vehicle})</option>
+                  ))}
+                </select>
+              </div>
+              <div className="responsive-grid" style={{ gap: '15px' }}>
+                <div className="form-group">
+                  <label>Hora de Recogida</label>
+                  <input name="pickupTime" type="time" className="form-control" required defaultValue={assigningBooking.pickupTime || assigningBooking.time || ''} />
+                </div>
+                <div className="form-group">
+                  <label>Pago al Chofer (US$)</label>
+                  <input name="payment" type="number" step="0.01" min="0.01" className="form-control" required defaultValue={assigningBooking.driverPayment || ''} />
+                </div>
+              </div>
+              <div className="modal-actions mt-4">
+                <button type="button" className="btn btn-outline" onClick={() => setAssigningBooking(null)}>{t('cancel')}</button>
+                <button type="submit" className="btn btn-primary">Guardar Asignación</button>
               </div>
             </form>
           </div>
