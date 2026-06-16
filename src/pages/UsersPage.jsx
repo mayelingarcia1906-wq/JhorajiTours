@@ -157,17 +157,17 @@ const UsersPage = () => {
       </div>
 
       <div className="d-flex gap-3 mb-4 flex-wrap">
-        <div className="card flex-fill" style={{ minWidth: '150px' }}>
-          <div className="text-muted" style={{ fontSize: '0.85rem', fontWeight: 600 }}>Total de Usuarios</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--primary-color)' }}>{users.length}</div>
+        <div className="card flex-fill" style={{ minWidth: '150px', padding: '12px 14px', borderRadius: '10px' }}>
+          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Total de Usuarios</div>
+          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--primary-color)' }}>{users.length}</div>
         </div>
-        <div className="card flex-fill" style={{ minWidth: '150px' }}>
-          <div className="text-muted" style={{ fontSize: '0.85rem', fontWeight: 600 }}>Administradores</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--danger)' }}>{users.filter(u => u.role === 'Admin').length}</div>
+        <div className="card flex-fill" style={{ minWidth: '150px', padding: '12px 14px', borderRadius: '10px' }}>
+          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Administradores</div>
+          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--danger)' }}>{users.filter(u => u.role === 'Admin').length}</div>
         </div>
-        <div className="card flex-fill" style={{ minWidth: '150px' }}>
-          <div className="text-muted" style={{ fontSize: '0.85rem', fontWeight: 600 }}>Operaciones</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--success)' }}>{users.filter(u => u.role === 'Operaciones').length}</div>
+        <div className="card flex-fill" style={{ minWidth: '150px', padding: '12px 14px', borderRadius: '10px' }}>
+          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Operaciones</div>
+          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--success)' }}>{users.filter(u => u.role === 'Operaciones').length}</div>
         </div>
       </div>
 
@@ -199,8 +199,8 @@ const UsersPage = () => {
           </div>
 
           <div className="table-wrapper">
-            <table className="table">
-              <thead>
+            <table className="table compact-table" style={{ minWidth: '0', width: '100%', fontSize: '0.85rem' }}>
+              <thead style={{ fontSize: '0.75rem' }}>
                 <tr>
                   <th>{t('user') || 'Usuario'}</th>
                   <th>{t('role') || 'Rol'}</th>
@@ -218,7 +218,7 @@ const UsersPage = () => {
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                           <span className="font-bold" style={{ color: 'var(--text-dark)' }}>{u.name}</span>
-                          <span style={{ fontSize: '0.8rem', color: 'var(--text-light)', marginTop: '2px' }}>{u.email}</span>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-light)', marginTop: '2px' }}>{u.email}</span>
                         </div>
                       </div>
                     </td>

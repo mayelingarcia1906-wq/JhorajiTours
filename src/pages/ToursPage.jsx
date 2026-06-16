@@ -201,7 +201,7 @@ const ToursPage = () => {
               <button className="search-btn-inner" onClick={handleSearch} type="button"><Search size={13} /> {t('search')}</button>
             </div>
           </div>
-          <select className="form-control" style={{ width: 'min(100%, 220px)' }} value={categoryFilter} onChange={handleCategoryChange}>
+          <select className="form-control" style={{ width: 'min(100%, 220px)', height: '36px', padding: '0 12px', fontSize: '0.85rem', borderRadius: 'var(--radius-full)' }} value={categoryFilter} onChange={handleCategoryChange}>
             {categories.map((category) => <option key={category} value={category}>{t(category)}</option>)}
           </select>
         </div>
@@ -223,23 +223,23 @@ const ToursPage = () => {
                 </span>
               )}
             </div>
-            <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <div className="d-flex justify-content-between align-items-center mb-2" style={{ gap: '12px' }}>
-                <h3 style={{ fontSize: '1.05rem', margin: 0 }}>{tour.title}</h3>
-                <span style={{ fontWeight: 700, color: 'var(--primary-color)', whiteSpace: 'nowrap' }}>{formatPrice(tour.price)}</span>
+            <div style={{ padding: '15px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+              <div className="d-flex justify-content-between align-items-center mb-2" style={{ gap: '8px' }}>
+                <h3 style={{ fontSize: '0.95rem', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={tour.title}>{tour.title}</h3>
+                <span style={{ fontWeight: 700, color: 'var(--primary-color)', whiteSpace: 'nowrap', fontSize: '0.9rem', flexShrink: 0 }}>{formatPrice(tour.price)}</span>
               </div>
-              <div className="d-flex gap-3 text-muted mb-4" style={{ fontSize: '0.85rem', flexWrap: 'wrap' }}>
-                <div className="d-flex align-items-center gap-1"><MapPin size={14} /> {t(tour.category)}</div>
-                <div className="d-flex align-items-center gap-1"><Clock size={14} /> {t(tour.duration)}</div>
-                <div className="d-flex align-items-center gap-1" style={{ color: 'var(--warning)' }}><Star size={14} fill="currentColor" /> {tour.rating}</div>
+              <div className="d-flex justify-content-between text-muted mb-3" style={{ fontSize: '0.8rem', overflow: 'hidden' }}>
+                <div className="d-flex align-items-center gap-1" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', paddingRight: '5px' }} title={t(tour.category)}><MapPin size={13} style={{ flexShrink: 0 }} /> <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{t(tour.category)}</span></div>
+                <div className="d-flex align-items-center gap-1" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', paddingRight: '5px' }} title={t(tour.duration)}><Clock size={13} style={{ flexShrink: 0 }} /> <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{t(tour.duration)}</span></div>
+                <div className="d-flex align-items-center gap-1" style={{ color: 'var(--warning)', whiteSpace: 'nowrap', flexShrink: 0 }}><Star size={13} fill="currentColor" /> {tour.rating}</div>
               </div>
-              <div style={{ marginTop: 'auto', display: 'flex', gap: '10px', borderTop: '1px solid var(--border-color)', paddingTop: '15px', flexWrap: 'wrap' }}>
-                <button className="btn btn-outline" style={{ flex: '1 1 90px', padding: '0.5rem' }} onClick={() => setSelectedTour(tour)}><Eye size={16} /> {t('view')}</button>
+              <div style={{ marginTop: 'auto', display: 'flex', gap: '12px', borderTop: '1px solid var(--border-color)', paddingTop: '12px', flexWrap: 'wrap' }}>
+                <button className="btn btn-outline" style={{ flex: '1 1 0', minWidth: '70px', height: '32px', padding: '0 8px', fontSize: '0.8rem' }} onClick={() => setSelectedTour(tour)}><Eye size={14} /> {t('view')}</button>
                 {canPerformAction('edit') && (
-                  <button className="btn btn-outline" style={{ flex: '1 1 90px', padding: '0.5rem' }} onClick={() => openEditTour(tour)}><Edit3 size={16} /> {t('edit')}</button>
+                  <button className="btn btn-outline" style={{ flex: '1 1 0', minWidth: '70px', height: '32px', padding: '0 8px', fontSize: '0.8rem' }} onClick={() => openEditTour(tour)}><Edit3 size={14} /> {t('edit')}</button>
                 )}
                 {canPerformAction('delete') && (
-                  <button className="btn btn-outline" style={{ flex: '1 1 90px', padding: '0.5rem', color: 'var(--danger)', borderColor: 'var(--danger)' }} onClick={() => setShowDeleteConfirm(tour.id)}><Trash2 size={16} /> {t('delete')}</button>
+                  <button className="btn btn-outline" style={{ flex: '1 1 0', minWidth: '70px', height: '32px', padding: '0 8px', fontSize: '0.8rem', color: 'var(--danger)', borderColor: 'var(--danger)' }} onClick={() => setShowDeleteConfirm(tour.id)}><Trash2 size={14} /> {t('delete')}</button>
                 )}
               </div>
             </div>

@@ -203,42 +203,37 @@ const CustomersPage = () => {
           </div>
         </div>
 
-        <div className="table-wrapper">
-          <table className="table">
-            <thead>
+        <div className="table-wrapper" style={{ overflowX: 'auto' }}>
+          <table className="table" style={{ fontSize: '0.85rem', width: '100%', tableLayout: 'auto' }}>
+            <thead style={{ fontSize: '0.55rem', textTransform: 'uppercase', borderBottom: '2px solid var(--border-color)' }}>
               <tr>
-                <th>{t('customer')}</th>
-                <th>{t('contact')}</th>
-                <th>{t('country')}</th>
-                <th>{t('totalBookings')}</th>
-                <th>{t('totalSpent')}</th>
-                <th>{t('lastVisit')}</th>
-                <th>{t('status')}</th>
-                <th>{t('actions')}</th>
+                <th style={{ padding: '0.5rem', borderRight: '1px solid var(--border-color)', fontSize: '0.75rem' }}>{t('customer')}</th>
+                <th style={{ padding: '0.5rem', whiteSpace: 'nowrap', borderRight: '1px solid var(--border-color)', fontSize: '0.75rem' }}>{t('contact')}</th>
+                <th style={{ padding: '0.5rem', borderRight: '1px solid var(--border-color)', fontSize: '0.75rem' }}>{t('country')}</th>
+                <th style={{ padding: '0.5rem', borderRight: '1px solid var(--border-color)', fontSize: '0.75rem' }}>{t('totalBookings')}</th>
+                <th style={{ padding: '0.5rem', borderRight: '1px solid var(--border-color)', fontSize: '0.75rem' }}>{t('totalSpent')}</th>
+                <th style={{ padding: '0.5rem', whiteSpace: 'nowrap', borderRight: '1px solid var(--border-color)', fontSize: '0.75rem' }}>{t('lastVisit')}</th>
+                <th style={{ padding: '0.5rem', borderRight: '1px solid var(--border-color)', fontSize: '0.75rem' }}>{t('status')}</th>
+                <th style={{ padding: '0.5rem', fontSize: '0.75rem', textAlign: 'left' }}>{t('actions')}</th>
               </tr>
             </thead>
             <tbody>
               {currentItems.map((customer) => (
                 <tr key={customer.id}>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--primary-color)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '0.85rem', flexShrink: 0 }}>
-                        {customer.name.charAt(0)}
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 500 }}>{customer.name}</span>
-                        <span style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>{customer.email}</span>
-                      </div>
+                  <td style={{ padding: '0.5rem', borderRight: '1px solid var(--border-color)' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <span style={{ fontWeight: 500, whiteSpace: 'nowrap' }}>{customer.name}</span>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-light)', whiteSpace: 'nowrap' }}>{customer.email}</span>
                     </div>
                   </td>
-                  <td>{customer.phone}</td>
-                  <td>{customer.country}</td>
-                  <td>{customer.totalBookings}</td>
-                  <td className="font-bold">{customer.totalSpent}</td>
-                  <td>{customer.lastVisit}</td>
-                  <td><span className={`badge badge-${statusBadge[customer.status]}`}>{t(customer.status)}</span></td>
-                  <td>
-                    <div className="action-buttons">
+                  <td style={{ padding: '0.5rem', whiteSpace: 'nowrap', borderRight: '1px solid var(--border-color)' }}>{customer.phone}</td>
+                  <td style={{ padding: '0.5rem', whiteSpace: 'nowrap', borderRight: '1px solid var(--border-color)' }}>{customer.country}</td>
+                  <td style={{ padding: '0.5rem', borderRight: '1px solid var(--border-color)' }}>{customer.totalBookings}</td>
+                  <td className="font-bold" style={{ padding: '0.5rem', whiteSpace: 'nowrap', borderRight: '1px solid var(--border-color)' }}>{customer.totalSpent}</td>
+                  <td style={{ padding: '0.5rem', whiteSpace: 'nowrap', borderRight: '1px solid var(--border-color)' }}>{customer.lastVisit}</td>
+                  <td style={{ padding: '0.5rem', borderRight: '1px solid var(--border-color)' }}><span className={`badge badge-${statusBadge[customer.status]}`}>{t(customer.status)}</span></td>
+                  <td style={{ padding: '0.5rem' }}>
+                    <div className="action-buttons" style={{ justifyContent: 'flex-start', display: 'flex' }}>
                       <button className="icon-btn" onClick={() => setSelectedCustomer(customer)} title={t('view')}><Eye size={18} /></button>
                       <button className="icon-btn" onClick={() => openEditCustomer(customer)} title={t('edit')}><Edit3 size={18} /></button>
                       <button className="icon-btn" onClick={() => setShowDeleteConfirm(customer.id)} title={t('delete')} style={{ color: 'var(--danger)' }}><Trash2 size={18} /></button>

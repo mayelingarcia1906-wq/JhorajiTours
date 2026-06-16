@@ -303,73 +303,74 @@ const FinancesPage = () => {
       </div>
 
       {/* METRICS ROW */}
-      <div className="metrics-row filter-row mb-4" style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-        <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>{t('grossIncome')}</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-dark)', margin: '5px 0' }}>{formatPrice(totalBruto)}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>{t('grossIncomeDesc')}</div>
+      <div className="metrics-row filter-row mb-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
+        <div className="card" style={{ padding: '12px 14px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase' }}>{t('grossIncome')}</div>
+          <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-dark)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatPrice(totalBruto)}</div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '6px', marginTop: 'auto' }}>{t('grossIncomeDesc')}</div>
         </div>
-        <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>{t('provPayments')}</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ef4444', margin: '5px 0' }}>{formatPrice(totalProv)}</div>
+        <div className="card" style={{ padding: '12px 14px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase' }}>{t('provPayments')}</div>
+          <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ef4444', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatPrice(totalProv)}</div>
+          <div style={{ borderTop: '1px dashed transparent', paddingTop: '6px', marginTop: 'auto' }}></div>
         </div>
-        <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>{t('otaCommissions')}</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f59e0b', margin: '5px 0' }}>{formatPrice(totalOta)}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>{t('otaDesc')}</div>
+        <div className="card" style={{ padding: '12px 14px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase' }}>{t('otaCommissions')}</div>
+          <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f59e0b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatPrice(totalOta)}</div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '6px', marginTop: 'auto' }}>{t('otaDesc')}</div>
         </div>
-        <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>{t('drivers')}</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#3b82f6', margin: '5px 0' }}>{formatPrice(totalDriver)}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>{t('driversDesc')}</div>
+        <div className="card" style={{ padding: '12px 14px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase' }}>{t('drivers')}</div>
+          <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#3b82f6', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatPrice(totalDriver)}</div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '6px', marginTop: 'auto' }}>{t('driversDesc')}</div>
         </div>
-        <div className="card" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)' }}>{t('operExpenses')}</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-dark)', margin: '5px 0' }}>{formatPrice(totalGastos)}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '5px' }}>{t('operExpensesDesc')}</div>
+        <div className="card" style={{ padding: '12px 14px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase' }}>{t('operExpenses')}</div>
+          <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-dark)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatPrice(totalGastos)}</div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '6px', marginTop: 'auto' }}>{t('operExpensesDesc')}</div>
         </div>
-        <div className="card card-ganancia" style={{ flex: 1, padding: '20px', minWidth: '150px' }}>
-          <div className="ganancia-title" style={{ fontSize: '0.7rem', fontWeight: 700 }}>{t('realProfit')}</div>
-          <div className="ganancia-amount" style={{ fontSize: '1.5rem', fontWeight: 800, margin: '5px 0' }}>{formatPrice(gananciaReal)}</div>
-          <div className="ganancia-subtitle" style={{ fontSize: '0.75rem', paddingTop: '5px' }}>{t('profitDesc')}</div>
+        <div className="card card-ganancia" style={{ padding: '12px 14px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px', backgroundColor: '#ecfdf5', borderColor: '#a7f3d0' }}>
+          <div className="ganancia-title" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#065f46', textTransform: 'uppercase' }}>{t('realProfit')}</div>
+          <div className="ganancia-amount" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#047857', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatPrice(gananciaReal)}</div>
+          <div className="ganancia-subtitle" style={{ fontSize: '0.7rem', color: '#065f46', borderTop: '1px dashed #a7f3d0', paddingTop: '6px', marginTop: 'auto' }}>{t('profitDesc')}</div>
         </div>
       </div>
 
-      <div className="card mb-4" style={{ overflowX: 'auto' }}>
-        <div className="page-toolbar" style={{ display: 'flex', gap: '15px', flexWrap: 'nowrap', alignItems: 'center', minWidth: 'max-content' }}>
-          <input type="date" className="form-control" style={{ maxWidth: '160px' }} value={fromDate} onChange={e => setFromDate(e.target.value)} />
-          <input type="date" className="form-control" style={{ maxWidth: '160px' }} value={toDate} onChange={e => setToDate(e.target.value)} />
+      <div className="card mb-4" style={{ overflowX: 'auto', padding: '12px 15px' }}>
+        <div className="page-toolbar" style={{ display: 'flex', gap: '10px', flexWrap: 'nowrap', alignItems: 'center', minWidth: 'max-content' }}>
+          <input type="date" className="form-control" style={{ maxWidth: '140px', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }} value={fromDate} onChange={e => setFromDate(e.target.value)} />
+          <input type="date" className="form-control" style={{ maxWidth: '140px', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }} value={toDate} onChange={e => setToDate(e.target.value)} />
           
           {activeTab === 'choferes' && (
-            <select className="form-control" style={{ maxWidth: '200px' }} value={driverFilter} onChange={e => setDriverFilter(e.target.value)}>
+            <select className="form-control" style={{ maxWidth: '160px', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }} value={driverFilter} onChange={e => setDriverFilter(e.target.value)}>
               <option value="all">-- Chofer --</option>
               {drivers.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
           )}
 
           {activeTab === 'proveedores' && (
-            <select className="form-control" style={{ maxWidth: '200px' }} value={providerFilter} onChange={e => setProviderFilter(e.target.value)}>
+            <select className="form-control" style={{ maxWidth: '160px', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }} value={providerFilter} onChange={e => setProviderFilter(e.target.value)}>
               <option value="all">-- Proveedor --</option>
               {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
           )}
 
           {activeTab === 'gastos' && (
-            <select className="form-control" style={{ maxWidth: '200px' }} value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)}>
+            <select className="form-control" style={{ maxWidth: '160px', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }} value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)}>
               <option value="all">-- Categoría --</option>
               {expenseCategories.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
             </select>
           )}
 
           {(activeTab === 'proveedores' || activeTab === 'choferes') && (
-            <input type="text" className="form-control" style={{ maxWidth: '180px' }} placeholder="Buscar cliente..." value={clientFilter} onChange={e => setClientFilter(e.target.value)} />
+            <input type="text" className="form-control" style={{ maxWidth: '160px', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }} placeholder="Buscar cliente..." value={clientFilter} onChange={e => setClientFilter(e.target.value)} />
           )}
 
-          <button className="btn btn-primary" onClick={handleRefresh} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <Filter size={16} /> {t('search')}
+          <button className="btn btn-primary" onClick={handleRefresh} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '0.35rem 0.75rem', fontSize: '0.85rem' }}>
+            <Filter size={14} /> {t('search')}
           </button>
-          <button className="btn btn-outline" onClick={handleClear} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <Eraser size={16} /> Limpiar
+          <button className="btn btn-outline" onClick={handleClear} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '0.35rem 0.75rem', fontSize: '0.85rem' }}>
+            <Eraser size={14} /> Limpiar
           </button>
         </div>
       </div>
@@ -406,37 +407,37 @@ const FinancesPage = () => {
                   <button className="btn btn-link" onClick={() => toggleProvStatus('Pendiente')} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><AlertCircle size={16}/> {t('pending')}</button>
                 </div>
               )}
-              <div className="table-wrapper" style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
-                <table className="table compact-table" style={{ margin: 0 }}>
+              <div className="table-wrapper" style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflowX: 'auto' }}>
+                <table className="table compact-table" style={{ margin: 0, fontSize: '0.8rem', width: '100%', tableLayout: 'auto' }}>
                   <thead style={{ backgroundColor: '#f8fafc', color: '#64748b', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '1px solid #e2e8f0' }}>
                     <tr>
-                      <th style={{width: '40px', padding: '15px'}}><input type="checkbox" onChange={e => setSelectedProv(e.target.checked ? filteredProvLiq.map(p=>p.id) : [])} checked={filteredProvLiq.length > 0 && selectedProv.length === filteredProvLiq.length}/></th>
-                      <th style={{ padding: '15px' }}>{t('date')}</th>
-                      <th style={{ padding: '15px' }}>{t('client')}</th>
-                      <th style={{ padding: '15px' }}>{t('provider')}</th>
-                      <th style={{ padding: '15px' }}>{t('baseCost')}</th>
-                      <th style={{ padding: '15px' }}>{t('extras')}</th>
-                      <th style={{ padding: '15px' }}>{t('totalCost')}</th>
-                      <th style={{ padding: '15px' }}>{t('clientPrice')}</th>
-                      <th style={{ padding: '15px' }}>{t('otaCommissions')}</th>
-                      <th style={{ padding: '15px' }}>{t('profit')}</th>
-                      <th style={{ padding: '15px' }}>{t('status')}</th>
+                      <th style={{width: '40px', padding: '0.5rem'}}><input type="checkbox" onChange={e => setSelectedProv(e.target.checked ? filteredProvLiq.map(p=>p.id) : [])} checked={filteredProvLiq.length > 0 && selectedProv.length === filteredProvLiq.length}/></th>
+                      <th style={{ padding: '0.5rem', whiteSpace: 'nowrap' }}>{t('date')}</th>
+                      <th style={{ padding: '0.5rem' }}>{t('client')}</th>
+                      <th style={{ padding: '0.5rem', whiteSpace: 'nowrap' }}>{t('provider')}</th>
+                      <th style={{ padding: '0.5rem', whiteSpace: 'nowrap' }}>{t('baseCost')}</th>
+                      <th style={{ padding: '0.5rem', whiteSpace: 'nowrap' }}>{t('extras')}</th>
+                      <th style={{ padding: '0.5rem', whiteSpace: 'nowrap' }}>{t('totalCost')}</th>
+                      <th style={{ padding: '0.5rem', whiteSpace: 'nowrap' }}>{t('clientPrice')}</th>
+                      <th style={{ padding: '0.5rem', whiteSpace: 'nowrap' }}>{t('otaCommissions')}</th>
+                      <th style={{ padding: '0.5rem', whiteSpace: 'nowrap' }}>{t('profit')}</th>
+                      <th style={{ padding: '0.5rem', whiteSpace: 'nowrap' }}>{t('status')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentProvLiq.map(p => (
                       <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '15px' }}><input type="checkbox" checked={selectedProv.includes(p.id)} onChange={() => setSelectedProv(prev => prev.includes(p.id) ? prev.filter(id => id !== p.id) : [...prev, p.id])}/></td>
-                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>{p.date}</td>
-                        <td style={{ padding: '15px', color: '#1e293b', fontSize: '0.9rem' }}>{p.client}</td>
-                        <td style={{ padding: '15px', fontWeight: '700', color: '#0f172a', fontSize: '0.95rem' }}>{p.provider}</td>
-                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>{formatPrice(p.costBase)}</td>
-                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>{formatPrice(p.extras)}</td>
-                        <td style={{ padding: '15px', fontWeight: '800', color: '#0f172a', fontSize: '0.95rem' }}>{formatPrice(p.costTotal)}</td>
-                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>{formatPrice(p.priceClient)}</td>
-                        <td style={{ padding: '15px', color: '#475569', fontSize: '0.9rem' }}>{formatPrice(p.ota)}</td>
-                        <td style={{ padding: '15px', color: '#16a34a', fontWeight: '800', fontSize: '0.95rem' }}>{formatPrice(p.profit)}</td>
-                        <td style={{ padding: '15px' }}>
+                        <td style={{ padding: '0.5rem' }}><input type="checkbox" checked={selectedProv.includes(p.id)} onChange={() => setSelectedProv(prev => prev.includes(p.id) ? prev.filter(id => id !== p.id) : [...prev, p.id])}/></td>
+                        <td style={{ padding: '0.5rem', color: '#475569', whiteSpace: 'nowrap' }}>{p.date}</td>
+                        <td style={{ padding: '0.5rem', color: '#1e293b' }}>{p.client}</td>
+                        <td style={{ padding: '0.5rem', fontWeight: '700', color: '#0f172a' }}>{p.provider}</td>
+                        <td style={{ padding: '0.5rem', color: '#475569', whiteSpace: 'nowrap' }}>{formatPrice(p.costBase)}</td>
+                        <td style={{ padding: '0.5rem', color: '#475569', whiteSpace: 'nowrap' }}>{formatPrice(p.extras)}</td>
+                        <td style={{ padding: '0.5rem', fontWeight: '800', color: '#0f172a', whiteSpace: 'nowrap' }}>{formatPrice(p.costTotal)}</td>
+                        <td style={{ padding: '0.5rem', color: '#475569', whiteSpace: 'nowrap' }}>{formatPrice(p.priceClient)}</td>
+                        <td style={{ padding: '0.5rem', color: '#475569', whiteSpace: 'nowrap' }}>{formatPrice(p.ota)}</td>
+                        <td style={{ padding: '0.5rem', color: '#16a34a', fontWeight: '800', whiteSpace: 'nowrap' }}>{formatPrice(p.profit)}</td>
+                        <td style={{ padding: '0.5rem', whiteSpace: 'nowrap' }}>
                           {p.status === 'Pagado' ? (
                             <span style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: '#ecfdf5', color: '#059669', padding: '4px 10px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px' }}>
                               {t('paid').toUpperCase()}
@@ -450,12 +451,12 @@ const FinancesPage = () => {
                       </tr>
                     ))}
                     <tr style={{ backgroundColor: '#f8fafc', color: '#0f172a' }}>
-                      <td colSpan="6" style={{ padding: '16px 15px', textAlign: 'right', fontWeight: '700', fontSize: '0.85rem', letterSpacing: '0.5px', color: '#64748b' }}>{t('totals')}</td>
-                      <td style={{ padding: '16px 15px', fontWeight: '800', fontSize: '0.95rem' }}>{formatPrice(totalProv)}</td>
-                      <td style={{ padding: '16px 15px', fontWeight: '700', fontSize: '0.9rem' }}>{formatPrice(totalBruto)}</td>
-                      <td style={{ padding: '16px 15px', color: '#f59e0b', fontWeight: '800', fontSize: '0.95rem' }}>{formatPrice(totalOta)}</td>
-                      <td style={{ padding: '16px 15px', color: '#16a34a', fontWeight: '800', fontSize: '0.95rem' }}>{formatPrice(totalBruto - totalProv - totalOta)}</td>
-                      <td style={{ padding: '16px 15px' }}></td>
+                      <td colSpan="6" style={{ padding: '0.5rem', textAlign: 'right', fontWeight: '700', fontSize: '0.85rem', letterSpacing: '0.5px', color: '#64748b' }}>{t('totals')}</td>
+                      <td style={{ padding: '0.5rem', fontWeight: '800', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>{formatPrice(totalProv)}</td>
+                      <td style={{ padding: '0.5rem', fontWeight: '700', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>{formatPrice(totalBruto)}</td>
+                      <td style={{ padding: '0.5rem', color: '#f59e0b', fontWeight: '800', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>{formatPrice(totalOta)}</td>
+                      <td style={{ padding: '0.5rem', color: '#16a34a', fontWeight: '800', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>{formatPrice(totalBruto - totalProv - totalOta)}</td>
+                      <td style={{ padding: '0.5rem' }}></td>
                     </tr>
                   </tbody>
                 </table>
@@ -475,41 +476,41 @@ const FinancesPage = () => {
                   <button className="btn btn-link" onClick={() => toggleDriverStatus('Pendiente')} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><AlertCircle size={16}/> {t('pending')}</button>
                 </div>
               )}
-              <div className="table-wrapper">
-                <table className="table compact-table">
+              <div className="table-wrapper" style={{ overflowX: 'auto' }}>
+                <table className="table compact-table" style={{ fontSize: '0.8rem', tableLayout: 'auto', width: '100%' }}>
                   <thead>
                     <tr>
-                      <th style={{width: '30px'}}><input type="checkbox" onChange={e => setSelectedDriver(e.target.checked ? filteredDriverLiq.map(d=>d.id) : [])} checked={filteredDriverLiq.length > 0 && selectedDriver.length === filteredDriverLiq.length}/></th>
-                      <th>{t('date')}</th>
-                      <th>{t('driver')}</th>
-                      <th>{t('client')}</th>
-                      <th>{t('service')}</th>
-                      <th>{t('adults')}</th>
-                      <th>{t('children')}</th>
-                      <th>{t('amountCol')}</th>
-                      <th>{t('status')}</th>
+                      <th style={{width: '30px', padding: '0.5rem'}}><input type="checkbox" onChange={e => setSelectedDriver(e.target.checked ? filteredDriverLiq.map(d=>d.id) : [])} checked={filteredDriverLiq.length > 0 && selectedDriver.length === filteredDriverLiq.length}/></th>
+                      <th style={{ whiteSpace: 'nowrap', padding: '0.5rem' }}>{t('date')}</th>
+                      <th style={{ whiteSpace: 'nowrap', padding: '0.5rem' }}>{t('driver')}</th>
+                      <th style={{ padding: '0.5rem' }}>{t('client')}</th>
+                      <th style={{ padding: '0.5rem' }}>{t('service')}</th>
+                      <th style={{ padding: '0.5rem' }}>{t('adults')}</th>
+                      <th style={{ padding: '0.5rem' }}>{t('children')}</th>
+                      <th style={{ whiteSpace: 'nowrap', padding: '0.5rem' }}>{t('amountCol')}</th>
+                      <th style={{ whiteSpace: 'nowrap', padding: '0.5rem' }}>{t('status')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentDriverLiq.map(d => (
                       <tr key={d.id}>
-                        <td><input type="checkbox" checked={selectedDriver.includes(d.id)} onChange={() => setSelectedDriver(prev => prev.includes(d.id) ? prev.filter(id => id !== d.id) : [...prev, d.id])}/></td>
-                        <td>{d.date}</td>
-                        <td style={{fontWeight: '600'}}>{d.driver}</td>
-                        <td>{d.client}</td>
-                        <td>{d.service}</td>
-                        <td>{d.adults}</td>
-                        <td>{d.children}</td>
-                        <td style={{fontWeight: '700', color: '#3b82f6'}}>{formatPrice(d.amount)}</td>
-                        <td>
+                        <td style={{ padding: '0.5rem' }}><input type="checkbox" checked={selectedDriver.includes(d.id)} onChange={() => setSelectedDriver(prev => prev.includes(d.id) ? prev.filter(id => id !== d.id) : [...prev, d.id])}/></td>
+                        <td style={{ whiteSpace: 'nowrap', padding: '0.5rem' }}>{d.date}</td>
+                        <td style={{fontWeight: '600', whiteSpace: 'nowrap', padding: '0.5rem'}}>{d.driver}</td>
+                        <td style={{ padding: '0.5rem' }}>{d.client}</td>
+                        <td style={{ padding: '0.5rem' }}>{d.service}</td>
+                        <td style={{ padding: '0.5rem' }}>{d.adults}</td>
+                        <td style={{ padding: '0.5rem' }}>{d.children}</td>
+                        <td style={{fontWeight: '700', color: '#3b82f6', whiteSpace: 'nowrap', padding: '0.5rem'}}>{formatPrice(d.amount)}</td>
+                        <td style={{ whiteSpace: 'nowrap', padding: '0.5rem' }}>
                           <span className={`badge badge-${d.status === 'Pagado' ? 'success' : 'danger'}`}>{d.status}</span>
                         </td>
                       </tr>
                     ))}
                     <tr style={{ backgroundColor: '#f8fafc', fontWeight: 'bold' }}>
-                      <td colSpan="7" style={{ textAlign: 'right' }}>TOTAL CHOFERES:</td>
-                      <td style={{color: '#3b82f6'}}>{formatPrice(totalDriver)}</td>
-                      <td></td>
+                      <td colSpan="7" style={{ textAlign: 'right', padding: '0.5rem' }}>TOTAL CHOFERES:</td>
+                      <td style={{color: '#3b82f6', whiteSpace: 'nowrap', padding: '0.5rem'}}>{formatPrice(totalDriver)}</td>
+                      <td style={{ padding: '0.5rem' }}></td>
                     </tr>
                   </tbody>
                 </table>
@@ -528,30 +529,30 @@ const FinancesPage = () => {
                   <button className="btn btn-link no-print" onClick={confirmDeleteExpense} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Trash2 size={16}/> Eliminar</button>
                 </div>
               )}
-              <div className="table-wrapper">
-                <table className="table compact-table">
+              <div className="table-wrapper" style={{ overflowX: 'auto' }}>
+                <table className="table compact-table" style={{ fontSize: '0.8rem', tableLayout: 'auto', width: '100%' }}>
                   <thead>
                     <tr>
-                      <th className="no-print" style={{width: '30px'}}><input type="checkbox" onChange={e => setSelectedExp(e.target.checked ? filteredExpenses.map(ex=>ex.id) : [])} checked={filteredExpenses.length > 0 && selectedExp.length === filteredExpenses.length}/></th>
-                      <th>{t('date')}</th>
-                      <th>{t('category')}</th>
-                      <th>{t('description')}</th>
-                      <th>{t('amountCol')}</th>
+                      <th className="no-print" style={{width: '30px', padding: '0.5rem'}}><input type="checkbox" onChange={e => setSelectedExp(e.target.checked ? filteredExpenses.map(ex=>ex.id) : [])} checked={filteredExpenses.length > 0 && selectedExp.length === filteredExpenses.length}/></th>
+                      <th style={{ whiteSpace: 'nowrap', padding: '0.5rem' }}>{t('date')}</th>
+                      <th style={{ whiteSpace: 'nowrap', padding: '0.5rem' }}>{t('category')}</th>
+                      <th style={{ padding: '0.5rem' }}>{t('description')}</th>
+                      <th style={{ whiteSpace: 'nowrap', padding: '0.5rem' }}>{t('amountCol')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentExpenses.map(ex => (
                       <tr key={ex.id}>
-                        <td><input type="checkbox" checked={selectedExp.includes(ex.id)} onChange={() => setSelectedExp(prev => prev.includes(ex.id) ? prev.filter(id => id !== ex.id) : [...prev, ex.id])}/></td>
-                        <td>{ex.date}</td>
-                        <td style={{fontWeight: '600'}}>{ex.category}</td>
-                        <td>{ex.desc}</td>
-                        <td style={{fontWeight: '700', color: '#ef4444'}}>{formatPrice(ex.amount)}</td>
+                        <td style={{ padding: '0.5rem' }}><input type="checkbox" checked={selectedExp.includes(ex.id)} onChange={() => setSelectedExp(prev => prev.includes(ex.id) ? prev.filter(id => id !== ex.id) : [...prev, ex.id])}/></td>
+                        <td style={{ whiteSpace: 'nowrap', padding: '0.5rem' }}>{ex.date}</td>
+                        <td style={{fontWeight: '600', whiteSpace: 'nowrap', padding: '0.5rem'}}>{ex.category}</td>
+                        <td style={{ padding: '0.5rem' }}>{ex.desc}</td>
+                        <td style={{fontWeight: '700', color: '#ef4444', whiteSpace: 'nowrap', padding: '0.5rem'}}>{formatPrice(ex.amount)}</td>
                       </tr>
                     ))}
                     <tr style={{ backgroundColor: '#f8fafc', fontWeight: 'bold' }}>
-                      <td colSpan="4" style={{ textAlign: 'right' }}>TOTAL GASTOS:</td>
-                      <td style={{color: '#ef4444'}}>{formatPrice(totalGastos)}</td>
+                      <td colSpan="4" style={{ textAlign: 'right', padding: '0.5rem' }}>TOTAL GASTOS:</td>
+                      <td style={{color: '#ef4444', whiteSpace: 'nowrap', padding: '0.5rem'}}>{formatPrice(totalGastos)}</td>
                     </tr>
                   </tbody>
                 </table>

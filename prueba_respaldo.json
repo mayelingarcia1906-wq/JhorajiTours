@@ -1,0 +1,12 @@
+{
+  "tours": ["Tour Isla Saona (PRUEBA)", "Safari Macao (PRUEBA)"],
+  "customers": [{"id": 999, "name": "Cliente de Prueba JSON", "email": "prueba@json.com"}],
+  "drivers": [],
+  "agencies": [],
+  "providers": [],
+  "activities": [],
+  "bookings": [{"id": "RES-PRUEBA-01", "customer": "Cliente de Prueba JSON", "tour": "Tour Isla Saona (PRUEBA)", "status": "confirmed", "date": "2026-06-20"}],
+  "orders": [],
+  "expenses": [],
+  "audit": [{"id": 1, "action": "Restauración de prueba", "timestamp": "2026-06-16T12:00:00Z"}]
+}

@@ -136,9 +136,9 @@ const ProvidersPage = () => {
 
       <div className="card">
         <div className="table-wrapper">
-          <table className="table">
-            <thead>
-              <tr>
+          <table className="table compact-table" style={{ minWidth: '0', width: '100%', fontSize: '0.85rem' }}>
+            <thead style={{ fontSize: '0.75rem' }}>
+              <tr style={{ color: 'var(--text-light)', borderBottom: '1px solid var(--border-color)' }}>
                 <th>{t('providerName')}</th>
                 <th>{t('contact')}</th>
                 <th>{t('notes')}</th>

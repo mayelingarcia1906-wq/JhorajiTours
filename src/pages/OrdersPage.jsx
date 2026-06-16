@@ -192,20 +192,20 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
         
         <div className="page-toolbar" style={{ marginBottom: '20px' }}>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'nowrap', overflowX: 'auto', paddingBottom: '5px' }}>
-            <input type="date" className="form-control" style={{ minWidth: '130px', flex: 1 }} value={fromDate} onChange={e => setFromDate(e.target.value)} title="Desde" />
-            <input type="date" className="form-control" style={{ minWidth: '130px', flex: 1 }} value={toDate} onChange={e => setToDate(e.target.value)} title="Hasta" />
+            <input type="date" className="form-control" style={{ minWidth: '130px', flex: 1, height: '36px', fontSize: '0.85rem', padding: '0 12px', borderRadius: 'var(--radius-md)' }} value={fromDate} onChange={e => setFromDate(e.target.value)} title="Desde" />
+            <input type="date" className="form-control" style={{ minWidth: '130px', flex: 1, height: '36px', fontSize: '0.85rem', padding: '0 12px', borderRadius: 'var(--radius-md)' }} value={toDate} onChange={e => setToDate(e.target.value)} title="Hasta" />
             
-            <select className="form-control" style={{ minWidth: '150px', flex: 1.5 }} value={providerFilter} onChange={e => setProviderFilter(e.target.value)}>
+            <select className="form-control" style={{ minWidth: '150px', flex: 1.5, height: '36px', fontSize: '0.85rem', padding: '0 12px', borderRadius: 'var(--radius-md)' }} value={providerFilter} onChange={e => setProviderFilter(e.target.value)}>
               <option value="all">-- {t('provider') || 'Proveedor'} --</option>
               {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
             
-            <select className="form-control" style={{ minWidth: '180px', flex: 1.5 }} value={driverFilter} onChange={e => setDriverFilter(e.target.value)}>
+            <select className="form-control" style={{ minWidth: '180px', flex: 1.5, height: '36px', fontSize: '0.85rem', padding: '0 12px', borderRadius: 'var(--radius-md)' }} value={driverFilter} onChange={e => setDriverFilter(e.target.value)}>
               <option value="all">-- {t('driver') || 'Chofer'} --</option>
               {drivers.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
             
-            <input type="text" className="form-control" style={{ minWidth: '150px', flex: 1.5 }} placeholder={t('clientName')} value={clientSearch} onChange={e => setClientSearch(e.target.value)} />
+            <input type="text" className="form-control" style={{ minWidth: '150px', flex: 1.5, height: '36px', fontSize: '0.85rem', padding: '0 12px', borderRadius: 'var(--radius-md)' }} placeholder={t('clientName')} value={clientSearch} onChange={e => setClientSearch(e.target.value)} />
           </div>
         </div>
 
@@ -228,9 +228,9 @@ const OrdersPage = ({ hideHeader, onEditOrder, onViewOrder }) => {
         )}
 
         <div className="table-wrapper">
-          <table className="table compact-table">
-            <thead>
-              <tr style={{ color: 'var(--text-light)', fontSize: '0.85rem', borderBottom: '1px solid var(--border-color)' }}>
+          <table className="table compact-table" style={{ minWidth: '0', width: '100%', fontSize: '0.85rem' }}>
+            <thead style={{ fontSize: '0.75rem' }}>
+              <tr style={{ color: 'var(--text-light)', borderBottom: '1px solid var(--border-color)' }}>
                 <th style={{ width: '40px' }}><input type="checkbox" onChange={toggleSelectAll} checked={filteredOrders.length > 0 && selectedOrders.length === filteredOrders.length} /></th>
                 <th>{t('ref')}</th>
                 <th>{t('date')}</th>

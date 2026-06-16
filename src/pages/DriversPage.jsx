@@ -173,35 +173,39 @@ const DriversPage = () => {
           <div className="page-toolbar mb-4" style={{ alignItems: 'flex-start' }}>
             <h3 style={{ fontSize: '1.1rem', margin: 0, marginTop: '8px' }}>{t('assignedBookings') || 'Reservas Asignadas'}</h3>
             <div className="d-flex gap-2 filter-row" style={{ flexWrap: 'wrap', flex: 1, justifyContent: 'flex-end' }}>
-              <select className="form-control" style={{ width: 'auto' }} value={assignFilterAct} onChange={e => setAssignFilterAct(e.target.value)}>
+              <select className="form-control" style={{ width: 'auto', height: '36px', fontSize: '0.85rem', padding: '0 12px', borderRadius: 'var(--radius-md)' }} value={assignFilterAct} onChange={e => setAssignFilterAct(e.target.value)}>
                 <option value="all">Todas las Actividades</option>
                 {uniqueTours.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
               <div className="search-field" style={{ width: '160px' }}>
-                <Calendar size={18} />
-                <input type="date" className="form-control" value={assignFilterDateStart} onChange={e => setAssignFilterDateStart(e.target.value)} />
+                <Calendar size={16} />
+                <input type="date" className="form-control" style={{ height: '36px', fontSize: '0.85rem', padding: '0 12px 0 36px', borderRadius: 'var(--radius-md)' }} value={assignFilterDateStart} onChange={e => setAssignFilterDateStart(e.target.value)} />
               </div>
               <div className="search-field" style={{ width: '160px' }}>
-                <Calendar size={18} />
-                <input type="date" className="form-control" value={assignFilterDateEnd} onChange={e => setAssignFilterDateEnd(e.target.value)} />
+                <Calendar size={16} />
+                <input type="date" className="form-control" style={{ height: '36px', fontSize: '0.85rem', padding: '0 12px 0 36px', borderRadius: 'var(--radius-md)' }} value={assignFilterDateEnd} onChange={e => setAssignFilterDateEnd(e.target.value)} />
               </div>
               <button className="btn btn-primary">{t('filter') || 'Filtrar'}</button>
             </div>
           </div>
 
           <div className="table-wrapper">
-            <table className="table" style={{ minWidth: '800px' }}>
-              <thead>
-                <tr>
-                  <th style={{ width: '25%' }}>{t('dateCustomer') || 'Fecha / Cliente'}</th>
-                  <th style={{ width: '30%' }}>{t('activity') || 'Actividad'}</th>
-                  <th style={{ width: '45%' }}>{t('assignment') || 'Asignación (Hora / Chofer / Pago)'}</th>
+            <table className="table compact-table" style={{ fontSize: '0.85rem', minWidth: '0', width: '100%', tableLayout: 'auto' }}>
+              <thead style={{ fontSize: '0.75rem' }}>
+                <tr style={{ color: 'var(--text-light)', borderBottom: '1px solid var(--border-color)' }}>
+                  <th style={{ whiteSpace: 'nowrap', padding: '0.6rem 0.5rem' }}>{t('date') || 'Fecha'}</th>
+                  <th style={{ padding: '0.6rem 0.5rem' }}>{t('customer') || 'Cliente'}</th>
+                  <th style={{ padding: '0.6rem 0.5rem' }}>{t('activity') || 'Actividad'}</th>
+                  <th style={{ whiteSpace: 'nowrap', padding: '0.6rem 0.5rem' }}>Hora</th>
+                  <th style={{ padding: '0.6rem 0.5rem' }}>Chofer Asignado</th>
+                  <th style={{ whiteSpace: 'nowrap', padding: '0.6rem 0.5rem' }}>Pago Chofer</th>
+                  <th style={{ textAlign: 'right', padding: '0.6rem 0.5rem' }}>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredBookings.length === 0 ? (
                   <tr>
-                    <td colSpan="3" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-light)' }}>
+                    <td colSpan="7" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-light)' }}>
                       <Calendar size={40} style={{ opacity: 0.3, marginBottom: '1rem' }} />
                       <div>No hay servicios para esta fecha o actividad.</div>
                     </td>
@@ -209,43 +213,41 @@ const DriversPage = () => {
                 ) : (
                   currentAssignItems.map(b => (
                     <tr key={b.id}>
-                      <td>
+                      <td style={{ whiteSpace: 'nowrap', padding: '0.6rem 0.5rem' }}>
                         <div className="font-bold">{b.date}</div>
-                        <div className="text-muted d-flex align-items-center gap-1"><User size={14} />{b.customer} ({b.pax} pax)</div>
-                        <div className="text-muted" style={{ fontSize: '0.8rem' }}>{b.hotel}</div>
                       </td>
-                      <td>
-                        <div className="font-bold">{b.tour}</div>
+                      <td style={{ padding: '0.6rem 0.5rem' }}>
+                        <div className="text-muted d-flex align-items-center gap-1" style={{ whiteSpace: 'nowrap' }}>
+                          <User size={14} style={{ flexShrink: 0 }} />
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{b.customer} ({b.pax} pax)</span>
+                        </div>
+                        <div className="text-muted" style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{b.hotel}</div>
+                      </td>
+                      <td style={{ padding: '0.6rem 0.5rem' }}>
+                        <div className="font-bold" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{b.tour}</div>
                         <div className="text-muted" style={{ fontSize: '0.85rem' }}>Ref: {b.id}</div>
                       </td>
-                      <td>
-                        <div className="d-flex gap-2" style={{ flexWrap: 'nowrap', alignItems: 'center' }}>
-                          <div style={{ width: '120px' }}>
-                            <div style={{ fontSize: '0.65rem', color: 'var(--text-light)', marginBottom: '2px', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Hora</div>
-                            <div style={{ fontWeight: 600, color: '#0ea5e9' }}>{b.pickupTime || b.time || '--:--'}</div>
-                          </div>
-                          <div style={{ flex: 1, minWidth: '200px' }}>
-                            <div style={{ fontSize: '0.65rem', color: 'var(--text-light)', marginBottom: '2px', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Chofer Asignado</div>
-                            <div style={{ fontWeight: 500, color: 'var(--text-dark)' }}>
-                              {(() => {
-                                const dVal = b.driverId || b.driver;
-                                if (!dVal) return 'Sin Chofer';
-                                const found = drivers.find(d => String(d.id) === String(dVal) || d.name === dVal);
-                                return found ? found.name : dVal;
-                              })()}
-                            </div>
-                          </div>
-                          <div style={{ width: '120px' }}>
-                            <div style={{ fontSize: '0.65rem', color: 'var(--text-light)', marginBottom: '2px', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Pago Chofer</div>
-                            <div style={{ fontWeight: 600, color: 'var(--text-dark)' }}>$ {b.driverPayment || '0.00'}</div>
-                          </div>
-                          <div style={{ width: '120px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }}>
-                            <button className="btn btn-primary btn-sm" onClick={() => setAssigningBooking(b)} style={{ padding: '4px 12px', fontSize: '0.8rem', borderRadius: '4px' }}>
-                              <Edit3 size={14} style={{ marginRight: '4px' }} />
-                              Asignar
-                            </button>
-                          </div>
+                      <td style={{ whiteSpace: 'nowrap', padding: '0.6rem 0.5rem' }}>
+                        <div style={{ fontWeight: 600, color: '#0ea5e9' }}>{b.pickupTime || b.time || '--:--'}</div>
+                      </td>
+                      <td style={{ whiteSpace: 'nowrap', padding: '0.6rem 0.5rem' }}>
+                        <div style={{ fontWeight: 500, color: 'var(--text-dark)' }}>
+                          {(() => {
+                            const dVal = b.driverId || b.driver;
+                            if (!dVal) return 'Sin Chofer';
+                            const found = drivers.find(d => String(d.id) === String(dVal) || d.name === dVal);
+                            return found ? found.name : dVal;
+                          })()}
                         </div>
+                      </td>
+                      <td style={{ whiteSpace: 'nowrap', padding: '0.6rem 0.5rem' }}>
+                        <div style={{ fontWeight: 600, color: 'var(--text-dark)' }}>$ {b.driverPayment || '0.00'}</div>
+                      </td>
+                      <td style={{ textAlign: 'right', whiteSpace: 'nowrap', padding: '0.6rem 0.5rem' }}>
+                        <button className="btn btn-primary btn-sm" onClick={() => setAssigningBooking(b)} style={{ padding: '4px 12px', fontSize: '0.8rem', borderRadius: '4px' }}>
+                          <Edit3 size={14} style={{ marginRight: '4px' }} />
+                          Asignar
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -265,9 +267,9 @@ const DriversPage = () => {
             <h3 style={{ fontSize: '1.1rem', margin: 0 }}>{t('driversDirectory') || 'Directorio de Choferes Registrados'}</h3>
           </div>
           <div className="table-wrapper">
-            <table className="table" style={{ minWidth: '100%' }}>
-              <thead>
-                <tr>
+            <table className="table compact-table" style={{ minWidth: '0', width: '100%', fontSize: '0.85rem' }}>
+              <thead style={{ fontSize: '0.75rem' }}>
+                <tr style={{ color: 'var(--text-light)', borderBottom: '1px solid var(--border-color)' }}>
                   <th>{t('driverName')}</th>
                   <th>{t('contactWhatsapp') || 'Contacto (WhatsApp)'}</th>
                   <th>{t('vehicle')}</th>
@@ -331,32 +333,32 @@ const DriversPage = () => {
           
           <div className="responsive-grid mb-4 no-print" style={{ gap: '15px' }}>
             <div className="form-group">
-              <label>{t('selectDriver') || 'Seleccionar Chofer'}</label>
-              <select className="form-control" value={orderFilterVehicle} onChange={e => setOrderFilterVehicle(e.target.value)}>
+              <label style={{ fontSize: '0.85rem' }}>{t('selectDriver') || 'Seleccionar Chofer'}</label>
+              <select className="form-control" style={{ height: '36px', fontSize: '0.85rem', padding: '0 12px', borderRadius: 'var(--radius-md)' }} value={orderFilterVehicle} onChange={e => setOrderFilterVehicle(e.target.value)}>
                 <option value="">-- Todos los choferes --</option>
                 {drivers.map(d => <option key={d.id} value={d.id}>{d.name} ({d.vehicle})</option>)}
               </select>
             </div>
             <div className="form-group">
-              <label>{t('dateFrom') || 'Fecha Desde'}</label>
+              <label style={{ fontSize: '0.85rem' }}>{t('dateFrom') || 'Fecha Desde'}</label>
               <div className="search-field" style={{ width: '100%' }}>
-                <Calendar size={18} />
-                <input type="date" className="form-control" value={orderFilterDateStart} onChange={e => setOrderFilterDateStart(e.target.value)} />
+                <Calendar size={16} />
+                <input type="date" className="form-control" style={{ height: '36px', fontSize: '0.85rem', padding: '0 12px 0 36px', borderRadius: 'var(--radius-md)' }} value={orderFilterDateStart} onChange={e => setOrderFilterDateStart(e.target.value)} />
               </div>
             </div>
             <div className="form-group">
-              <label>{t('dateTo') || 'Fecha Hasta'}</label>
+              <label style={{ fontSize: '0.85rem' }}>{t('dateTo') || 'Fecha Hasta'}</label>
               <div className="search-field" style={{ width: '100%' }}>
-                <Calendar size={18} />
-                <input type="date" className="form-control" value={orderFilterDateEnd} onChange={e => setOrderFilterDateEnd(e.target.value)} />
+                <Calendar size={16} />
+                <input type="date" className="form-control" style={{ height: '36px', fontSize: '0.85rem', padding: '0 12px 0 36px', borderRadius: 'var(--radius-md)' }} value={orderFilterDateEnd} onChange={e => setOrderFilterDateEnd(e.target.value)} />
               </div>
             </div>
           </div>
 
               <div className="table-wrapper">
-              <table className="table">
-                <thead>
-                  <tr>
+              <table className="table compact-table" style={{ minWidth: '0', width: '100%', fontSize: '0.85rem' }}>
+                <thead style={{ fontSize: '0.75rem' }}>
+                  <tr style={{ color: 'var(--text-light)', borderBottom: '1px solid var(--border-color)' }}>
                     <th>Fecha / Hora</th>
                     <th>Chofer</th>
                     <th>Cliente</th>

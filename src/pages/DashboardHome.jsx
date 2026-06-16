@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { ArrowUpRight, DollarSign, Eye, ShoppingCart, TrendingUp, Users, X, User, MapPin, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList, Legend } from 'recharts';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
 import { useCurrency } from '../context/CurrencyContext';
@@ -12,6 +13,7 @@ const DashboardHome = () => {
   const navigate = useNavigate();
 
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [popularFilter, setPopularFilter] = useState('year');
 
   const statusBadgeMap = {
     paid: 'success',
@@ -60,19 +62,37 @@ const DashboardHome = () => {
   }, [allBookings]);
 
   const stats = [
-    { title: t('totalRevenue'), value: formatPrice(totalRevenue), change: '+12%', icon: <DollarSign size={24} color="var(--primary-color)" />, color: 'var(--primary-color)' },
-    { title: t('todayBookings'), value: todayBookingsCount.toString(), change: '+5%', icon: <ShoppingCart size={24} color="var(--success)" />, color: 'var(--success)' },
-    { title: t('newCustomers'), value: totalCustomers.toString(), change: '+18%', icon: <Users size={24} color="var(--warning)" />, color: 'var(--warning)' },
-    { title: t('activeTours'), value: activeToursCount.toString(), change: '0%', icon: <TrendingUp size={24} color="var(--danger)" />, color: 'var(--danger)' },
+    { title: t('totalRevenue'), value: formatPrice(totalRevenue), change: '+12%', icon: <DollarSign size={18} color="var(--primary-color)" />, color: 'var(--primary-color)' },
+    { title: t('todayBookings'), value: todayBookingsCount.toString(), change: '+5%', icon: <ShoppingCart size={18} color="var(--success)" />, color: 'var(--success)' },
+    { title: t('newCustomers'), value: totalCustomers.toString(), change: '+18%', icon: <Users size={18} color="var(--warning)" />, color: 'var(--warning)' },
+    { title: t('activeTours'), value: activeToursCount.toString(), change: '0%', icon: <TrendingUp size={18} color="var(--danger)" />, color: 'var(--danger)' },
   ];
 
   const recentBookings = allBookings.slice(0, 5);
 
   const popularTours = useMemo(() => {
     if (allBookings.length === 0) return [];
+
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    const currentDate = now.getDate();
+
+    const filteredBookings = allBookings.filter(b => {
+      if (!b.date) return false;
+      const bDate = new Date(b.date);
+      if (popularFilter === 'day') {
+        return bDate.getDate() === currentDate && bDate.getMonth() === currentMonth && bDate.getFullYear() === currentYear;
+      }
+      if (popularFilter === 'month') {
+        return bDate.getMonth() === currentMonth && bDate.getFullYear() === currentYear;
+      }
+      return bDate.getFullYear() === currentYear;
+    });
+
     const counts = {};
     let max = 0;
-    allBookings.forEach(b => {
+    filteredBookings.forEach(b => {
       counts[b.tour] = (counts[b.tour] || 0) + 1;
       if (counts[b.tour] > max) max = counts[b.tour];
     });
@@ -84,7 +104,7 @@ const DashboardHome = () => {
         salesCount: count,
         percent: `${Math.round((count / max) * 100)}%`
       }));
-  }, [allBookings]);
+  }, [allBookings, popularFilter]);
 
   return (
     <div>
@@ -97,49 +117,46 @@ const DashboardHome = () => {
         </div>
       </div>
 
-      <div className="stats-grid mb-4">
+      <div className="stats-grid mb-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px' }}>
         {stats.map((stat) => (
-          <div key={stat.title} className="card d-flex align-items-center gap-4">
-            <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: `${stat.color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {stat.icon}
+          <div key={stat.title} className="card" style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: '6px', borderRadius: '10px' }}>
+            <div className="d-flex justify-content-between align-items-start">
+              <p className="text-muted" style={{ margin: 0, fontSize: '0.8rem', fontWeight: 600 }}>{stat.title}</p>
+              <div style={{ width: '30px', height: '30px', borderRadius: '6px', backgroundColor: `${stat.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                {stat.icon}
+              </div>
             </div>
             <div>
-              <p className="text-muted" style={{ margin: 0 }}>{stat.title}</p>
-              <h3 style={{ margin: '5px 0', fontSize: '1.5rem' }}>{stat.value}</h3>
-              <div className="d-flex align-items-center gap-1" style={{ fontSize: '0.85rem', color: stat.change.startsWith('+') ? 'var(--success)' : 'var(--text-light)', fontWeight: 500 }}>
-                {stat.change.startsWith('+') && <ArrowUpRight size={14} />}
-                {stat.change} {t('thisMonth')}
+              <h3 style={{ margin: '0 0 2px 0', fontSize: '1.15rem', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.value}</h3>
+              <div className="d-flex align-items-center gap-1" style={{ fontSize: '0.7rem', color: stat.change.startsWith('+') ? 'var(--success)' : 'var(--text-light)', fontWeight: 600 }}>
+                {stat.change.startsWith('+') && <ArrowUpRight size={12} />}
+                {stat.change} <span style={{ color: 'var(--text-muted)' }}>{t('thisMonth')}</span>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        <div className="card">
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', alignItems: 'stretch' }}>
+        <div className="card" style={{ flex: '2 1 500px' }}>
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h3 style={{ fontSize: '1.2rem', margin: 0 }}>{t('recentBookings')}</h3>
             <button className="btn btn-outline" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }} onClick={() => navigate('/bookings')}>{t('seeAll')}</button>
           </div>
           <div className="table-wrapper">
-            <table className="table">
-              <thead>
+            <table className="table compact-table" style={{ minWidth: '0', width: '100%', fontSize: '0.85rem' }}>
+              <thead style={{ fontSize: '0.75rem' }}>
                 <tr>
-                  <th>ID</th>
+                  <th style={{ whiteSpace: 'nowrap' }}>ID</th>
                   <th>{t('customer')}</th>
                   <th>{t('tour')}</th>
-                  <th>Fecha</th>
-                  <th>Pax</th>
-                  <th>Hotel</th>
-                  <th>{t('status')}</th>
-                  <th>{t('amount')}</th>
-                  <th></th>
+                  <th style={{ textAlign: 'right' }}>ACCIONES</th>
                 </tr>
               </thead>
               <tbody>
                 {recentBookings.map((booking) => (
                   <tr key={booking.id}>
-                    <td className="font-bold">{booking.id}</td>
+                    <td className="font-bold" style={{ whiteSpace: 'nowrap' }}>{booking.id}</td>
                     <td>
                       <div style={{ fontWeight: 500 }}>{booking.customer}</div>
                       <div className="text-muted" style={{ fontSize: '0.75rem' }}>{booking.email}</div>
@@ -147,18 +164,9 @@ const DashboardHome = () => {
                     <td>
                       <div style={{ fontWeight: 500 }}>{booking.tour}</div>
                     </td>
-                    <td className="text-muted">{booking.date}</td>
-                    <td className="text-muted">{booking.pax}</td>
-                    <td className="text-muted">{booking.hotel}</td>
-                    <td>
-                      <span className={`badge badge-${statusBadgeMap[booking.status]}`}>
-                        {t(booking.status)}
-                      </span>
-                    </td>
-                    <td className="font-bold">{booking.amount}</td>
-                    <td>
-                      <button onClick={() => setSelectedBooking(booking)} style={{ background: 'none', color: 'var(--primary-color)' }}>
-                        <Eye size={18} />
+                    <td style={{ whiteSpace: 'nowrap', textAlign: 'right' }}>
+                      <button onClick={() => setSelectedBooking(booking)} style={{ background: 'none', color: 'var(--primary-color)', padding: '4px 8px', borderRadius: '4px' }}>
+                        <Eye size={16} />
                       </button>
                     </td>
                   </tr>
@@ -168,20 +176,61 @@ const DashboardHome = () => {
           </div>
         </div>
 
-        <div className="card">
-          <h3 style={{ fontSize: '1.2rem', margin: '0 0 20px 0' }}>{t('popularTours')}</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {popularTours.map((tour) => (
-              <div key={tour.name}>
-                <div className="d-flex justify-content-between mb-2">
-                  <span style={{ fontWeight: 500, fontSize: '0.9rem' }}>{tour.name}</span>
-                  <span className="text-muted">{tour.salesCount} {t('sales')}</span>
-                </div>
-                <div style={{ width: '100%', height: '8px', backgroundColor: 'var(--bg-color)', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
-                  <div style={{ width: tour.percent, height: '100%', backgroundColor: 'var(--primary-color)', borderRadius: 'var(--radius-full)' }} />
-                </div>
+        <div className="card" style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column' }}>
+          <div className="d-flex justify-content-between align-items-center mb-4" style={{ flexWrap: 'wrap', gap: '10px' }}>
+            <h3 style={{ fontSize: '1.1rem', margin: 0, whiteSpace: 'nowrap' }}>{t('popularTours')}</h3>
+            <div style={{ display: 'flex', gap: '4px', backgroundColor: 'var(--bg-color)', padding: '4px', borderRadius: 'var(--radius-full)' }}>
+              {['day', 'month', 'year'].map(f => (
+                <button
+                  key={f}
+                  onClick={() => setPopularFilter(f)}
+                  style={{
+                    border: 'none',
+                    background: popularFilter === f ? 'var(--text-dark)' : 'transparent',
+                    color: popularFilter === f ? '#fff' : 'var(--text-muted)',
+                    padding: '4px 12px',
+                    borderRadius: 'var(--radius-full)',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  {f === 'day' ? 'Día' : f === 'month' ? 'Mes' : 'Año'}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={{ width: '100%', height: '300px', display: 'flex', flexDirection: 'column' }}>
+            {popularTours.length === 0 ? (
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '0.9rem', textAlign: 'center', padding: '20px' }}>
+                {popularFilter === 'day' ? 'No hay reservas registradas para el día de hoy.' :
+                 popularFilter === 'month' ? 'No hay reservas registradas para este mes.' :
+                 'No hay reservas registradas para este año.'}
               </div>
-            ))}
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={popularTours} margin={{ top: 30, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                  <XAxis 
+                    dataKey="name" 
+                    tickFormatter={(name) => name.split(/[\s:-]+/).filter(w => w.length > 0).map(w => w[0].toUpperCase()).join('')} 
+                    tick={{ fontSize: 11, fill: 'var(--text-dark)', fontWeight: 'bold' }} 
+                    axisLine={{ stroke: 'var(--border-color)' }} 
+                    tickLine={false} 
+                    interval={0} 
+                  />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: 'var(--text-light)' }} axisLine={false} tickLine={false} />
+                  <Tooltip 
+                    cursor={{ fill: 'rgba(14,165,233,0.05)' }} 
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-sm)', backgroundColor: 'var(--card-bg)', color: 'var(--text-dark)' }} 
+                    formatter={(value) => [value, 'Reserva']}
+                  />
+                  <Bar dataKey="salesCount" fill="#8bbcf1" radius={[4, 4, 0, 0]} barSize={40} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
       </div>

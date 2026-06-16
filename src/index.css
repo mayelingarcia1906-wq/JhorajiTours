@@ -19,7 +19,7 @@
   --info: #3b82f6;
 
   /* Layout */
-  --sidebar-width: 260px;
+  --sidebar-width: 235px;
   --header-height: 70px;
   
   /* Shadows */
@@ -181,11 +181,11 @@ input[type="checkbox"]:checked::before {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1.2rem;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
   border-radius: var(--radius-md);
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 
 .btn-primary { background-color: var(--primary-color); color: #fff; }
@@ -217,14 +217,14 @@ input[type="checkbox"]:checked::before {
 
 /* Forms */
 .form-group { margin-bottom: 1rem; }
-.form-group label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 500; color: var(--text-dark); }
+.form-group label { display: block; margin-bottom: 0.35rem; font-size: 0.85rem; font-weight: 500; color: var(--text-dark); }
 .form-control {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   font-family: 'Poppins', sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   transition: var(--transition);
 }
 .form-control:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(14,165,233,0.1); }
@@ -345,6 +345,11 @@ input[type="checkbox"]:checked::before {
   flex-wrap: wrap;
 }
 
+.page-header h2 {
+  font-size: 1.35rem;
+  margin-bottom: 2px;
+}
+
 .page-header > div {
   min-width: 0;
 }
@@ -393,13 +398,14 @@ input[type="checkbox"]:checked::before {
 }
 
 .search-integrated .form-control {
-  padding-left: 38px;
-  padding-right: 135px;
+  padding-left: 34px;
+  padding-right: 125px;
   border-radius: var(--radius-full);
   border: 1.5px solid var(--border-color);
   background: var(--bg-color);
-  height: 42px;
+  height: 36px;
   width: 100%;
+  font-size: 0.85rem;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -410,7 +416,7 @@ input[type="checkbox"]:checked::before {
 
 .search-integrated .search-clear-btn {
   position: absolute;
-  right: 105px;
+  right: 95px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -438,16 +444,16 @@ input[type="checkbox"]:checked::before {
 
 .search-integrated .search-btn-inner {
   position: absolute;
-  right: 5px;
+  right: 4px;
   top: 50%;
   transform: translateY(-50%);
   background: var(--primary-color);
   color: #fff;
   border: none;
   border-radius: var(--radius-full);
-  padding: 0 16px;
-  height: 32px;
-  font-size: 0.82rem;
+  padding: 0 14px;
+  height: 28px;
+  font-size: 0.8rem;
   font-weight: 600;
   display: flex;
   align-items: center;

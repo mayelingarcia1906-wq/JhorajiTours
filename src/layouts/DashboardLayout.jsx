@@ -142,8 +142,8 @@ const DashboardLayout = () => {
                   style={({ isActive }) => ({
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '15px',
-                    padding: '10px 20px',
+                    gap: '10px',
+                    padding: '10px 12px',
                     borderRadius: 'var(--radius-md)',
                     color: isActive ? 'var(--primary-color)' : 'var(--text-light)',
                     backgroundColor: isActive ? 'rgba(14, 165, 233, 0.1)' : 'transparent',
@@ -152,6 +152,7 @@ const DashboardLayout = () => {
                     overflow: 'hidden',
                     whiteSpace: 'nowrap',
                     marginBottom: '1px',
+                    fontSize: '0.88rem'
                   })}
                 >
                   <div style={{ minWidth: '20px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
@@ -162,12 +163,12 @@ const DashboardLayout = () => {
           ))}
         </nav>
 
-        <div style={{ padding: '20px', borderTop: '1px solid var(--border-color)', overflow: 'hidden' }}>
+        <div style={{ padding: '15px', borderTop: '1px solid var(--border-color)', overflow: 'hidden' }}>
           <button
             onClick={() => { localStorage.removeItem('jhoraji_user'); navigate('/login', { replace: true }); }}
             className="sidebar-logout-btn"
-            style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '12px 20px', color: 'var(--danger)', background: 'none', width: '100%', borderRadius: 'var(--radius-md)', fontWeight: '500', transition: 'all 0.2s', overflow: 'hidden', whiteSpace: 'nowrap', border: 'none', cursor: 'pointer' }}>
-            <div style={{ minWidth: '20px', display: 'flex', justifyContent: 'center' }}><LogOut size={20} /></div>
+            style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 12px', color: 'var(--danger)', background: 'none', width: '100%', borderRadius: 'var(--radius-md)', fontWeight: '500', fontSize: '0.88rem', transition: 'all 0.2s', overflow: 'hidden', whiteSpace: 'nowrap', border: 'none', cursor: 'pointer' }}>
+            <div style={{ minWidth: '20px', display: 'flex', justifyContent: 'center' }}><LogOut size={18} /></div>
             <span className="sidebar-text">{t('logout')}</span>
           </button>
         </div>

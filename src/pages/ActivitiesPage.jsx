@@ -154,9 +154,9 @@ const ActivitiesPage = () => {
 
       <div className="card">
         <div className="table-wrapper">
-          <table className="table compact-table">
-            <thead>
-              <tr>
+          <table className="table compact-table" style={{ minWidth: '0', width: '100%', fontSize: '0.85rem' }}>
+            <thead style={{ fontSize: '0.75rem' }}>
+              <tr style={{ color: 'var(--text-light)', borderBottom: '1px solid var(--border-color)' }}>
                 <th>{t('activityName').toUpperCase()} / PROVEEDOR</th>
                 <th>COSTO</th>
                 <th>MODO</th>

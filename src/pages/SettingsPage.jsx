@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Bell, Building, Mail, Palette, Phone, Save, Shield, UserCircle, Users, Globe, Unlock, CheckSquare, Square, Database, Download, Upload } from 'lucide-react';
+import { Bell, Building, Mail, Palette, Phone, Save, Shield, UserCircle, Users, Globe, Unlock, CheckSquare, Square, Database, Download, Upload, AlertTriangle, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
@@ -13,6 +13,7 @@ const defaultSettings = {
   website: 'https://jhorajitours.com',
   currency: 'USD',
   emailNotif: true,
+  emailNotifFreq: 'daily',
   newBookingNotif: true,
   paymentNotif: true,
   pushNotif: false,
@@ -70,6 +71,7 @@ const SettingsPage = () => {
   const activeSection = searchParams.get('section') || 'general';
   const [settings, setSettings] = useState(() => readStoredJson('jhoraji_settings', defaultSettings));
   const [sessions, setSessions] = useState(() => readStoredArray('jhoraji_sessions', defaultSessions));
+  const [pendingImport, setPendingImport] = useState(null);
   
   const { permissions, updatePermissions, isAdmin } = usePermissions();
   
@@ -122,6 +124,7 @@ const SettingsPage = () => {
   const persistSettings = (nextSettings) => {
     setSettings(nextSettings);
     localStorage.setItem('jhoraji_settings', JSON.stringify(nextSettings));
+    window.dispatchEvent(new Event('settings_updated'));
   };
 
   const handleChange = (field, value) => {
@@ -197,17 +200,22 @@ const SettingsPage = () => {
   };
 
   const handleExportData = () => {
+    const safeParse = (key, fallback) => {
+      try { return JSON.parse(localStorage.getItem(key)) || fallback; }
+      catch { return fallback; }
+    };
+
     const dataToExport = {
-      tours: JSON.parse(localStorage.getItem('jhoraji_tours') || '[]'),
-      customers: JSON.parse(localStorage.getItem('jhoraji_customers') || '[]'),
-      drivers: JSON.parse(localStorage.getItem('jhoraji_drivers') || '[]'),
-      agencies: JSON.parse(localStorage.getItem('jhoraji_agencies') || '[]'),
-      providers: JSON.parse(localStorage.getItem('jhoraji_providers') || '[]'),
-      activities: JSON.parse(localStorage.getItem('jhoraji_act') || '[]'),
-      bookings: JSON.parse(localStorage.getItem('jhoraji_bookings') || '[]'),
-      orders: JSON.parse(localStorage.getItem('jhoraji_orders') || '[]'),
-      expenses: JSON.parse(localStorage.getItem('jhoraji_expenses') || '[]'),
-      audit: JSON.parse(localStorage.getItem('jhoraji_audit') || '[]'),
+      tours: safeParse('jhoraji_tours', []),
+      customers: safeParse('jhoraji_customers', []),
+      drivers: safeParse('jhoraji_drivers', []),
+      agencies: safeParse('jhoraji_agencies', []),
+      providers: safeParse('jhoraji_providers', []),
+      activities: safeParse('jhoraji_act', []),
+      bookings: safeParse('jhoraji_bookings', []),
+      orders: safeParse('jhoraji_orders', []),
+      expenses: safeParse('jhoraji_expenses', []),
+      audit: safeParse('jhoraji_audit', []),
     };
     
     const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
@@ -231,32 +239,75 @@ const SettingsPage = () => {
       try {
         const importedData = JSON.parse(e.target.result);
         if (!importedData.bookings) throw new Error('Formato inválido');
-        
-        localStorage.setItem('jhoraji_tours', JSON.stringify(importedData.tours || []));
-        localStorage.setItem('jhoraji_customers', JSON.stringify(importedData.customers || []));
-        localStorage.setItem('jhoraji_drivers', JSON.stringify(importedData.drivers || []));
-        localStorage.setItem('jhoraji_agencies', JSON.stringify(importedData.agencies || []));
-        localStorage.setItem('jhoraji_providers', JSON.stringify(importedData.providers || []));
-        localStorage.setItem('jhoraji_act', JSON.stringify(importedData.activities || []));
-        localStorage.setItem('jhoraji_bookings', JSON.stringify(importedData.bookings || []));
-        localStorage.setItem('jhoraji_orders', JSON.stringify(importedData.orders || []));
-        localStorage.setItem('jhoraji_expenses', JSON.stringify(importedData.expenses || []));
-        localStorage.setItem('jhoraji_audit', JSON.stringify(importedData.audit || []));
-        
-        addToast('Datos restaurados correctamente. Recargando...', 'success');
-        setTimeout(() => window.location.reload(), 1500);
+        setPendingImport(importedData);
       } catch (error) {
         addToast('Error al importar. El archivo no es un respaldo válido.', 'error');
       }
     };
     reader.readAsText(file);
+    event.target.value = null; // Reset file input
+  };
+
+  const executeImport = (mode) => {
+    if (!pendingImport) return;
+    
+    try {
+      if (mode === 'overwrite') {
+        localStorage.setItem('jhoraji_tours', JSON.stringify(pendingImport.tours || []));
+        localStorage.setItem('jhoraji_customers', JSON.stringify(pendingImport.customers || []));
+        localStorage.setItem('jhoraji_drivers', JSON.stringify(pendingImport.drivers || []));
+        localStorage.setItem('jhoraji_agencies', JSON.stringify(pendingImport.agencies || []));
+        localStorage.setItem('jhoraji_providers', JSON.stringify(pendingImport.providers || []));
+        localStorage.setItem('jhoraji_act', JSON.stringify(pendingImport.activities || []));
+        localStorage.setItem('jhoraji_bookings', JSON.stringify(pendingImport.bookings || []));
+        localStorage.setItem('jhoraji_orders', JSON.stringify(pendingImport.orders || []));
+        localStorage.setItem('jhoraji_expenses', JSON.stringify(pendingImport.expenses || []));
+        localStorage.setItem('jhoraji_audit', JSON.stringify(pendingImport.audit || []));
+      } else if (mode === 'merge') {
+        const mergeArrays = (key, importArr) => {
+          if (!importArr || !importArr.length) return;
+          const localArr = JSON.parse(localStorage.getItem(key) || '[]');
+          
+          if (importArr.length > 0 && typeof importArr[0] === 'string') {
+            // Simple arrays (tours, activities)
+            const combined = [...new Set([...localArr, ...importArr])];
+            localStorage.setItem(key, JSON.stringify(combined));
+          } else {
+            // Object arrays with ID
+            const map = new Map();
+            localArr.forEach(item => { if(item.id) map.set(item.id, item) });
+            importArr.forEach(item => { if(item.id) map.set(item.id, item) });
+            localStorage.setItem(key, JSON.stringify(Array.from(map.values())));
+          }
+        };
+
+        mergeArrays('jhoraji_tours', pendingImport.tours);
+        mergeArrays('jhoraji_customers', pendingImport.customers);
+        mergeArrays('jhoraji_drivers', pendingImport.drivers);
+        mergeArrays('jhoraji_agencies', pendingImport.agencies);
+        mergeArrays('jhoraji_providers', pendingImport.providers);
+        mergeArrays('jhoraji_act', pendingImport.activities);
+        mergeArrays('jhoraji_bookings', pendingImport.bookings);
+        mergeArrays('jhoraji_orders', pendingImport.orders);
+        mergeArrays('jhoraji_expenses', pendingImport.expenses);
+        mergeArrays('jhoraji_audit', pendingImport.audit);
+      }
+      
+      addToast(mode === 'merge' ? 'Datos fusionados correctamente.' : 'Datos restaurados correctamente.', 'success');
+      setPendingImport(null);
+      setTimeout(() => window.location.reload(), 1500);
+    } catch (error) {
+      addToast('Error al procesar los datos.', 'error');
+    }
   };
 
   return (
     <div>
-      <div className="mb-4">
-        <h2>{t('settings')}</h2>
-        <p className="text-muted">{t('systemPreferences')}</p>
+      <div className="page-header mb-4">
+        <div>
+          <h2>{t('settings')}</h2>
+          <p className="text-muted" style={{ margin: 0 }}>{t('systemPreferences')}</p>
+        </div>
       </div>
 
       <div className="card" style={{ padding: 0 }}>
@@ -351,16 +402,16 @@ const SettingsPage = () => {
               <div>
                 <h3 className="mb-4">{t('accountData')}</h3>
                 <div style={{ ...settingCardStyle, display: 'flex', gap: '20px', alignItems: 'center', marginBottom: '20px' }}>
-                  <div style={{ width: '72px', height: '72px', borderRadius: '50%', backgroundColor: 'var(--primary-color)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.7rem', fontWeight: 700 }}>
+                  <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'var(--primary-color)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', fontWeight: 700 }}>
                     {currentUser.name?.charAt(0) || 'A'}
                   </div>
                   <div>
-                    <h4 style={{ margin: '0 0 4px 0' }}>{currentUser.name}</h4>
-                    <p className="text-muted" style={{ margin: 0 }}>{currentUser.email}</p>
-                    <span className="badge badge-primary" style={{ marginTop: '8px' }}>{currentUser.role}</span>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1.05rem' }}>{currentUser.name}</h4>
+                    <p className="text-muted" style={{ margin: 0, fontSize: '0.85rem' }}>{currentUser.email}</p>
+                    <span className="badge badge-primary" style={{ marginTop: '8px', fontSize: '0.7rem' }}>{currentUser.role}</span>
                   </div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '15px' }}>
                   {[
                     [t('fullName'), currentUser.name, <UserCircle size={18} />],
                     [t('email'), currentUser.email, <Mail size={18} />],
@@ -372,10 +423,10 @@ const SettingsPage = () => {
                     [t('accessLevel'), currentUser.role === 'Administrador' ? 'Full Access' : 'Standard', <Shield size={18} />],
                   ].map(([label, value, icon]) => (
                     <div key={label} style={settingCardStyle}>
-                      <p className="text-muted" style={{ margin: '0 0 8px 0' }}>{label}</p>
-                      <div className="d-flex align-items-center gap-2" style={{ fontWeight: 600 }}>
+                      <p className="text-muted" style={{ margin: '0 0 4px 0', fontSize: '0.85rem' }}>{label}</p>
+                      <div className="d-flex align-items-center gap-2" style={{ fontWeight: 600, fontSize: '0.9rem' }}>
                         <span style={{ color: 'var(--primary-color)', flexShrink: 0 }}>{icon}</span>
-                        <span style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{value}</span>
+                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={value}>{value}</span>
                       </div>
                     </div>
                   ))}
@@ -390,8 +441,8 @@ const SettingsPage = () => {
                   <label style={{ display: 'block', marginBottom: '10px', fontWeight: 500 }}>{t('systemTheme')}</label>
                   <div className="d-flex align-items-center justify-content-between" style={settingCardStyle}>
                     <div>
-                      <h4 style={{ margin: 0, fontSize: '1rem' }}>{theme === 'dark' ? t('darkMode') : t('lightMode')}</h4>
-                      <p className="text-muted" style={{ margin: 0 }}>{t('darkModeDesc')}</p>
+                      <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{theme === 'dark' ? t('darkMode') : t('lightMode')}</h4>
+                      <p className="text-muted" style={{ margin: 0, fontSize: '0.85rem' }}>{t('darkModeDesc')}</p>
                     </div>
                     <ToggleSwitch checked={theme === 'dark'} onChange={toggleTheme} activeColor="#f59e0b" label={t('systemTheme')} />
                   </div>
@@ -401,8 +452,8 @@ const SettingsPage = () => {
                   <label style={{ display: 'block', marginBottom: '10px', fontWeight: 500 }}>{t('panelLanguage')}</label>
                   <div className="d-flex align-items-center justify-content-between" style={settingCardStyle}>
                     <div>
-                      <h4 style={{ margin: 0, fontSize: '1rem' }}>{language === 'es' ? t('spanish') : t('english')}</h4>
-                      <p className="text-muted" style={{ margin: 0 }}>{t('panelLanguageDesc')}</p>
+                      <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{language === 'es' ? t('spanish') : t('english')}</h4>
+                      <p className="text-muted" style={{ margin: 0, fontSize: '0.85rem' }}>{t('panelLanguageDesc')}</p>
                     </div>
                     <select className="form-control" style={{ width: '150px' }} value={language} onChange={(e) => changeLanguage(e.target.value)}>
                       <option value="es">Español</option>
@@ -435,10 +486,28 @@ const SettingsPage = () => {
                   {notificationItems.map((item) => (
                     <div key={item.key} className="d-flex align-items-center justify-content-between" style={settingCardStyle}>
                       <div>
-                        <h4 style={{ margin: 0, fontSize: '1rem' }}>{item.title}</h4>
-                        <p className="text-muted" style={{ margin: 0 }}>{item.desc}</p>
+                        <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{item.title}</h4>
+                        <p className="text-muted" style={{ margin: 0, fontSize: '0.85rem' }}>{item.desc}</p>
                       </div>
-                      <ToggleSwitch checked={Boolean(settings[item.key])} onChange={(checked) => handleNotificationChange(item.key, checked)} label={item.title} />
+                      <div className="d-flex align-items-center gap-3">
+                        {settings[item.key] && (
+                          <select 
+                            className="form-control" 
+                            style={{ height: '32px', padding: '0 10px', fontSize: '0.85rem', width: 'auto', borderRadius: 'var(--radius-md)' }}
+                            value={settings[`${item.key}Freq`] || (item.key === 'emailNotif' ? 'daily' : 'instant')}
+                            onChange={(e) => {
+                              persistSettings({ ...settings, [`${item.key}Freq`]: e.target.value });
+                              addToast(t('preferenceUpdated') || 'Preferencia actualizada', 'success');
+                            }}
+                          >
+                            <option value="instant">Inmediato</option>
+                            <option value="hourly">Cada hora</option>
+                            <option value="daily">Diario</option>
+                            <option value="weekly">Semanal</option>
+                          </select>
+                        )}
+                        <ToggleSwitch checked={Boolean(settings[item.key])} onChange={(checked) => handleNotificationChange(item.key, checked)} label={item.title} />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -492,17 +561,17 @@ const SettingsPage = () => {
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                   {Object.entries(permissions).map(([role, roleData]) => (
-                    <div key={role} className="card" style={{ padding: '1.5rem', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
-                      <h4 style={{ margin: '0 0 15px 0', fontSize: '1.1rem', color: 'var(--primary-color)' }}>{t(role === 'Operador de Reservas' ? 'roleOperator' : 'roleAgent')}</h4>
+                    <div key={role} className="card" style={{ padding: '1.2rem', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
+                      <h4 style={{ margin: '0 0 15px 0', fontSize: '1.05rem', color: 'var(--primary-color)' }}>{t(role === 'Operador de Reservas' ? 'roleOperator' : 'roleAgent')}</h4>
                       
-                      <div style={{ marginBottom: '10px', fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.95rem' }}>{t('moduleAccess')}</div>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '20px' }}>
+                      <div style={{ marginBottom: '10px', fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.9rem' }}>{t('moduleAccess')}</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px', marginBottom: '20px' }}>
                         {allModules.map((module) => {
                           const isGranted = roleData.modules?.[module] || false;
                           return (
                             <div key={module} className="d-flex align-items-center gap-2" style={{ cursor: 'pointer' }} onClick={() => handlePermissionChange(role, 'modules', module, !isGranted)}>
-                              {isGranted ? <CheckSquare size={18} color="var(--primary-color)" /> : <Square size={18} color="var(--text-light)" />}
-                              <span style={{ fontWeight: 500, color: isGranted ? 'var(--text-dark)' : 'var(--text-light)' }}>
+                              {isGranted ? <CheckSquare size={16} color="var(--primary-color)" /> : <Square size={16} color="var(--text-light)" />}
+                              <span style={{ fontWeight: 500, fontSize: '0.85rem', color: isGranted ? 'var(--text-dark)' : 'var(--text-light)' }}>
                                 {t('module' + module.charAt(0).toUpperCase() + module.slice(1))}
                               </span>
                             </div>
@@ -510,14 +579,14 @@ const SettingsPage = () => {
                         })}
                       </div>
 
-                      <div style={{ marginBottom: '10px', fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.95rem' }}>{t('actionPermissions')}</div>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+                      <div style={{ marginBottom: '10px', fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.9rem' }}>{t('actionPermissions')}</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px' }}>
                         {allActions.map((action) => {
                           const isGranted = roleData.actions?.[action] || false;
                           return (
                             <div key={action} className="d-flex align-items-center gap-2" style={{ cursor: 'pointer' }} onClick={() => handlePermissionChange(role, 'actions', action, !isGranted)}>
-                              {isGranted ? <CheckSquare size={18} color="var(--primary-color)" /> : <Square size={18} color="var(--text-light)" />}
-                              <span style={{ fontWeight: 500, color: isGranted ? 'var(--text-dark)' : 'var(--text-light)' }}>
+                              {isGranted ? <CheckSquare size={16} color="var(--primary-color)" /> : <Square size={16} color="var(--text-light)" />}
+                              <span style={{ fontWeight: 500, fontSize: '0.85rem', color: isGranted ? 'var(--text-dark)' : 'var(--text-light)' }}>
                                 {t('action' + action.charAt(0).toUpperCase() + action.slice(1))}
                               </span>
                             </div>
@@ -536,20 +605,20 @@ const SettingsPage = () => {
                 <p className="text-muted mb-4">Protege tu información exportando tus datos periódicamente. Si alguna vez pierdes información, puedes restaurarla subiendo el archivo JSON de respaldo.</p>
                 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-                  <div className="card" style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
-                    <Download size={48} color="var(--primary-color)" style={{ marginBottom: '15px' }} />
-                    <h4 style={{ marginBottom: '10px' }}>Exportar Datos</h4>
-                    <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '20px' }}>Descarga un archivo JSON con todas tus reservas, clientes, choferes y configuraciones.</p>
-                    <button onClick={handleExportData} className="btn btn-primary" style={{ width: '100%' }}>
+                  <div className="card" style={{ padding: '1.5rem', textAlign: 'center', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
+                    <Download size={32} color="var(--primary-color)" style={{ marginBottom: '12px' }} />
+                    <h4 style={{ marginBottom: '8px', fontSize: '1.05rem' }}>Exportar Datos</h4>
+                    <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '15px' }}>Descarga un archivo JSON con todas tus reservas, clientes, choferes y configuraciones.</p>
+                    <button onClick={handleExportData} className="btn btn-primary" style={{ width: '100%', height: '36px', fontSize: '0.85rem' }}>
                       Descargar Copia (JSON)
                     </button>
                   </div>
 
-                  <div className="card" style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
-                    <Upload size={48} color="var(--warning)" style={{ marginBottom: '15px' }} />
-                    <h4 style={{ marginBottom: '10px' }}>Importar / Restaurar</h4>
-                    <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '20px' }}>Sube tu archivo JSON previamente descargado para restaurar el sistema completo.</p>
-                    <label className="btn btn-outline" style={{ width: '100%', cursor: 'pointer', display: 'block' }}>
+                  <div className="card" style={{ padding: '1.5rem', textAlign: 'center', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
+                    <Upload size={32} color="var(--warning)" style={{ marginBottom: '12px' }} />
+                    <h4 style={{ marginBottom: '8px', fontSize: '1.05rem' }}>Importar / Restaurar</h4>
+                    <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '15px' }}>Sube tu archivo JSON previamente descargado para restaurar el sistema completo.</p>
+                    <label className="btn btn-outline" style={{ width: '100%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '36px', fontSize: '0.85rem', margin: 0 }}>
                       Subir Archivo JSON
                       <input type="file" accept=".json" style={{ display: 'none' }} onChange={handleImportData} />
                     </label>
@@ -560,6 +629,49 @@ const SettingsPage = () => {
           </div>
         </div>
       </div>
+
+      {pendingImport && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '500px' }}>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h3 style={{ margin: 0 }}>Importar Datos</h3>
+              <button onClick={() => setPendingImport(null)} style={{ background: 'none', color: 'var(--text-light)', border: 'none', cursor: 'pointer' }}>
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="mb-4">
+              <p>Has seleccionado un archivo de respaldo. ¿Cómo deseas proceder con la información?</p>
+            </div>
+
+            <div className="d-flex flex-column gap-3">
+              <button 
+                onClick={() => executeImport('merge')} 
+                className="btn btn-primary" 
+                style={{ justifyContent: 'center', padding: '15px' }}
+              >
+                <div style={{ textAlign: 'left', width: '100%' }}>
+                  <div style={{ fontWeight: 'bold', fontSize: '1.05rem', marginBottom: '5px' }}>Fusionar Datos (Seguro)</div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 'normal', opacity: 0.9 }}>Agrega la información nueva del archivo sin borrar lo que ya tienes en el sistema.</div>
+                </div>
+              </button>
+
+              <button 
+                onClick={() => executeImport('overwrite')} 
+                className="btn btn-outline" 
+                style={{ justifyContent: 'center', padding: '15px', borderColor: 'var(--danger)', color: 'var(--danger)' }}
+              >
+                <div style={{ textAlign: 'left', width: '100%' }}>
+                  <div className="d-flex align-items-center gap-2" style={{ fontWeight: 'bold', fontSize: '1.05rem', marginBottom: '5px' }}>
+                    <AlertTriangle size={18} /> Reemplazar Todo (Peligroso)
+                  </div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 'normal', color: 'var(--text-light)' }}>Borra todos tus datos actuales y deja el sistema exactamente como está en el archivo.</div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -58,19 +58,56 @@ export const NotificationsProvider = ({ children }) => {
 
   const addNotification = useCallback((text, type = 'system') => {
     const icon = NOTIF_TYPE_ICONS[type] || '';
-    const newNotif = {
-      id: Date.now(),
-      text: icon ? `${icon} ${text}` : text,
-      time: new Date().toLocaleString(),
-      read: false,
-      type,
-    };
-    setNotifications(prev => [newNotif, ...prev].slice(0, 50));
+    const fullText = icon ? `${icon} ${text}` : text;
+    
+    setNotifications(prev => {
+      // Evitar que se repita exactamente la misma notificación si aún no ha sido leída
+      if (prev.some(n => !n.read && n.text === fullText)) {
+        return prev;
+      }
+
+      const newNotif = {
+        id: Date.now(),
+        text: fullText,
+        time: new Date().toLocaleString(),
+        read: false,
+        type,
+      };
+      return [newNotif, ...prev].slice(0, 50);
+    });
   }, []);
 
-  // Generate a periodic "live" notification every 3 minutes from bookings data
+  const [notifSettings, setNotifSettings] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('jhoraji_settings') || '{}');
+    } catch { return {}; }
+  });
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      try {
+        setNotifSettings(JSON.parse(localStorage.getItem('jhoraji_settings') || '{}'));
+      } catch {}
+    };
+    window.addEventListener('settings_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('settings_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
+
+  // Generate a periodic "live" notification
   useEffect(() => {
     if (isMuted) return;
+    if (notifSettings.pushNotif === false) return; // If disabled, don't generate live notifications
+
+    const freq = notifSettings.pushNotifFreq || 'instant';
+    let intervalMs = 3 * 60 * 1000; // 3 minutes for 'instant' demo
+    if (freq === 'hourly') intervalMs = 60 * 60 * 1000;
+    else if (freq === 'daily') intervalMs = 24 * 60 * 60 * 1000;
+    else if (freq === 'weekly') intervalMs = 7 * 24 * 60 * 60 * 1000;
+
     const liveMessages = [
       () => {
         const bookings = JSON.parse(localStorage.getItem('jhoraji_bookings') || '[]');
@@ -96,10 +133,10 @@ export const NotificationsProvider = ({ children }) => {
       const msgFn = liveMessages[Math.floor(Math.random() * liveMessages.length)];
       const msg = msgFn();
       if (msg) addNotification(msg.text, msg.type);
-    }, 3 * 60 * 1000); // Every 3 minutes
+    }, intervalMs);
 
     return () => clearInterval(interval);
-  }, [isMuted, addNotification]);
+  }, [isMuted, notifSettings.pushNotif, notifSettings.pushNotifFreq, addNotification]);
 
   const markNotificationRead = (id) => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));

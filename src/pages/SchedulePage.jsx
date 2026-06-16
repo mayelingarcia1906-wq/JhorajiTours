@@ -94,27 +94,27 @@ const SchedulePage = () => {
 
       {/* Stats row */}
       <div className="d-flex gap-3 mb-4" style={{ flexWrap: 'wrap' }}>
-        <div className="card" style={{ flex: 1, minWidth: '140px', padding: '1rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--primary-color)' }}>{totalWeekBookings}</div>
-          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{t('servicesThisWeek') || 'Servicios esta semana'}</div>
+        <div className="card" style={{ flex: 1, minWidth: '140px', padding: '12px 14px', borderRadius: '10px', textAlign: 'center' }}>
+          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--primary-color)' }}>{totalWeekBookings}</div>
+          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '2px' }}>{t('servicesThisWeek') || 'Servicios esta semana'}</div>
         </div>
-        <div className="card" style={{ flex: 1, minWidth: '140px', padding: '1rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--success)' }}>
+        <div className="card" style={{ flex: 1, minWidth: '140px', padding: '12px 14px', borderRadius: '10px', textAlign: 'center' }}>
+          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--success)' }}>
             {Object.values(bookingsByDate).flat().filter(b => b.status === 'paid').length}
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{t('paid') || 'Pagados'}</div>
+          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '2px' }}>{t('paid') || 'Pagados'}</div>
         </div>
-        <div className="card" style={{ flex: 1, minWidth: '140px', padding: '1rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--warning)' }}>
+        <div className="card" style={{ flex: 1, minWidth: '140px', padding: '12px 14px', borderRadius: '10px', textAlign: 'center' }}>
+          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--warning)' }}>
             {Object.values(bookingsByDate).flat().filter(b => b.status === 'pending').length}
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{t('pending') || 'Pendientes'}</div>
+          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '2px' }}>{t('pending') || 'Pendientes'}</div>
         </div>
-        <div className="card" style={{ flex: 2, minWidth: '200px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Calendar size={20} color="var(--primary-color)" />
+        <div className="card" style={{ flex: 2, minWidth: '200px', padding: '12px 14px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Calendar size={18} color="var(--primary-color)" />
           <div>
-            <div style={{ fontWeight: 600, fontSize: '0.95rem', textTransform: 'capitalize' }}>{monthYearLabel}</div>
-            <div className="text-muted" style={{ fontSize: '0.78rem' }}>
+            <div style={{ fontWeight: 600, fontSize: '0.85rem', textTransform: 'capitalize' }}>{monthYearLabel}</div>
+            <div className="text-muted" style={{ fontSize: '0.75rem', marginTop: '2px' }}>
               {weekDates[0].toLocaleDateString('es-DO', { day: 'numeric', month: 'short' })} — {weekDates[6].toLocaleDateString('es-DO', { day: 'numeric', month: 'short' })}
             </div>
           </div>

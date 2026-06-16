@@ -100,34 +100,34 @@ const AuditPage = () => {
       </div>
 
       {/* Estadísticas */}
-      <div className="stats-grid mb-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
-        <div className="card" style={{ textAlign: 'center', padding: '1rem' }}>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--primary-color)' }}>{logs.length}</div>
-          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{t('totalActions')}</div>
+      <div className="stats-grid mb-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' }}>
+        <div className="card" style={{ textAlign: 'center', padding: '12px 14px', borderRadius: '10px' }}>
+          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--primary-color)' }}>{logs.length}</div>
+          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '2px' }}>{t('totalActions')}</div>
         </div>
-        <div className="card" style={{ textAlign: 'center', padding: '1rem' }}>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--success)' }}>
+        <div className="card" style={{ textAlign: 'center', padding: '12px 14px', borderRadius: '10px' }}>
+          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--success)' }}>
             {logs.filter(l => l.action?.startsWith('Creó')).length}
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{t('creations')}</div>
+          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '2px' }}>{t('creations')}</div>
         </div>
-        <div className="card" style={{ textAlign: 'center', padding: '1rem' }}>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--warning)' }}>
+        <div className="card" style={{ textAlign: 'center', padding: '12px 14px', borderRadius: '10px' }}>
+          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--warning)' }}>
             {logs.filter(l => l.action?.startsWith('Editó')).length}
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{t('editions')}</div>
+          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '2px' }}>{t('editions')}</div>
         </div>
-        <div className="card" style={{ textAlign: 'center', padding: '1rem' }}>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--danger)' }}>
+        <div className="card" style={{ textAlign: 'center', padding: '12px 14px', borderRadius: '10px' }}>
+          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--danger)' }}>
             {logs.filter(l => l.action?.startsWith('Eliminó')).length}
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{t('deletions')}</div>
+          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '2px' }}>{t('deletions')}</div>
         </div>
-        <div className="card" style={{ textAlign: 'center', padding: '1rem' }}>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--primary-color)' }}>
+        <div className="card" style={{ textAlign: 'center', padding: '12px 14px', borderRadius: '10px' }}>
+          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--primary-color)' }}>
             {logs.filter(l => l.action?.startsWith('Activó') || l.action?.startsWith('Desactivó')).length}
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem' }}>{t('statusChanges')}</div>
+          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '2px' }}>{t('statusChanges')}</div>
         </div>
       </div>
 
@@ -147,7 +147,7 @@ const AuditPage = () => {
             <button className={`search-clear-btn ${searchQuery ? 'visible' : ''}`} onClick={clearSearch} type="button"><Eraser size={15} /></button>
             <button className="search-btn-inner" onClick={handleSearch} type="button"><Search size={13} /> {t('search')}</button>
           </div>
-          <select className="form-control" style={{ width: 'min(100%, 200px)' }} value={moduleFilter} onChange={e => setModuleFilter(e.target.value)}>
+          <select className="form-control" style={{ width: 'min(100%, 200px)', height: '36px', padding: '0 12px', fontSize: '0.85rem', borderRadius: 'var(--radius-full)' }} value={moduleFilter} onChange={e => setModuleFilter(e.target.value)}>
             {modules.map(m => <option key={m} value={m}>{m === 'all' ? t('allModules') : m}</option>)}
           </select>
         </div>
