@@ -1,33 +1,43 @@
-import React from 'react';
-import { AlertTriangle, Trash2 } from 'lucide-react';
-import { useLanguage } from '../context/LanguageContext';
+import { AlertTriangle, Trash2, X } from 'lucide-react';
 
-const DeleteConfirmModal = ({ isOpen, onConfirm, onCancel, title, message }) => {
-  const { t } = useLanguage();
-
+const DeleteConfirmModal = ({ isOpen, onCancel, onConfirm, title, message }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" style={{ zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0, 0, 0, 0.5)' }}>
-      <div className="card print-no" style={{ maxWidth: '420px', width: '90%', textAlign: 'center', padding: '24px', backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(239, 68, 68, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--danger)' }}>
-            <AlertTriangle size={24} />
+    <div className="modal-overlay" onClick={onCancel}>
+      <div
+        className="modal-content"
+        onClick={(e) => e.stopPropagation()}
+        style={{ maxWidth: 440, padding: '1.5rem' }}
+      >
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', marginBottom: '1.25rem' }}>
+          <div
+            style={{
+              width: 48, height: 48, borderRadius: 'var(--radius-lg)',
+              background: 'var(--danger-soft)', color: 'var(--danger)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <AlertTriangle size={22} />
           </div>
-        </div>
-        <h3 style={{ marginBottom: '10px', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-dark)' }}>
-          {title || t('deleteTitle') || 'Confirmar Eliminación'}
-        </h3>
-        <p className="text-muted" style={{ marginBottom: '24px', fontSize: '0.95rem', lineHeight: 1.5 }}>
-          {message || t('deleteWarning') || '¿Estás seguro que deseas eliminar este elemento? Esta acción no se puede deshacer.'}
-        </p>
-        <div className="d-flex justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
-          <button className="btn btn-outline" onClick={onCancel} style={{ flex: 1 }}>
-            {t('cancel') || 'Cancelar'}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h3 style={{ margin: 0, marginBottom: 4, fontSize: '1.05rem' }}>{title || '¿Confirmar eliminación?'}</h3>
+            <p style={{ margin: 0, color: 'var(--text-light)', fontSize: '0.88rem', lineHeight: 1.5 }}>
+              {message || 'Esta acción no se puede deshacer.'}
+            </p>
+          </div>
+          <button className="modal-close" onClick={onCancel} aria-label="Cerrar" style={{ width: 28, height: 28 }}>
+            <X size={16} />
           </button>
-          <button className="btn btn-danger" onClick={onConfirm} style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
-            <Trash2 size={16} />
-            {t('delete') || 'Eliminar'}
+        </div>
+
+        <div className="modal-actions" style={{ marginTop: 0 }}>
+          <button type="button" className="btn btn-outline" onClick={onCancel}>
+            Cancelar
+          </button>
+          <button type="button" className="btn btn-danger" onClick={onConfirm}>
+            <Trash2 size={15} /> Sí, eliminar
           </button>
         </div>
       </div>
