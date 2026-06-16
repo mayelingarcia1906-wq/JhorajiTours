@@ -1,301 +1,358 @@
-import { useEffect, useRef, useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { useTheme } from '../context/ThemeContext';
+import { useEffect, useState } from 'react';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import {
+  Activity, BarChart3, Bell, Building2, Calendar, Car, ChevronLeft,
+  ChevronRight, ClipboardList, Globe, LayoutDashboard, LogOut, Map,
+  Menu, Moon, Search, Settings, Shield, Sun, Truck, UserCog, Users, Wallet, X,
+} from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 import { usePermissions } from '../context/PermissionsContext';
 import { useNotifications } from '../context/NotificationsContext';
-import {
-  LayoutDashboard, CalendarDays, Map, Users, Settings, Menu, X, Bell,
-  UserCircle, LogOut, Sun, Moon, ChevronDown, CheckCheck, Trash2,
-  Truck, Briefcase, Shield, ShieldCheck, CalendarClock, Zap, Building, ClipboardList, DollarSign, BellOff, ShoppingBag
-} from 'lucide-react';
 
-const DashboardLayout = () => {
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true);
-  const [notifOpen, setNotifOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [currentUser] = useState(() => {
-    const savedUser = localStorage.getItem('jhoraji_user');
-    return savedUser
-      ? { name: 'Administrador', email: 'admin@jhorajitours.com', role: 'Administrador', phone: '829-580-8964', department: 'Administración', status: 'Activo', ...JSON.parse(savedUser) }
-      : { name: 'Administrador', email: 'admin@jhorajitours.com', role: 'Administrador', phone: '829-580-8964', department: 'Administración', status: 'Activo' };
-  });
-  const { 
-    notifications, 
-    unreadCount, 
-    isMuted, 
-    setIsMuted, 
-    markNotificationRead, 
-    markAllNotificationsRead, 
-    deleteNotification,
-    clearAllNotifications
-  } = useNotifications();
-  const { theme, toggleTheme } = useTheme();
+const buildNavItems = (t, canAccessModule) => [
+  {
+    title: t('modulos'),
+    items: [
+      { to: '/', label: t('dashboard'), icon: LayoutDashboard, module: 'dashboard' },
+      { to: '/bookings', label: t('reservas'), icon: ClipboardList, module: 'bookings' },
+      { to: '/orders', label: t('ordenes'), icon: Truck, module: 'orders' },
+      { to: '/schedule', label: t('horario'), icon: Calendar, module: 'schedule' },
+    ].filter((i) => canAccessModule(i.module)),
+  },
+  {
+    title: t('gestion'),
+    items: [
+      { to: '/tours', label: t('tours'), icon: Map, module: 'tours' },
+      { to: '/activities', label: t('actividades'), icon: Activity, module: 'activities' },
+      { to: '/customers', label: t('clientes'), icon: Users, module: 'customers' },
+      { to: '/drivers', label: t('choferes'), icon: Car, module: 'drivers' },
+      { to: '/providers', label: t('proveedores'), icon: Building2, module: 'providers' },
+      { to: '/agencies', label: t('agencias'), icon: Globe, module: 'agencies' },
+    ].filter((i) => canAccessModule(i.module)),
+  },
+  {
+    title: t('administracion'),
+    items: [
+      { to: '/finances', label: t('finanzas'), icon: Wallet, module: 'finances' },
+      { to: '/audit', label: t('auditoria'), icon: BarChart3, module: 'audit' },
+      { to: '/users', label: t('usuarios'), icon: UserCog, module: 'users' },
+      { to: '/settings', label: t('configuracion'), icon: Settings, module: 'settings' },
+    ].filter((i) => canAccessModule(i.module)),
+  },
+];
+
+const HeaderBell = ({ onLogout }) => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-
-  const notifRef = useRef(null);
-  const profileRef = useRef(null);
+  const { notifications, unreadCount, markAllRead, clearAll, isMuted, toggleMute } = useNotifications();
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (notifRef.current && !notifRef.current.contains(event.target)) setNotifOpen(false);
-      if (profileRef.current && !profileRef.current.contains(event.target)) setProfileOpen(false);
+    if (!open) return;
+    const close = (e) => {
+      if (!e.target.closest('.notif-wrapper')) setOpen(false);
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const { canAccessModule } = usePermissions();
-
-  // ── Ítems de navegación con control de acceso por permisos ──────────
-  const navSections = [
-    // ---- Sección compartida ----
-    {
-      label: null,
-      items: [
-        { name: t('dashboard'), path: '/dashboard', icon: <LayoutDashboard size={20} />, module: 'dashboard' },
-      ]
-    },
-    // ---- Módulos operativos ----
-    {
-      label: 'Módulos',
-      items: [
-        { name: t('bookings'), path: '/bookings', icon: <CalendarDays size={20} />, module: 'bookings' },
-        { name: t('moduleFinances'), path: '/finances', icon: <DollarSign size={20} />, module: 'finances' },
-        { name: t('tours'), path: '/tours', icon: <Map size={20} />, module: 'tours' },
-        { name: t('customers'), path: '/customers', icon: <Users size={20} />, module: 'customers' },
-        { name: t('moduleDrivers'), path: '/drivers', icon: <Truck size={20} />, module: 'drivers' },
-        { name: t('moduleProviders'), path: '/providers', icon: <Briefcase size={20} />, module: 'providers' },
-        { name: t('moduleAgencies'), path: '/agencies', icon: <Building size={20} />, module: 'agencies' },
-        { name: t('moduleActivities'), path: '/activities', icon: <Zap size={20} />, module: 'activities' },
-        { name: t('moduleSchedule'), path: '/schedule', icon: <CalendarClock size={20} />, module: 'schedule' },
-      ]
-    },
-    // ---- Sección Administración ----
-    {
-      label: t('adminPanel'),
-      items: [
-        { name: t('moduleUsers'), path: '/users', icon: <Shield size={20} />, module: 'users' },
-        { name: t('moduleAudit'), path: '/audit', icon: <ShieldCheck size={20} />, module: 'audit' },
-      ]
-    },
-    // ---- Configuración ----
-    {
-      label: null,
-      items: [
-        { name: t('settings'), path: '/settings', icon: <Settings size={20} />, module: 'settings' },
-      ]
-    },
-  ];
-
-  const filteredSections = navSections.map(section => ({
-    ...section,
-    items: section.items.filter(item => canAccessModule(item.module))
-  })).filter(section => section.items.length > 0);
-
-
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [open]);
 
   return (
-    <div className="dashboard-layout">
-      {/* Sidebar Overlay for mobile */}
-      <div
-        className={`sidebar-overlay ${mobileSidebarOpen ? 'open' : ''}`}
-        onClick={() => setMobileSidebarOpen(false)}
-      />
+    <div className="notif-wrapper" style={{ position: 'relative' }}>
+      <button
+        className="icon-btn"
+        onClick={() => setOpen(!open)}
+        aria-label="Notificaciones"
+        style={{ position: 'relative' }}
+      >
+        <Bell size={18} />
+        {unreadCount > 0 && (
+          <span
+            style={{
+              position: 'absolute', top: 4, right: 4,
+              minWidth: 16, height: 16, padding: '0 4px',
+              borderRadius: 999, background: 'var(--danger)', color: 'white',
+              fontSize: 10, fontWeight: 700, lineHeight: '16px', textAlign: 'center',
+            }}
+          >
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </span>
+        )}
+      </button>
 
-      {/* Sidebar */}
-      <aside className={`dashboard-sidebar ${mobileSidebarOpen ? 'mobile-open' : ''} ${!desktopSidebarOpen ? 'desktop-collapsed' : ''}`}>
-        <div className="sidebar-header">
-          <div className="d-flex align-items-center gap-2 sidebar-header-content">
-            <div className="sidebar-logo-box" style={{ width: '40px', height: '40px', minWidth: '40px', backgroundColor: 'var(--primary-color)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold', fontSize: '20px' }}>
-              JT
-            </div>
-            <div className="sidebar-text-container">
-              <h2 className="sidebar-text" style={{ fontSize: '1.2rem', margin: 0, color: 'var(--primary-color)', whiteSpace: 'nowrap' }}>Jhoraji Tours</h2>
-              <span className="sidebar-text" style={{ fontSize: '0.8rem', color: 'var(--text-light)', whiteSpace: 'nowrap' }}>{t('adminPanel')}</span>
-            </div>
-          </div>
-          <button className="mobile-menu-btn d-lg-none" onClick={() => setMobileSidebarOpen(false)}>
-            <X size={24} />
-          </button>
-        </div>
-
-        <nav style={{ padding: '12px 10px', display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, overflowY: 'auto' }}>
-          {filteredSections.map((section, si) => (
-            <div key={si} style={{ marginBottom: '8px' }}>
-              {section.label && desktopSidebarOpen && (
-                <div style={{ padding: '6px 20px 4px', fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.7 }}>
-                  {section.label}
-                </div>
-              )}
-              {section.label && !desktopSidebarOpen && (
-                <div style={{ height: '1px', backgroundColor: 'var(--border-color)', margin: '6px 8px' }} />
-              )}
-              {section.items.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setMobileSidebarOpen(false)}
-                  className="sidebar-nav-link"
-                  style={({ isActive }) => ({
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '10px 12px',
-                    borderRadius: 'var(--radius-md)',
-                    color: isActive ? 'var(--primary-color)' : 'var(--text-light)',
-                    backgroundColor: isActive ? 'rgba(14, 165, 233, 0.1)' : 'transparent',
-                    fontWeight: isActive ? '600' : '500',
-                    transition: 'all 0.2s',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                    marginBottom: '1px',
-                    fontSize: '0.88rem'
-                  })}
-                >
-                  <div style={{ minWidth: '20px', display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
-                  <span className="sidebar-text">{item.name}</span>
-                </NavLink>
-              ))}
-            </div>
-          ))}
-        </nav>
-
-        <div style={{ padding: '15px', borderTop: '1px solid var(--border-color)', overflow: 'hidden' }}>
-          <button
-            onClick={() => { localStorage.removeItem('jhoraji_user'); navigate('/login', { replace: true }); }}
-            className="sidebar-logout-btn"
-            style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 12px', color: 'var(--danger)', background: 'none', width: '100%', borderRadius: 'var(--radius-md)', fontWeight: '500', fontSize: '0.88rem', transition: 'all 0.2s', overflow: 'hidden', whiteSpace: 'nowrap', border: 'none', cursor: 'pointer' }}>
-            <div style={{ minWidth: '20px', display: 'flex', justifyContent: 'center' }}><LogOut size={18} /></div>
-            <span className="sidebar-text">{t('logout')}</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className={`dashboard-main ${!desktopSidebarOpen ? 'desktop-collapsed' : ''}`}>
-        {/* Header */}
-        <header className="dashboard-header">
-          <div className="d-flex align-items-center gap-3">
-            <button className="mobile-menu-btn d-lg-none" onClick={() => setMobileSidebarOpen(true)}>
-              <Menu size={24} />
-            </button>
-            <button className="mobile-menu-btn d-none d-lg-block" onClick={() => setDesktopSidebarOpen(!desktopSidebarOpen)}>
-              <Menu size={24} />
-            </button>
-          </div>
-
-          <div className="d-flex align-items-center gap-4 dashboard-header-actions">
-
-            {/* Theme Toggle */}
-            <button onClick={toggleTheme} style={{ background: 'none', color: 'var(--text-light)' }}>
-              {theme === 'dark' ? <Sun size={22} /> : <Moon size={22} />}
-            </button>
-
-            {/* Notifications */}
-            <div style={{ position: 'relative' }} ref={notifRef}>
-              <button onClick={() => setNotifOpen(!notifOpen)} style={{ background: 'none', position: 'relative', color: 'var(--text-light)' }}>
-                {isMuted ? <BellOff size={22} /> : <Bell size={22} />}
-                {!isMuted && unreadCount > 0 && <span style={{ position: 'absolute', top: '-4px', right: '-5px', minWidth: '16px', height: '16px', padding: '0 4px', backgroundColor: 'var(--danger)', borderRadius: '999px', color: '#fff', fontSize: '0.65rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{unreadCount}</span>}
-              </button>
-              {notifOpen && (
+      {open && (
+        <div className="notif-dropdown notif-dropdown-mobile">
+          <div className="notif-dropdown-header">
+            <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{t('notificaciones')}</h4>
+            <div className="d-flex gap-2">
+              {notifications.length > 0 && (
                 <>
-                  {/* Mobile overlay for notification panel */}
-                  <div className="hide-desktop" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 55 }} onClick={() => setNotifOpen(false)} />
-                  <div style={{ position: window.innerWidth <= 768 ? 'fixed' : 'absolute', top: window.innerWidth <= 768 ? 'auto' : '100%', bottom: window.innerWidth <= 768 ? '0' : 'auto', left: window.innerWidth <= 768 ? '0' : 'auto', right: window.innerWidth <= 768 ? '0' : '0', marginTop: window.innerWidth <= 768 ? '0' : '10px', width: window.innerWidth <= 768 ? '100%' : '340px', maxHeight: window.innerWidth <= 768 ? '80vh' : 'none', backgroundColor: 'var(--card-bg)', borderRadius: window.innerWidth <= 768 ? 'var(--radius-lg) var(--radius-lg) 0 0' : 'var(--radius-md)', boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border-color)', zIndex: 60, overflow: 'hidden' }}>
-                    <div className="d-flex justify-content-between align-items-center" style={{ padding: '15px', borderBottom: '1px solid var(--border-color)', fontWeight: '600' }}>
-                      <span>{t('notifications')}</span>
-                      <div className="d-flex gap-2">
-                        <button 
-                          type="button" 
-                          title={isMuted ? "Activar notificaciones" : "Silenciar notificaciones"} 
-                          onClick={() => setIsMuted(!isMuted)} 
-                          style={{ background: isMuted ? 'rgba(239,68,68,0.1)' : 'var(--bg-color)', color: isMuted ? 'var(--danger)' : 'var(--text-light)', borderRadius: 'var(--radius-md)', padding: '6px', display: 'flex' }}
-                        >
-                          {isMuted ? <BellOff size={16} /> : <Bell size={16} />}
-                        </button>
-                        <button type="button" title="Marcar todas" onClick={markAllNotificationsRead} style={{ background: 'var(--bg-color)', color: 'var(--primary-color)', borderRadius: 'var(--radius-md)', padding: '6px', display: 'flex' }}>
-                          <CheckCheck size={16} />
-                        </button>
-                        <button type="button" title="Limpiar todas" onClick={clearAllNotifications} style={{ background: 'var(--bg-color)', color: 'var(--danger)', borderRadius: 'var(--radius-md)', padding: '6px', display: 'flex' }}>
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </div>
-                    <div style={{ maxHeight: window.innerWidth <= 768 ? 'calc(80vh - 120px)' : '320px', overflowY: 'auto', padding: '10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      {notifications.length === 0 && (
-                        <div style={{ padding: '30px 16px', textAlign: 'center' }}>
-                          <Bell size={32} style={{ color: 'var(--text-light)', opacity: 0.3, marginBottom: '10px' }} />
-                          <div className="text-muted" style={{ fontSize: '0.85rem' }}>No tienes notificaciones</div>
-                        </div>
-                      )}
-                      {notifications.map(n => (
-                        <div key={n.id} style={{ padding: '12px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', backgroundColor: n.read ? 'var(--card-bg)' : 'var(--bg-color)', fontSize: '0.9rem' }}>
-                          <div className="d-flex justify-content-between gap-2">
-                            <div>
-                              <div style={{ color: 'var(--text-dark)', marginBottom: '5px', fontWeight: n.read ? 500 : 700 }}>{n.text}</div>
-                              <div style={{ color: 'var(--text-light)', fontSize: '0.75rem' }}>{n.time}</div>
-                            </div>
-                            <div className="d-flex gap-1">
-                              {!n.read && (
-                                <button type="button" title="Leída" onClick={() => markNotificationRead(n.id)} style={{ background: 'transparent', color: 'var(--primary-color)', padding: '2px' }}>
-                                  <CheckCheck size={16} />
-                                </button>
-                              )}
-                              <button type="button" title="Eliminar" onClick={() => deleteNotification(n.id)} style={{ background: 'transparent', color: 'var(--danger)', padding: '2px' }}>
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <div style={{ padding: '10px', textAlign: 'center' }}>
-                      <button type="button" className="btn btn-primary" onClick={() => { setNotifOpen(false); navigate('/settings?section=notifications'); }} style={{ width: '100%', padding: '10px', fontSize: '0.9rem', fontWeight: 600, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', borderRadius: 'var(--radius-md)' }}><Settings size={18} /> Configurar alertas</button>
-                    </div>
-                  </div>
+                  <button className="btn btn-ghost btn-sm" onClick={markAllRead}>
+                    {t('marcarLeidas')}
+                  </button>
+                  <button className="btn btn-ghost btn-sm" onClick={clearAll} style={{ color: 'var(--danger)' }}>
+                    {t('limpiar')}
+                  </button>
                 </>
               )}
             </div>
-
-            {/* Profile Dropdown */}
-            <div style={{ position: 'relative' }} ref={profileRef}>
-              <button onClick={() => setProfileOpen(!profileOpen)} className="d-flex align-items-center gap-2" style={{ background: 'none', border: 'none' }}>
-                <UserCircle size={32} color="var(--primary-color)" />
-                <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }} className="desktop-user-info">
-                  <span style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-dark)' }}>{currentUser.name}</span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>{currentUser.role}</span>
-                </div>
-                <ChevronDown size={16} color="var(--text-light)" />
-              </button>
-              {profileOpen && (
-                <div style={{ position: 'absolute', top: '100%', right: '0', marginTop: '10px', width: '270px', backgroundColor: 'var(--card-bg)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border-color)', zIndex: 60, padding: '10px 0' }}>
-                  <div style={{ padding: '12px 18px', borderBottom: '1px solid var(--border-color)', marginBottom: '6px' }}>
-                    <div style={{ fontWeight: 700, color: 'var(--text-dark)' }}>{currentUser.name}</div>
+          </div>
+          <div className="notif-dropdown-list">
+            {notifications.length === 0 ? (
+              <div className="notif-empty">
+                <Bell size={32} style={{ opacity: 0.3, marginBottom: 8 }} />
+                <div>{t('sinNotificaciones')}</div>
+              </div>
+            ) : (
+              notifications.map((n) => (
+                <div
+                  key={n.id}
+                  className={`notif-item ${!n.read ? 'unread' : ''}`}
+                  onClick={() => { navigate(n.link || '/'); setOpen(false); }}
+                >
+                  <div
+                    className="notif-icon"
+                    style={{
+                      background: n.read ? 'var(--bg-soft)' : 'var(--primary-50)',
+                      color: n.read ? 'var(--text-light)' : 'var(--primary-color)',
+                    }}
+                  >
+                    <Bell size={16} />
                   </div>
-                  <button className="dropdown-item" style={{ width: '100%', padding: '10px 20px', textAlign: 'left', background: 'none', color: 'var(--text-dark)' }} onClick={() => { setProfileOpen(false); navigate('/settings?section=profile'); }}>{t('myProfile')}</button>
-                  <button className="dropdown-item" style={{ width: '100%', padding: '10px 20px', textAlign: 'left', background: 'none', color: 'var(--text-dark)' }} onClick={() => { setProfileOpen(false); navigate('/settings'); }}>{t('settings')}</button>
-                  <div style={{ borderTop: '1px solid var(--border-color)', margin: '5px 0' }}></div>
-                  <button className="dropdown-item" style={{ width: '100%', padding: '10px 20px', textAlign: 'left', background: 'none', color: 'var(--danger)' }} onClick={() => { localStorage.removeItem('jhoraji_user'); navigate('/login', { replace: true }); }}>{t('logout')}</button>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '0.85rem', fontWeight: n.read ? 500 : 600, color: 'var(--text-dark)' }}>
+                      {n.title || n.message}
+                    </div>
+                    {n.title && (
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>{n.message}</div>
+                    )}
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-faint)', marginTop: 2 }}>
+                      {new Date(n.timestamp).toLocaleString()}
+                    </div>
+                  </div>
                 </div>
-              )}
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const UserMenu = ({ user, onLogout }) => {
+  const { t } = useLanguage();
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (e) => {
+      if (!e.target.closest('.user-menu-wrapper')) setOpen(false);
+    };
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [open]);
+
+  if (!user) return null;
+  const initials = (user.name || 'U').split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
+
+  return (
+    <div className="user-menu-wrapper" style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="d-flex align-items-center gap-2"
+        style={{
+          padding: '0.35rem 0.6rem', borderRadius: 'var(--radius-full)',
+          background: 'transparent', color: 'var(--text-dark)',
+        }}
+      >
+        <div className="sidebar-avatar" style={{ width: 32, height: 32, fontSize: '0.78rem' }}>{initials}</div>
+        <div className="desktop-user-info" style={{ textAlign: 'left', lineHeight: 1.2 }}>
+          <div style={{ fontSize: '0.82rem', fontWeight: 600 }}>{user.name}</div>
+          <div style={{ fontSize: '0.68rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            {user.role}
+          </div>
+        </div>
+      </button>
+
+      {open && (
+        <div
+          className="card-glass"
+          style={{
+            position: 'absolute', top: 'calc(100% + 0.5rem)', right: 0,
+            minWidth: 220, padding: '0.5rem', zIndex: 60,
+          }}
+        >
+          <div style={{ padding: '0.65rem 0.75rem', borderBottom: '1px solid var(--border-color)', marginBottom: '0.4rem' }}>
+            <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{user.name}</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>{user.email}</div>
+          </div>
+          <Link
+            to="/settings"
+            onClick={() => setOpen(false)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '0.5rem',
+              padding: '0.55rem 0.75rem', borderRadius: 'var(--radius-sm)',
+              fontSize: '0.85rem', color: 'var(--text-dark)',
+            }}
+          >
+            <Settings size={15} /> {t('configuracion')}
+          </Link>
+          <button
+            onClick={onLogout}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%',
+              padding: '0.55rem 0.75rem', borderRadius: 'var(--radius-sm)',
+              fontSize: '0.85rem', color: 'var(--danger)', background: 'transparent',
+            }}
+          >
+            <LogOut size={15} /> {t('cerrarSesion')}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const DashboardLayout = () => {
+  const { t } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
+  const { canAccessModule } = usePermissions();
+  const navigate = useNavigate();
+
+  const [user, setUser] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('jhoraji_user')); } catch { return null; }
+  });
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [desktopCollapsed, setDesktopCollapsed] = useState(false);
+
+  useEffect(() => {
+    const sync = () => {
+      try { setUser(JSON.parse(localStorage.getItem('jhoraji_user'))); } catch { setUser(null); }
+    };
+    window.addEventListener('storage', sync);
+    return () => window.removeEventListener('storage', sync);
+  }, []);
+
+  useEffect(() => {
+    if (!user) navigate('/login', { replace: true });
+  }, [user, navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('jhoraji_user');
+    setUser(null);
+    navigate('/login', { replace: true });
+  };
+
+  const navSections = buildNavItems(t, canAccessModule);
+  const initials = (user?.name || 'J').split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
+
+  return (
+    <div className="dashboard-layout">
+      <div
+        className={`sidebar-overlay ${mobileOpen ? 'open' : ''}`}
+        onClick={() => setMobileOpen(false)}
+      />
+
+      <aside className={`dashboard-sidebar ${mobileOpen ? 'mobile-open' : ''} ${desktopCollapsed ? 'desktop-collapsed' : ''}`}>
+        <div className="sidebar-header">
+          <div className="sidebar-header-content">
+            <div className="sidebar-logo">J</div>
+            <div className="sidebar-text">
+              <span className="brand">Jhoraji Tours</span>
+              <span className="brand-tag">Operations</span>
             </div>
+          </div>
+          <button
+            className="sidebar-toggle d-none d-md-block"
+            onClick={() => setDesktopCollapsed(!desktopCollapsed)}
+            aria-label="Colapsar sidebar"
+            style={{ display: window.innerWidth >= 1024 ? 'flex' : 'none' }}
+          >
+            {desktopCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
+          <button
+            className="sidebar-toggle d-md-none"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Cerrar sidebar"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        <div className="sidebar-body">
+          {navSections.map((section) => (
+            <div key={section.title} className="sidebar-section">
+              <div className="sidebar-section-title">{section.title}</div>
+              {section.items.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    end={item.to === '/'}
+                    className={({ isActive }) => `sidebar-nav-link ${isActive ? 'active' : ''}`}
+                    onClick={() => setMobileOpen(false)}
+                    title={desktopCollapsed ? item.label : undefined}
+                  >
+                    <Icon size={18} />
+                    <span className="nav-label">{item.label}</span>
+                  </NavLink>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+
+        <div className="sidebar-footer">
+          <div className="sidebar-user-card">
+            <div className="sidebar-avatar">{initials}</div>
+            <div className="sidebar-text" style={{ minWidth: 0 }}>
+              <div className="sidebar-user-name">{user?.name || 'Usuario'}</div>
+              <div className="sidebar-user-role">{user?.role || '—'}</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <div className={`dashboard-main ${desktopCollapsed ? 'desktop-collapsed' : ''}`}>
+        <header className="dashboard-header">
+          <div className="d-flex align-items-center gap-3">
+            <button
+              className="mobile-menu-btn"
+              onClick={() => setMobileOpen(true)}
+              aria-label="Abrir menú"
+            >
+              <Menu size={20} />
+            </button>
+            <div className="desktop-search" style={{ position: 'relative' }}>
+              <Search size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-faint)' }} />
+              <input
+                className="form-control"
+                placeholder="Buscar reservas, tours, clientes…"
+                style={{ paddingLeft: '2.2rem', height: 36, borderRadius: 'var(--radius-full)', width: 320 }}
+              />
+            </div>
+          </div>
+
+          <div className="dashboard-header-actions">
+            <button
+              className="icon-btn"
+              onClick={toggleTheme}
+              aria-label="Cambiar tema"
+              title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <HeaderBell onLogout={handleLogout} />
+            <UserMenu user={user} onLogout={handleLogout} />
           </div>
         </header>
 
-        {/* Page Content */}
         <div className="dashboard-content">
-          {/* Print Header */}
-          <div className="print-header-official print-only">
-            <h1>Jhoraji Tours - Reporte Oficial</h1>
-            <p>Fecha de Impresión: {new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
-            <p>Generado por: {currentUser.name} ({currentUser.role})</p>
-          </div>
           <Outlet />
         </div>
-      </main>
+      </div>
     </div>
   );
 };
