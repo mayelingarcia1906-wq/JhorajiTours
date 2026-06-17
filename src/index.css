@@ -930,8 +930,6 @@ textarea.form-control { height: auto; min-height: 72px; }
 }
 
 .stat-card:hover {
-  border-color: var(--border-strong);
-  border-left-color: inherit;
   box-shadow: var(--shadow-md);
 }
 
