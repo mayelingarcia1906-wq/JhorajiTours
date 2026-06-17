@@ -345,11 +345,11 @@ const FinancesPage = () => {
         </div>
         <div className="card-ganancia stat-card">
           <div className="stat-header">
-            <span className="ganancia-title stat-label" style={{ color: 'var(--success)' }}>{t('realProfit')}</span>
+            <span className="ganancia-title stat-label">{t('realProfit')}</span>
             <div className="stat-icon" style={{ background: 'var(--success-soft)', color: 'var(--success)' }}><CheckCircle size={18} /></div>
           </div>
           <div className="ganancia-amount" style={{ fontSize: '1.5rem' }}>{formatPrice(gananciaReal)}</div>
-          <div className="ganancia-subtitle" style={{ fontSize: '0.72rem', borderTop: '1px dashed rgba(34, 197, 94, 0.3)', paddingTop: 6, marginTop: 6, color: 'var(--success)' }}>{t('profitDesc')}</div>
+          <div className="ganancia-subtitle">{t('profitDesc')}</div>
         </div>
       </div>
 
