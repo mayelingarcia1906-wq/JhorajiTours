@@ -513,7 +513,7 @@ const SettingsPage = () => {
                 <label>{t('confirmPassword')}</label>
                 <input type="password" className="form-control" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
               </div>
-              <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#f59e0b' }}>{t('updatePassword')}</button>
+              <button type="submit" className="btn btn-warning">{t('updatePassword')}</button>
             </div>
 
             <div className="mt-4">

@@ -331,6 +331,16 @@ input[type="checkbox"]:checked::before {
   background-color: var(--danger);
   color: #fff;
 }
+.btn-warning {
+  background-color: var(--warning);
+  border: 1px solid var(--warning);
+  color: #fff;
+}
+.btn-warning:hover {
+  background-color: #d97706;
+  border-color: #d97706;
+  color: #fff;
+}
 
 .btn-success {
   background-color: transparent;
