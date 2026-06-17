@@ -950,6 +950,20 @@ textarea.form-control { height: auto; min-height: 72px; }
   letter-spacing: 0.05em;
 }
 
+/* Global stat-icon — works inside and outside stat-card */
+.stat-icon {
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--primary-50);
+  color: var(--primary-color);
+}
+.stat-icon.tone-primary { background: var(--primary-50); color: var(--primary-color); }
+.stat-icon.tone-success { background: var(--success-soft); color: var(--success); }
+.stat-icon.tone-warning { background: var(--warning-soft); color: #b45309; }
+.stat-icon.tone-danger  { background: var(--danger-soft);  color: var(--danger); }
+.stat-icon.tone-info    { background: var(--info-soft);    color: var(--info); }
+[data-theme='dark'] .stat-icon.tone-warning { color: #fbbf24; }
+
 .stat-card .stat-icon {
   width: 28px; height: 28px;
   border-radius: var(--radius-md);
