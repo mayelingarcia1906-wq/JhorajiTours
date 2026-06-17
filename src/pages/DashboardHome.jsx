@@ -21,7 +21,7 @@ const StatCard = ({ tone, label, value, icon: Icon, delta, deltaLabel }) => (
   <div className={`stat-card ${tone ? `tone-${tone}` : ''}`}>
     <div className="stat-header">
       <span className="stat-label">{label}</span>
-      {Icon && <div className="stat-icon"><Icon size={18} /></div>}
+      {Icon && <div className="stat-icon"><Icon size={14} /></div>}
     </div>
     <div className="stat-value">{value}</div>
     {delta && (
@@ -35,8 +35,8 @@ const StatCard = ({ tone, label, value, icon: Icon, delta, deltaLabel }) => (
 
 const Section = ({ title, action, children, className = '' }) => (
   <div className={`card ${className}`}>
-    <div className="d-flex justify-content-between align-items-center" style={{ marginBottom: '1.25rem' }}>
-      <h3 style={{ margin: 0, fontSize: '1rem' }}>{title}</h3>
+    <div className="d-flex justify-content-between align-items-center" style={{ marginBottom: '0.75rem' }}>
+      <h3 style={{ margin: 0, fontSize: '0.875rem' }}>{title}</h3>
       {action}
     </div>
     {children}
@@ -44,20 +44,20 @@ const Section = ({ title, action, children, className = '' }) => (
 );
 
 const ActivityItem = ({ icon: Icon, tone, title, subtitle, time, action }) => (
-  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', padding: '0.75rem 0', borderBottom: '1px solid var(--border-color)' }}>
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.625rem', padding: '0.5rem 0', borderBottom: '1px solid var(--border-color)' }}>
     <div
       className={`stat-icon ${tone ? `tone-${tone}` : ''}`}
-      style={{ width: 34, height: 34, flexShrink: 0 }}
+      style={{ width: 28, height: 28, flexShrink: 0 }}
     >
-      <Icon size={15} />
+      <Icon size={13} />
     </div>
     <div style={{ flex: 1, minWidth: 0 }}>
-      <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-dark)' }}>{title}</div>
-      {subtitle && <div style={{ fontSize: '0.78rem', color: 'var(--text-light)', marginTop: 2 }}>{subtitle}</div>}
+      <div style={{ fontSize: '0.8125rem', fontWeight: 500, color: 'var(--text-dark)' }}>{title}</div>
+      {subtitle && <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', marginTop: 1 }}>{subtitle}</div>}
     </div>
-    <div style={{ textAlign: 'right' }}>
-      {action && <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>{action}</div>}
-      {time && <div style={{ fontSize: '0.7rem', color: 'var(--text-faint)' }}>{time}</div>}
+    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+      {action && <div style={{ fontSize: '0.8125rem', fontWeight: 600 }}>{action}</div>}
+      {time && <div style={{ fontSize: '0.6875rem', color: 'var(--text-faint)' }}>{time}</div>}
     </div>
   </div>
 );
@@ -201,7 +201,7 @@ const DashboardHome = () => {
             </button>
           }
         >
-          <ResponsiveContainer width="100%" height={280}>
+          <ResponsiveContainer width="100%" height={220}>
             <BarChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
@@ -240,20 +240,20 @@ const DashboardHome = () => {
                   <div key={tour.name} style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                     <span
                       style={{
-                        width: 24, height: 24, borderRadius: '50%',
+                        width: 20, height: 20, borderRadius: '50%',
                         background: 'var(--primary-50)', color: 'var(--primary-color)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '0.72rem', fontWeight: 700, flexShrink: 0,
+                        fontSize: '0.6875rem', fontWeight: 600, flexShrink: 0,
                       }}
                     >
                       {i + 1}
                     </span>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <span style={{ fontSize: '0.8125rem', fontWeight: 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {tour.name}
                         </span>
-                        <span style={{ fontSize: '0.78rem', color: 'var(--text-light)', flexShrink: 0, marginLeft: 8 }}>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-light)', flexShrink: 0, marginLeft: 6 }}>
                           {tour.count}
                         </span>
                       </div>
@@ -298,43 +298,43 @@ const DashboardHome = () => {
         </Section>
 
         <Section title={language === 'es' ? 'Estado operativo' : 'Operational health'}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            <div className="d-flex justify-content-between align-items-center" style={{ padding: '0.65rem 0.85rem', background: 'var(--bg-soft)', borderRadius: 'var(--radius-md)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div className="d-flex justify-content-between align-items-center" style={{ padding: '0.4375rem 0.625rem', background: 'var(--bg-soft)', borderRadius: 'var(--radius-md)' }}>
               <div className="d-flex align-items-center gap-2">
-                <div className="stat-icon tone-success" style={{ width: 32, height: 32 }}>
+                <div className="stat-icon tone-success" style={{ width: 26, height: 26 }}>
                   <CheckCircle2 size={14} />
                 </div>
-                <span style={{ fontSize: '0.85rem', fontWeight: 500 }}>{t('customers')}</span>
+                <span style={{ fontSize: '0.8125rem', fontWeight: 400 }}>{t('customers')}</span>
               </div>
               <span className="badge badge-primary">{customers.length}</span>
             </div>
 
-            <div className="d-flex justify-content-between align-items-center" style={{ padding: '0.65rem 0.85rem', background: 'var(--bg-soft)', borderRadius: 'var(--radius-md)' }}>
+            <div className="d-flex justify-content-between align-items-center" style={{ padding: '0.4375rem 0.625rem', background: 'var(--bg-soft)', borderRadius: 'var(--radius-md)' }}>
               <div className="d-flex align-items-center gap-2">
-                <div className="stat-icon tone-info" style={{ width: 32, height: 32 }}>
+                <div className="stat-icon tone-info" style={{ width: 26, height: 26 }}>
                   <Car size={14} />
                 </div>
-                <span style={{ fontSize: '0.85rem', fontWeight: 500 }}>{t('choferes')}</span>
+                <span style={{ fontSize: '0.8125rem', fontWeight: 400 }}>{t('choferes')}</span>
               </div>
               <span className="badge badge-primary">{drivers.length}</span>
             </div>
 
-            <div className="d-flex justify-content-between align-items-center" style={{ padding: '0.65rem 0.85rem', background: 'var(--bg-soft)', borderRadius: 'var(--radius-md)' }}>
+            <div className="d-flex justify-content-between align-items-center" style={{ padding: '0.4375rem 0.625rem', background: 'var(--bg-soft)', borderRadius: 'var(--radius-md)' }}>
               <div className="d-flex align-items-center gap-2">
-                <div className="stat-icon tone-primary" style={{ width: 32, height: 32 }}>
+                <div className="stat-icon tone-primary" style={{ width: 26, height: 26 }}>
                   <MapPin size={14} />
                 </div>
-                <span style={{ fontSize: '0.85rem', fontWeight: 500 }}>{t('tours')}</span>
+                <span style={{ fontSize: '0.8125rem', fontWeight: 400 }}>{t('tours')}</span>
               </div>
               <span className="badge badge-primary">{tours.length}</span>
             </div>
 
-            <div className="d-flex justify-content-between align-items-center" style={{ padding: '0.65rem 0.85rem', background: 'var(--bg-soft)', borderRadius: 'var(--radius-md)' }}>
+            <div className="d-flex justify-content-between align-items-center" style={{ padding: '0.4375rem 0.625rem', background: 'var(--bg-soft)', borderRadius: 'var(--radius-md)' }}>
               <div className="d-flex align-items-center gap-2">
-                <div className="stat-icon tone-warning" style={{ width: 32, height: 32 }}>
+                <div className="stat-icon tone-warning" style={{ width: 26, height: 26 }}>
                   <Wallet size={14} />
                 </div>
-                <span style={{ fontSize: '0.85rem', fontWeight: 500 }}>{language === 'es' ? 'Gastos del periodo' : 'Period expenses'}</span>
+                <span style={{ fontSize: '0.8125rem', fontWeight: 400 }}>{language === 'es' ? 'Gastos del periodo' : 'Period expenses'}</span>
               </div>
               <span className="badge badge-warning">{formatPrice(expenses.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0).toFixed(2))}</span>
             </div>

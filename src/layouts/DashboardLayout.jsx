@@ -69,10 +69,10 @@ const HeaderBell = ({ onLogout }) => {
         {unreadCount > 0 && (
           <span
             style={{
-              position: 'absolute', top: 4, right: 4,
-              minWidth: 16, height: 16, padding: '0 4px',
+              position: 'absolute', top: 2, right: 2,
+              minWidth: 14, height: 14, padding: '0 3px',
               borderRadius: 999, background: 'var(--danger)', color: 'white',
-              fontSize: 10, fontWeight: 700, lineHeight: '16px', textAlign: 'center',
+              fontSize: 9, fontWeight: 700, lineHeight: '14px', textAlign: 'center',
             }}
           >
             {unreadCount > 9 ? '9+' : unreadCount}
@@ -166,10 +166,10 @@ const UserMenu = ({ user, onLogout }) => {
           background: 'transparent', color: 'var(--text-dark)',
         }}
       >
-        <div className="sidebar-avatar" style={{ width: 32, height: 32, fontSize: '0.78rem' }}>{initials}</div>
+        <div className="sidebar-avatar" style={{ width: 26, height: 26, fontSize: '0.6875rem' }}>{initials}</div>
         <div className="desktop-user-info" style={{ textAlign: 'left', lineHeight: 1.2 }}>
-          <div style={{ fontSize: '0.82rem', fontWeight: 600 }}>{user.name}</div>
-          <div style={{ fontSize: '0.68rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 500 }}>{user.name}</div>
+          <div style={{ fontSize: '0.625rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             {user.role}
           </div>
         </div>
@@ -177,36 +177,37 @@ const UserMenu = ({ user, onLogout }) => {
 
       {open && (
         <div
-          className="card-glass"
+          className="card"
           style={{
-            position: 'absolute', top: 'calc(100% + 0.5rem)', right: 0,
-            minWidth: 220, padding: '0.5rem', zIndex: 60,
+            position: 'absolute', top: 'calc(100% + 0.375rem)', right: 0,
+            minWidth: 200, padding: '0.375rem', zIndex: 60,
+            boxShadow: 'var(--shadow-lg)',
           }}
         >
-          <div style={{ padding: '0.65rem 0.75rem', borderBottom: '1px solid var(--border-color)', marginBottom: '0.4rem' }}>
-            <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{user.name}</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>{user.email}</div>
+          <div style={{ padding: '0.5rem 0.625rem', borderBottom: '1px solid var(--border-color)', marginBottom: '0.25rem' }}>
+            <div style={{ fontWeight: 600, fontSize: '0.8125rem' }}>{user.name}</div>
+            <div style={{ fontSize: '0.6875rem', color: 'var(--text-light)' }}>{user.email}</div>
           </div>
           <Link
             to="/settings"
             onClick={() => setOpen(false)}
             style={{
-              display: 'flex', alignItems: 'center', gap: '0.5rem',
-              padding: '0.55rem 0.75rem', borderRadius: 'var(--radius-sm)',
-              fontSize: '0.85rem', color: 'var(--text-dark)',
+              display: 'flex', alignItems: 'center', gap: '0.375rem',
+              padding: '0.4375rem 0.625rem', borderRadius: 'var(--radius-sm)',
+              fontSize: '0.8125rem', color: 'var(--text-dark)',
             }}
           >
-            <Settings size={15} /> {t('configuracion')}
+            <Settings size={14} /> {t('configuracion')}
           </Link>
           <button
             onClick={onLogout}
             style={{
-              display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%',
-              padding: '0.55rem 0.75rem', borderRadius: 'var(--radius-sm)',
-              fontSize: '0.85rem', color: 'var(--danger)', background: 'transparent',
+              display: 'flex', alignItems: 'center', gap: '0.375rem', width: '100%',
+              padding: '0.4375rem 0.625rem', borderRadius: 'var(--radius-sm)',
+              fontSize: '0.8125rem', color: 'var(--danger)', background: 'transparent',
             }}
           >
-            <LogOut size={15} /> {t('cerrarSesion')}
+            <LogOut size={14} /> {t('cerrarSesion')}
           </button>
         </div>
       )}
@@ -295,7 +296,7 @@ const DashboardLayout = () => {
                     onClick={() => setMobileOpen(false)}
                     title={desktopCollapsed ? item.label : undefined}
                   >
-                    <Icon size={18} />
+                    <Icon size={15} />
                     <span className="nav-label">{item.label}</span>
                   </NavLink>
                 );
@@ -326,11 +327,11 @@ const DashboardLayout = () => {
               <Menu size={20} />
             </button>
             <div className="desktop-search" style={{ position: 'relative' }}>
-              <Search size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-faint)' }} />
+              <Search size={13} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-faint)' }} />
               <input
                 className="form-control"
                 placeholder="Buscar reservas, tours, clientes…"
-                style={{ paddingLeft: '2.2rem', height: 36, borderRadius: 'var(--radius-full)', width: 320 }}
+                style={{ paddingLeft: '2rem', height: 32, borderRadius: 'var(--radius-full)', width: 280, fontSize: '0.8125rem' }}
               />
             </div>
           </div>
