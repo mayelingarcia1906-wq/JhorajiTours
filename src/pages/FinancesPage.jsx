@@ -343,7 +343,7 @@ const FinancesPage = () => {
           <div className="stat-value" style={{ fontSize: '1.5rem' }}>{formatPrice(totalGastos)}</div>
           <div style={{ fontSize: '0.72rem', color: 'var(--text-faint)', marginTop: 4 }}>{t('operExpensesDesc')}</div>
         </div>
-        <div className="card-ganancia stat-card" style={{ border: '1px solid rgba(34, 197, 94, 0.22)' }}>
+        <div className="card-ganancia stat-card">
           <div className="stat-header">
             <span className="ganancia-title stat-label" style={{ color: '#166534' }}>{t('realProfit')}</span>
             <div className="stat-icon" style={{ background: 'var(--success-soft)', color: 'var(--success)' }}><CheckCircle size={18} /></div>
