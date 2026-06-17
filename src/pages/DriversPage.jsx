@@ -297,7 +297,7 @@ const DriversPage = () => {
               <tbody>
                 {reportBookings.length === 0 ? (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-faint)' }}>
+                    <td colSpan="6" style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--text-faint)' }}>
                       No se encontraron reservas con esos filtros
                     </td>
                   </tr>

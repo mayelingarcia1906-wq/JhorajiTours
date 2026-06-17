@@ -495,7 +495,7 @@ const BookingsPage = () => {
               </div>
               <div>
                 <p className="text-muted mb-1" style={{ margin: 0, fontSize: '0.72rem' }}>{t('clientPrice')}</p>
-                <div className="d-flex align-items-center gap-1" style={{ fontWeight: 700, color: 'var(--primary-color)', marginTop: 4, fontSize: '1.1rem', fontFamily: 'var(--font-display)' }}>
+                <div className="d-flex align-items-center gap-1" style={{ fontWeight: 700, color: 'var(--primary-color)', marginTop: 4, fontSize: '0.9375rem', fontFamily: 'var(--font-display)' }}>
                   <DollarSign size={16} /> {formatPrice(selected.clientPrice)}
                 </div>
               </div>

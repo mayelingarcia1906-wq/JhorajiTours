@@ -131,7 +131,7 @@ const ProvidersActivitiesPage = () => {
         <div className="dashboard-grid-2">
           {/* Form */}
           <div className="card" style={{ alignSelf: 'flex-start' }}>
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-color)' }}>
+            <h3 style={{ fontSize: '0.9375rem', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-color)' }}>
               <Plus size={20} /> {editingProvider.id ? t('editProviderTitle') : t('newProviderTitle')}
             </h3>
             <form onSubmit={handleSaveProvider} key={editingProvider.id || 'new'}>
@@ -164,7 +164,7 @@ const ProvidersActivitiesPage = () => {
 
           {/* List */}
           <div className="card">
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '15px' }}>{t('providerList')}</h3>
+            <h3 style={{ fontSize: '0.9375rem', marginBottom: '0.75rem' }}>{t('providerList')}</h3>
             <div className="table-wrapper">
               <table className="table">
                 <thead>
@@ -203,7 +203,7 @@ const ProvidersActivitiesPage = () => {
         <div className="dashboard-grid-2">
           {/* Form */}
           <div className="card" style={{ alignSelf: 'flex-start' }}>
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-color)' }}>
+            <h3 style={{ fontSize: '0.9375rem', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-color)' }}>
               <Plus size={20} /> {editingActivity.id ? t('editActivityTitle') : t('newActivityTitle')}
             </h3>
             <form onSubmit={handleSaveActivity} key={editingActivity.id || 'new'}>
@@ -299,7 +299,7 @@ const ProvidersActivitiesPage = () => {
 
           {/* List */}
           <div className="card">
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '15px' }}>{t('activityList')}</h3>
+            <h3 style={{ fontSize: '0.9375rem', marginBottom: '0.75rem' }}>{t('activityList')}</h3>
             <div className="table-wrapper">
               <table className="table">
                 <thead>

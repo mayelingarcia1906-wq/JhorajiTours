@@ -343,12 +343,12 @@ const FinancesPage = () => {
           <div className="stat-value" style={{ fontSize: '1.5rem' }}>{formatPrice(totalGastos)}</div>
           <div style={{ fontSize: '0.72rem', color: 'var(--text-faint)', marginTop: 4 }}>{t('operExpensesDesc')}</div>
         </div>
-        <div className="card-ganancia stat-card" style={{ background: 'linear-gradient(135deg, var(--success-soft) 0%, rgba(34, 197, 94, 0.06) 100%)', border: '1px solid rgba(34, 197, 94, 0.25)' }}>
+        <div className="card-ganancia stat-card" style={{ border: '1px solid rgba(34, 197, 94, 0.22)' }}>
           <div className="stat-header">
             <span className="ganancia-title stat-label" style={{ color: '#166534' }}>{t('realProfit')}</span>
             <div className="stat-icon" style={{ background: 'var(--success-soft)', color: 'var(--success)' }}><CheckCircle size={18} /></div>
           </div>
-          <div className="ganancia-amount" style={{ fontSize: '1.7rem' }}>{formatPrice(gananciaReal)}</div>
+          <div className="ganancia-amount" style={{ fontSize: '1.5rem' }}>{formatPrice(gananciaReal)}</div>
           <div className="ganancia-subtitle" style={{ fontSize: '0.72rem', borderTop: '1px dashed rgba(34, 197, 94, 0.3)', paddingTop: 6, marginTop: 6, color: '#166534' }}>{t('profitDesc')}</div>
         </div>
       </div>
@@ -412,7 +412,7 @@ const FinancesPage = () => {
             <div>
               {selectedProv.length > 0 && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: '#f8fafc', padding: '10px 15px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '15px' }}>
-                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem' }}>{selectedProv.length} {t('selected')}</span>
+                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.8125rem' }}>{selectedProv.length} {t('selected')}</span>
                   <div style={{ width: '1px', height: '20px', backgroundColor: '#cbd5e1' }}></div>
                   <button className="btn btn-link" onClick={() => toggleProvStatus('Pagado')} style={{ color: '#10b981', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><CheckCircle size={16}/> {t('pay')}</button>
                   <button className="btn btn-link" onClick={() => toggleProvStatus('Pendiente')} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><AlertCircle size={16}/> {t('pending')}</button>
@@ -464,7 +464,7 @@ const FinancesPage = () => {
                     <tr style={{ backgroundColor: '#f8fafc', color: '#0f172a' }}>
                       <td colSpan="6" style={{ padding: '0.5rem', textAlign: 'right', fontWeight: '700', fontSize: '0.85rem', letterSpacing: '0.5px', color: '#64748b' }}>{t('totals')}</td>
                       <td style={{ padding: '0.5rem', fontWeight: '800', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>{formatPrice(totalProv)}</td>
-                      <td style={{ padding: '0.5rem', fontWeight: '700', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>{formatPrice(totalBruto)}</td>
+                      <td style={{ padding: '0.5rem', fontWeight: '700', fontSize: '0.8125rem', whiteSpace: 'nowrap' }}>{formatPrice(totalBruto)}</td>
                       <td style={{ padding: '0.5rem', color: '#f59e0b', fontWeight: '800', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>{formatPrice(totalOta)}</td>
                       <td style={{ padding: '0.5rem', color: '#16a34a', fontWeight: '800', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>{formatPrice(totalBruto - totalProv - totalOta)}</td>
                       <td style={{ padding: '0.5rem' }}></td>
@@ -481,7 +481,7 @@ const FinancesPage = () => {
             <div>
               {selectedDriver.length > 0 && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: '#f8fafc', padding: '10px 15px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '15px' }}>
-                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem' }}>{selectedDriver.length} {t('selected')}</span>
+                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.8125rem' }}>{selectedDriver.length} {t('selected')}</span>
                   <div style={{ width: '1px', height: '20px', backgroundColor: '#cbd5e1' }}></div>
                   <button className="btn btn-link" onClick={() => toggleDriverStatus('Pagado')} style={{ color: '#10b981', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><CheckCircle size={16}/> {t('pay')}</button>
                   <button className="btn btn-link" onClick={() => toggleDriverStatus('Pendiente')} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><AlertCircle size={16}/> {t('pending')}</button>
@@ -535,7 +535,7 @@ const FinancesPage = () => {
             <div>
               {selectedExp.length > 0 && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: '#f8fafc', padding: '10px 15px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '15px' }}>
-                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem' }}>{selectedExp.length} seleccionada(s)</span>
+                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.8125rem' }}>{selectedExp.length} seleccionada(s)</span>
                   <div style={{ width: '1px', height: '20px', backgroundColor: '#cbd5e1' }}></div>
                   <button className="btn btn-link no-print" onClick={confirmDeleteExpense} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Trash2 size={16}/> Eliminar</button>
                 </div>
@@ -586,27 +586,27 @@ const FinancesPage = () => {
                 <button onClick={() => setShowSummaryModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 0, display: 'flex' }}><X size={20} /></button>
               </div>
         
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8125rem' }}>
           <span style={{ color: '#333' }}>{t('totalBookingsLabel')}</span>
           <span style={{ fontWeight: 'bold', color: '#000' }}>{allBookings.length}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8125rem' }}>
           <span style={{ color: '#333' }}>{t('grossIncomeLabel')}</span>
           <span style={{ fontWeight: 'bold', color: '#10b981' }}>{formatPrice(totalBruto)}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8125rem' }}>
           <span style={{ color: '#333' }}>{t('provPaymentLabel')}</span>
           <span style={{ fontWeight: 'bold', color: '#ef4444' }}>{formatPrice(totalProv)}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8125rem' }}>
           <span style={{ color: '#333' }}>{t('otaCommLabel')}</span>
           <span style={{ fontWeight: 'bold', color: '#f59e0b' }}>{formatPrice(totalOta)}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8125rem' }}>
           <span style={{ color: '#333' }}>{t('driverPayLabel')}</span>
           <span style={{ fontWeight: 'bold', color: '#3b82f6' }}>{formatPrice(totalDriver)}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '0.9rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '0.8125rem' }}>
           <span style={{ color: '#333' }}>{t('operExpLabel')}</span>
           <span style={{ fontWeight: 'bold', color: '#000' }}>{formatPrice(totalGastos)}</span>
         </div>

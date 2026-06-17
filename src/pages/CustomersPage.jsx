@@ -187,8 +187,8 @@ const CustomersPage = () => {
               <h3>Perfil del cliente</h3>
               <button className="modal-close" onClick={() => setSelected(null)}><X size={16} /></button>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', padding: '1rem', backgroundColor: 'var(--bg-soft)', borderRadius: 'var(--radius-md)' }}>
-              <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary-color), var(--primary-hover))', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.4rem', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.875rem', padding: '0.75rem', backgroundColor: 'var(--bg-soft)', borderRadius: 'var(--radius-md)' }}>
+              <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary-color), var(--primary-hover))', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1.125rem', flexShrink: 0 }}>
                 {selected.name.charAt(0)}
               </div>
               <div>

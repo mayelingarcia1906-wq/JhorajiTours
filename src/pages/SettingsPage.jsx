@@ -385,7 +385,7 @@ const SettingsPage = () => {
           <div>
             <h3 className="mb-4">{t('accountData')}</h3>
             <div style={{ ...settingCardStyle, display: 'flex', gap: '20px', alignItems: 'center', marginBottom: '20px' }}>
-              <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'var(--primary-color)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', fontWeight: 700 }}>
+              <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'var(--primary-color)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.125rem', fontWeight: 700 }}>
                 {currentUser.name?.charAt(0) || 'A'}
               </div>
               <div>
@@ -407,7 +407,7 @@ const SettingsPage = () => {
               ].map(([label, value, icon]) => (
                 <div key={label} style={settingCardStyle}>
                   <p className="text-muted" style={{ margin: '0 0 4px 0', fontSize: '0.85rem' }}>{label}</p>
-                  <div className="d-flex align-items-center gap-2" style={{ fontWeight: 600, fontSize: '0.9rem' }}>
+                  <div className="d-flex align-items-center gap-2" style={{ fontWeight: 600, fontSize: '0.8125rem' }}>
                     <span style={{ color: 'var(--primary-color)', flexShrink: 0 }}>{icon}</span>
                     <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={value}>{value}</span>
                   </div>
@@ -517,7 +517,7 @@ const SettingsPage = () => {
             </div>
 
             <div className="mt-4">
-              <h4 style={{ fontSize: '1.1rem', marginBottom: '15px' }}>{t('activeSessions')}</h4>
+              <h4 style={{ fontSize: '0.9375rem', marginBottom: '15px' }}>{t('activeSessions')}</h4>
               <div style={{ border: '1px solid var(--border-color)', borderRadius: '8px', overflow: 'hidden' }}>
                 {sessions.map((session, index) => (
                   <div key={session.id} className="p-3 d-flex justify-content-between align-items-center" style={{ padding: '1rem', borderBottom: index === sessions.length - 1 ? 'none' : '1px solid var(--border-color)' }}>
@@ -547,7 +547,7 @@ const SettingsPage = () => {
                 <div key={role} className="card" style={{ padding: '1.2rem', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
                   <h4 style={{ margin: '0 0 15px 0', fontSize: '1.05rem', color: 'var(--primary-color)' }}>{t(role === 'Operador de Reservas' ? 'roleOperator' : 'roleAgent')}</h4>
                   
-                  <div style={{ marginBottom: '10px', fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.9rem' }}>{t('moduleAccess')}</div>
+                  <div style={{ marginBottom: '10px', fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.8125rem' }}>{t('moduleAccess')}</div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px', marginBottom: '20px' }}>
                     {allModules.map((module) => {
                       const isGranted = roleData.modules?.[module] || false;
@@ -562,7 +562,7 @@ const SettingsPage = () => {
                     })}
                   </div>
 
-                  <div style={{ marginBottom: '10px', fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.9rem' }}>{t('actionPermissions')}</div>
+                  <div style={{ marginBottom: '10px', fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.8125rem' }}>{t('actionPermissions')}</div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px' }}>
                     {allActions.map((action) => {
                       const isGranted = roleData.actions?.[action] || false;
@@ -588,7 +588,7 @@ const SettingsPage = () => {
             <p className="text-muted mb-4">Protege tu información exportando tus datos periódicamente. Si alguna vez pierdes información, puedes restaurarla subiendo el archivo JSON de respaldo.</p>
             
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-              <div className="card" style={{ padding: '1.5rem', textAlign: 'center', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
+              <div className="card" style={{ padding: '1rem', textAlign: 'center', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
                 <Download size={32} color="var(--primary-color)" style={{ marginBottom: '12px' }} />
                 <h4 style={{ marginBottom: '8px', fontSize: '1.05rem' }}>Exportar Datos</h4>
                 <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '15px' }}>Descarga un archivo JSON con todas tus reservas, clientes, choferes y configuraciones.</p>
@@ -597,7 +597,7 @@ const SettingsPage = () => {
                 </button>
               </div>
 
-              <div className="card" style={{ padding: '1.5rem', textAlign: 'center', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
+              <div className="card" style={{ padding: '1rem', textAlign: 'center', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
                 <Upload size={32} color="var(--warning)" style={{ marginBottom: '12px' }} />
                 <h4 style={{ marginBottom: '8px', fontSize: '1.05rem' }}>Importar / Restaurar</h4>
                 <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '15px' }}>Sube tu archivo JSON previamente descargado para restaurar el sistema completo.</p>

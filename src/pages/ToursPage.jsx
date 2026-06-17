@@ -196,7 +196,7 @@ const ToursPage = () => {
             <div style={{ padding: '1rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
               <div className="d-flex justify-content-between align-items-center" style={{ gap: 8, marginBottom: 8 }}>
                 <h3 style={{ fontSize: '0.95rem', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={tour.title}>{tour.title}</h3>
-                <span style={{ fontWeight: 700, color: 'var(--primary-color)', whiteSpace: 'nowrap', fontSize: '0.9rem' }}>{formatPrice(tour.price)}</span>
+                <span style={{ fontWeight: 700, color: 'var(--primary-color)', whiteSpace: 'nowrap', fontSize: '0.8125rem' }}>{formatPrice(tour.price)}</span>
               </div>
               <div className="d-flex justify-content-between" style={{ fontSize: '0.78rem', color: 'var(--text-light)', marginBottom: 12 }}>
                 <span className="d-flex align-items-center gap-1"><MapPin size={12} /> {t(tour.category)}</span>
@@ -228,7 +228,7 @@ const ToursPage = () => {
               <img src={selected.image} alt={selected.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               <button onClick={() => setSelected(null)} className="modal-close" style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(0,0,0,0.5)', color: 'white' }}><X size={18} /></button>
             </div>
-            <div style={{ padding: '1.5rem' }}>
+            <div style={{ padding: '1rem' }}>
               <div className="d-flex justify-content-between align-items-center mb-3" style={{ gap: 12, flexWrap: 'wrap' }}>
                 <h2 style={{ margin: 0 }}>{selected.title}</h2>
                 <span className={`badge ${selected.active ? 'badge-success' : 'badge-danger'}`}>{selected.active ? t('active') : t('inactive')}</span>

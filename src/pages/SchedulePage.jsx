@@ -96,7 +96,7 @@ const SchedulePage = () => {
             <span className="stat-label">{monthLabel}</span>
             <div className="stat-icon"><Clock size={18} /></div>
           </div>
-          <div className="stat-value" style={{ fontSize: '1.1rem', textTransform: 'capitalize' }}>{rangeLabel}</div>
+          <div className="stat-value" style={{ fontSize: '0.9375rem', textTransform: 'capitalize' }}>{rangeLabel}</div>
         </div>
       </div>
 
@@ -115,7 +115,7 @@ const SchedulePage = () => {
                   style={isToday ? { background: 'var(--primary-50)', color: 'var(--primary-color)', borderBottom: '3px solid var(--primary-color)' } : {}}
                 >
                   <div style={{ fontSize: '0.7rem' }}>{DAYS_ES[d.getDay()]}</div>
-                  <div style={{ fontSize: '1.3rem', fontWeight: 800, marginTop: 2, color: isToday ? 'var(--primary-color)' : 'var(--text-dark)' }}>{d.getDate()}</div>
+                  <div style={{ fontSize: '1rem', fontWeight: 700, marginTop: 2, color: isToday ? 'var(--primary-color)' : 'var(--text-dark)' }}>{d.getDate()}</div>
                   {count > 0 && <div style={{ fontSize: '0.65rem', color: 'var(--primary-color)', fontWeight: 700, marginTop: 2 }}>{count} serv.</div>}
                 </div>
               );
