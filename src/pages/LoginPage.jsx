@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Mail, MessageCircle, Shield, Sparkles, Waves } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const { t } = useLanguage();
   const { addToast } = useToast();
   const [email, setEmail] = useState('');
@@ -53,8 +55,8 @@ const LoginPage = () => {
         localStorage.removeItem('jhoraji_remembered_email');
       }
 
-      window.dispatchEvent(new Event('storage'));
       addToast(`Bienvenido, ${matched.name}`, 'success');
+      navigate('/dashboard', { replace: true });
     } catch (e) {
       setError('Error al iniciar sesión');
       addToast('Error al iniciar sesión', 'error');
@@ -186,11 +188,6 @@ const LoginPage = () => {
             {loading ? 'Ingresando…' : 'Ingresar al panel'}
           </button>
 
-          <div className="login-credentials">
-            <strong>Credenciales de demo</strong><br />
-            admin@jhorajitours.com · admin<br />
-            jhorajitour@gmail.com · Margarita2026@
-          </div>
         </form>
       </main>
     </div>
