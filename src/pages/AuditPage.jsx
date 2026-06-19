@@ -1,217 +1,192 @@
 import { useMemo, useState } from 'react';
-import { Activity, Edit3, Eraser, Plus, Search, ShieldCheck, Trash2, X } from 'lucide-react';
-import { Pagination } from '../components/Pagination';
+import { Activity, BarChart3, Clock, Edit3, Eye, LogIn, Plus, Search, Trash2, User, X, CheckCircle, AlertCircle, Power, Eraser } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { Pagination } from '../components/Pagination';
 
-const MODULE_COLORS = {
-  Usuarios: { bg: 'rgba(14,165,233,0.1)', color: 'var(--primary-color)' },
-  Proveedores: { bg: 'rgba(245,158,11,0.1)', color: 'var(--warning)' },
-  Actividades: { bg: 'rgba(139,92,246,0.1)', color: '#8b5cf6' },
-  Reservas: { bg: 'rgba(34,197,94,0.1)', color: 'var(--success)' },
-  Tours: { bg: 'rgba(239,68,68,0.1)', color: 'var(--danger)' },
-  Clientes: { bg: 'rgba(16,185,129,0.1)', color: '#10b981' },
-  Choferes: { bg: 'rgba(249,115,22,0.1)', color: '#f97316' },
-  Agencias: { bg: 'rgba(236,72,153,0.1)', color: '#ec4899' },
-  Órdenes: { bg: 'rgba(56,189,248,0.1)', color: '#38bdf8' },
-  Finanzas: { bg: 'rgba(168,85,247,0.1)', color: '#a855f7' },
-  Sistema: { bg: 'rgba(100,116,139,0.1)', color: 'var(--text-light)' },
+const STORAGE_KEY = 'jhoraji_audit';
+
+const read = (k, fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } };
+const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+const ACTION_META = {
+  'Creó': { icon: Plus, tone: 'success' },
+  'Editó': { icon: Edit3, tone: 'info' },
+  'Eliminó': { icon: Trash2, tone: 'danger' },
+  'Activó': { icon: Power, tone: 'success' },
+  'Desactivó': { icon: Power, tone: 'warning' },
+  'Login': { icon: LogIn, tone: 'info' },
+  'Logout': { icon: LogIn, tone: 'neutral' },
+  'Marcó': { icon: CheckCircle, tone: 'success' },
+  'Registró': { icon: Plus, tone: 'primary' },
+  'Actualizó': { icon: Edit3, tone: 'info' },
+  'Imprimió': { icon: Eye, tone: 'neutral' },
+  'Restauró': { icon: CheckCircle, tone: 'success' },
+  'Exportó': { icon: BarChart3, tone: 'info' },
 };
 
-const ACTION_ICONS = {
-  'Creó': { icon: Plus, color: 'var(--success)' },
-  'Editó': { icon: Edit3, color: 'var(--warning)' },
-  'Eliminó': { icon: Trash2, color: 'var(--danger)' },
-  'Activó': { icon: Activity, color: 'var(--success)' },
-  'Desactivó': { icon: Activity, color: 'var(--text-light)' },
-};
-
-const readAuditLogs = () => {
-  try {
-    return JSON.parse(localStorage.getItem('jhoraji_audit') || '[]');
-  } catch {
-    return [];
-  }
-};
-
-const formatDateTime = (iso) => {
-  try {
-    const d = new Date(iso);
-    return d.toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' });
-  } catch {
-    return iso;
-  }
+const getActionMeta = (action) => {
+  const match = Object.keys(ACTION_META).find((k) => action?.toLowerCase().startsWith(k.toLowerCase()));
+  return match ? ACTION_META[match] : { icon: Activity, tone: 'neutral' };
 };
 
 const AuditPage = () => {
   const { t } = useLanguage();
-  const [logs, setLogs] = useState(readAuditLogs);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [appliedSearch, setAppliedSearch] = useState('');
+  const [logs, setLogs] = useState(() => read(STORAGE_KEY, []));
   const [moduleFilter, setModuleFilter] = useState('all');
-  const [showClearConfirm, setShowClearConfirm] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [applied, setApplied] = useState('');
+  const [page, setPage] = useState(1);
   const itemsPerPage = 12;
 
-  const modules = ['all', ...Object.keys(MODULE_COLORS)];
+  const modules = useMemo(() => Array.from(new Set(logs.map((l) => l.module).filter(Boolean))).sort(), [logs]);
 
-  const refreshLogs = () => setLogs(readAuditLogs());
-
-  const filteredLogs = useMemo(() => {
-    return logs.filter(log => {
-      const matchModule = moduleFilter === 'all' || log.module === moduleFilter;
-      const term = appliedSearch.toLowerCase();
-      const matchSearch = !term || [log.action, log.detail, log.user, log.module].some(v => String(v || '').toLowerCase().includes(term));
-      return matchModule && matchSearch;
+  const filtered = useMemo(() => {
+    const term = applied.toLowerCase();
+    return logs.filter((l) => {
+      if (moduleFilter !== 'all' && l.module !== moduleFilter) return false;
+      if (!term) return true;
+      return [l.action, l.detail, l.user, l.module].some((v) => String(v || '').toLowerCase().includes(term));
     });
-  }, [logs, moduleFilter, appliedSearch]);
+  }, [logs, moduleFilter, applied]);
 
-  const handleSearch = () => { setAppliedSearch(searchQuery); setCurrentPage(1); };
-  const clearSearch = () => { setSearchQuery(''); setAppliedSearch(''); setCurrentPage(1); };
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const currentItems = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
-  const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
-  const currentItems = filteredLogs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-  const handleClearLogs = () => {
-    localStorage.removeItem('jhoraji_audit');
-    setLogs([]);
-    setShowClearConfirm(false);
-  };
-
-  const getActionStyle = (action) => {
-    const key = Object.keys(ACTION_ICONS).find(k => action?.startsWith(k));
-    return key ? ACTION_ICONS[key] : { icon: Activity, color: 'var(--primary-color)' };
-  };
+  const totalLogs = logs.length;
+  const todayLogs = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return logs.filter((l) => l.timestamp?.startsWith(today)).length;
+  }, [logs]);
+  const createsToday = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return logs.filter((l) => l.timestamp?.startsWith(today) && l.action?.toLowerCase().startsWith('creó')).length;
+  }, [logs]);
 
   return (
     <div>
-      <div className="page-header mb-4">
+      <div className="page-header">
         <div>
-          <h2>{t('auditTitle')}</h2>
-          <p className="text-muted" style={{ margin: 0 }}>{t('auditSubtitle')}</p>
-        </div>
-        <div className="d-flex gap-2">
-          <button className="btn btn-outline" onClick={refreshLogs}>
-            <Activity size={16} /> {t('update')}
-          </button>
-          <button className="btn btn-danger" onClick={() => setShowClearConfirm(true)}>
-            <Trash2 size={16} /> {t('clearLog')}
-          </button>
+          <h2>{t('auditTitle') || 'Auditoría'}</h2>
+          <p className="page-subtitle">{t('auditSubtitle')}</p>
         </div>
       </div>
 
-      {/* Estadísticas */}
-      <div className="stats-grid mb-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' }}>
-        <div className="card" style={{ textAlign: 'center', padding: '12px 14px', borderRadius: '10px' }}>
-          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--primary-color)' }}>{logs.length}</div>
-          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '2px' }}>{t('totalActions')}</div>
-        </div>
-        <div className="card" style={{ textAlign: 'center', padding: '12px 14px', borderRadius: '10px' }}>
-          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--success)' }}>
-            {logs.filter(l => l.action?.startsWith('Creó')).length}
+      <div className="stats-grid mb-4">
+        <div className="stat-card tone-primary">
+          <div className="stat-header">
+            <span className="stat-label">{t('totalEvents')}</span>
+            <div className="stat-icon"><BarChart3 size={18} /></div>
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '2px' }}>{t('creations')}</div>
+          <div className="stat-value">{totalLogs}</div>
         </div>
-        <div className="card" style={{ textAlign: 'center', padding: '12px 14px', borderRadius: '10px' }}>
-          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--warning)' }}>
-            {logs.filter(l => l.action?.startsWith('Editó')).length}
+        <div className="stat-card tone-info">
+          <div className="stat-header">
+            <span className="stat-label">{t('eventsToday')}</span>
+            <div className="stat-icon"><Clock size={18} /></div>
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '2px' }}>{t('editions')}</div>
+          <div className="stat-value">{todayLogs}</div>
         </div>
-        <div className="card" style={{ textAlign: 'center', padding: '12px 14px', borderRadius: '10px' }}>
-          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--danger)' }}>
-            {logs.filter(l => l.action?.startsWith('Eliminó')).length}
+        <div className="stat-card tone-success">
+          <div className="stat-header">
+            <span className="stat-label">{t('createsToday')}</span>
+            <div className="stat-icon"><Plus size={18} /></div>
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '2px' }}>{t('deletions')}</div>
+          <div className="stat-value">{createsToday}</div>
         </div>
-        <div className="card" style={{ textAlign: 'center', padding: '12px 14px', borderRadius: '10px' }}>
-          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--primary-color)' }}>
-            {logs.filter(l => l.action?.startsWith('Activó') || l.action?.startsWith('Desactivó')).length}
+        <div className="stat-card tone-warning">
+          <div className="stat-header">
+            <span className="stat-label">{t('modules')}</span>
+            <div className="stat-icon"><Activity size={18} /></div>
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '2px' }}>{t('statusChanges')}</div>
+          <div className="stat-value">{modules.length}</div>
         </div>
       </div>
 
-      {/* Filtros */}
       <div className="card mb-4">
         <div className="page-toolbar">
-          <div className="search-integrated">
-            <Search size={16} className="search-icon" />
-            <input
-              type="text"
-              placeholder={t('searchLog')}
-              className="form-control"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSearch()}
-            />
-            <button className={`search-clear-btn ${searchQuery ? 'visible' : ''}`} onClick={clearSearch} type="button"><Eraser size={15} /></button>
-            <button className="search-btn-inner" onClick={handleSearch} type="button"><Search size={13} /> {t('search')}</button>
+          <div className="d-flex gap-2 align-items-center" style={{ flex: 1, minWidth: 0, flexWrap: 'wrap' }}>
+            <div className="search-integrated">
+              <Search size={15} className="search-icon" />
+              <input
+                type="text"
+                placeholder={t('searchAudit')}
+                className="form-control"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && (setApplied(search), setPage(1))}
+              />
+              {search && (
+                <button className="search-clear-btn visible" onClick={() => { setSearch(''); setApplied(''); setPage(1); }} type="button">
+                  <Eraser size={14} />
+                </button>
+              )}
+              <button className="search-btn-inner" onClick={() => { setApplied(search); setPage(1); }} type="button">
+                <Search size={12} /> {t('search')}
+              </button>
+            </div>
           </div>
-          <select className="form-control" style={{ width: 'min(100%, 200px)', height: '36px', padding: '0 12px', fontSize: '0.85rem', borderRadius: 'var(--radius-full)' }} value={moduleFilter} onChange={e => setModuleFilter(e.target.value)}>
-            {modules.map(m => <option key={m} value={m}>{m === 'all' ? t('allModules') : m}</option>)}
+          <select className="form-control" style={{ width: 'auto', minWidth: 180 }} value={moduleFilter} onChange={(e) => { setModuleFilter(e.target.value); setPage(1); }}>
+            <option value="all">{t('allModulesFilter')}</option>
+            {modules.map((m) => <option key={m} value={m}>{m}</option>)}
           </select>
         </div>
       </div>
 
-      {/* Log List */}
-      <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h3 style={{ margin: 0, fontSize: '1rem' }}>
-            <ShieldCheck size={18} style={{ marginRight: '8px', color: 'var(--primary-color)', verticalAlign: 'middle' }} />
-            {filteredLogs.length} {t('records')}
-          </h3>
+      <div className="card" style={{ padding: 0 }}>
+        <div className="table-wrapper" style={{ borderRadius: 0, border: 'none' }}>
+          <table className="table">
+            <thead>
+              <tr>
+                <th style={{ width: 50 }}></th>
+                <th>{t('module')}</th>
+                <th>{t('action')}</th>
+                <th>{t('detail')}</th>
+                <th>{t('user')}</th>
+                <th>{t('dateTime')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentItems.length === 0 ? (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-faint)' }}>
+                    <BarChart3 size={32} style={{ opacity: 0.3, marginBottom: 8 }} />
+                    <div>{t('noAuditEvents')}</div>
+                  </td>
+                </tr>
+              ) : currentItems.map((log) => {
+                const meta = getActionMeta(log.action);
+                const Icon = meta.icon;
+                const tone = meta.tone;
+                return (
+                  <tr key={log.id}>
+                    <td>
+                      <div
+                        className={`stat-icon ${tone !== 'neutral' ? `tone-${tone}` : ''}`}
+                        style={{ width: 34, height: 34 }}
+                      >
+                        <Icon size={15} />
+                      </div>
+                    </td>
+                    <td><span className="badge badge-primary">{log.module || '—'}</span></td>
+                    <td className="font-bold" style={{ fontSize: '0.85rem' }}>{log.action}</td>
+                    <td style={{ color: 'var(--text-medium)', maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{log.detail || '—'}</td>
+                    <td>
+                      <div className="d-flex align-items-center gap-2" style={{ fontSize: '0.82rem' }}>
+                        <User size={12} style={{ color: 'var(--text-light)' }} />
+                        {log.user || '—'}
+                      </div>
+                    </td>
+                    <td style={{ fontSize: '0.78rem', color: 'var(--text-light)', fontFamily: 'var(--font-mono)' }}>
+                      {new Date(log.timestamp).toLocaleString()}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-
-        {filteredLogs.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-light)' }}>
-            <ShieldCheck size={40} style={{ opacity: 0.3, marginBottom: '1rem' }} />
-            <p>{t('noAuditLogs')}</p>
-            <p style={{ fontSize: '0.85rem' }}>{t('auditLogsDesc')}</p>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {currentItems.map(log => {
-              const actionStyle = getActionStyle(log.action);
-              const modStyle = MODULE_COLORS[log.module] || MODULE_COLORS['Sistema'];
-              const ActionIcon = actionStyle.icon;
-              return (
-                <div key={log.id} className="audit-log-item">
-                  <div className="audit-log-icon" style={{ backgroundColor: modStyle.bg }}>
-                    <ActionIcon size={15} color={actionStyle.color} />
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                      <span className="font-bold" style={{ fontSize: '0.9rem', color: 'var(--text-dark)' }}>{log.action}</span>
-                      <span style={{ fontSize: '0.82rem', color: 'var(--text-light)' }}>·</span>
-                      <span style={{ fontSize: '0.85rem', color: 'var(--text-dark)' }}>{log.detail}</span>
-                      <span className="badge" style={{ backgroundColor: modStyle.bg, color: modStyle.color, fontSize: '0.68rem', padding: '2px 8px' }}>{log.module}</span>
-                    </div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-light)', marginTop: '3px' }}>
-                      Por <strong>{log.user}</strong> · {formatDateTime(log.timestamp)}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-        <div style={{ padding: '0 1rem', paddingBottom: '1rem' }}>
-          <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredLogs.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} />
-        </div>
+        <Pagination currentPage={page} totalPages={totalPages} totalItems={filtered.length} itemsPerPage={itemsPerPage} onPageChange={setPage} />
       </div>
-
-      {showClearConfirm && (
-        <div className="modal-overlay" style={{ zIndex: 300 }}>
-          <div className="card" style={{ maxWidth: '420px', width: '90%', textAlign: 'center' }}>
-            <h3 style={{ marginBottom: '15px' }}>{t('clearAuditLog')}</h3>
-            <p className="text-muted mb-4">{t('clearAuditLogConfirm')}</p>
-            <div className="d-flex justify-content-center gap-3" style={{ flexWrap: 'wrap' }}>
-              <button className="btn btn-outline" onClick={() => setShowClearConfirm(false)}>{t('cancel')}</button>
-              <button className="btn btn-danger" onClick={handleClearLogs}>{t('clearAll')}</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

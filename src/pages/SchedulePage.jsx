@@ -1,20 +1,14 @@
-import { useMemo, useState } from 'react';
-import { Calendar, ChevronLeft, ChevronRight, Clock, MapPin, User, Users } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Calendar, ChevronLeft, ChevronRight, Clock, MapPin, User, Users, X } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
-const DAYS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-const FULL_DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
-const readStoredData = (key, defaultData) => {
-  const saved = localStorage.getItem(key);
-  if (!saved) return defaultData;
-  try { return JSON.parse(saved); } catch { return defaultData; }
-};
 
-const getWeekDates = (referenceDate) => {
-  const d = new Date(referenceDate);
-  const day = d.getDay();
-  const diff = d.getDate() - day;
-  const sunday = new Date(d.setDate(diff));
+const read = (k, fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } };
+
+const getWeekDates = (ref) => {
+  const d = new Date(ref);
+  const sunday = new Date(d.getFullYear(), d.getMonth(), d.getDate() - d.getDay());
   return Array.from({ length: 7 }, (_, i) => {
     const date = new Date(sunday);
     date.setDate(sunday.getDate() + i);
@@ -22,258 +16,190 @@ const getWeekDates = (referenceDate) => {
   });
 };
 
-const formatDateKey = (date) => date.toISOString().split('T')[0];
-
-import { useLanguage } from '../context/LanguageContext';
+const fmt = (d) => d.toISOString().split('T')[0];
 
 const SchedulePage = () => {
-  const { t } = useLanguage();
-  const [currentWeekRef, setCurrentWeekRef] = useState(new Date());
-  const [selectedBooking, setSelectedBooking] = useState(null);
+  const { t, language } = useLanguage();
+  const DAYS_ES = [t('sun'), t('mon'), t('tue'), t('wed'), t('thu'), t('fri'), t('sat')];
+  const [ref, setRef] = useState(new Date());
+  const [selected, setSelected] = useState(null);
+  const [bookings, setBookings] = useState(() => read('jhoraji_bookings', []));
+  const [drivers] = useState(() => read('jhoraji_drivers', []));
 
-  const bookings = useMemo(() => readStoredData('jhoraji_bookings', []), []);
-  const drivers = useMemo(() => readStoredData('jhoraji_drivers', []), []);
+  const weekDates = useMemo(() => getWeekDates(ref), [ref]);
+  const todayKey = fmt(new Date());
 
-  const weekDates = useMemo(() => getWeekDates(currentWeekRef), [currentWeekRef]);
+  useEffect(() => {
+    const sync = () => setBookings(read('jhoraji_bookings', []));
+    window.addEventListener('bookings_updated', sync);
+    return () => window.removeEventListener('bookings_updated', sync);
+  }, []);
 
-  const goToPrevWeek = () => {
-    const d = new Date(currentWeekRef);
-    d.setDate(d.getDate() - 7);
-    setCurrentWeekRef(d);
-  };
-
-  const goToNextWeek = () => {
-    const d = new Date(currentWeekRef);
-    d.setDate(d.getDate() + 7);
-    setCurrentWeekRef(d);
-  };
-
-  const goToToday = () => setCurrentWeekRef(new Date());
-
-  const bookingsByDate = useMemo(() => {
+  const byDate = useMemo(() => {
     const map = {};
-    weekDates.forEach(d => { map[formatDateKey(d)] = []; });
-    bookings.forEach(b => {
-      if (map[b.date] !== undefined && b.status !== 'canceled') {
+    weekDates.forEach((d) => { map[fmt(d)] = []; });
+    bookings.forEach((b) => {
+      if (map[b.date] !== undefined && b.status !== 'cancelado' && b.status !== 'canceled') {
         map[b.date].push(b);
       }
     });
     return map;
   }, [bookings, weekDates]);
 
-  const todayKey = formatDateKey(new Date());
-  const monthYearLabel = weekDates[0].toLocaleDateString('es-DO', { month: 'long', year: 'numeric' });
+  const allWeek = Object.values(byDate).flat();
+  const totalWeek = allWeek.length;
+  const paid = allWeek.filter((b) => b.status === 'pagado' || b.status === 'paid' || b.paymentDone).length;
+  const pending = allWeek.filter((b) => b.status === 'pendiente' || b.status === 'pending').length;
 
-  const getDriverName = (driverId) => {
-    if (!driverId) return null;
-    const d = drivers.find(dr => String(dr.id) === String(driverId));
-    return d ? d.name : null;
-  };
+  const locale = language === 'es' ? 'es-DO' : 'en-US';
+  const monthLabel = weekDates[0].toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+  const rangeLabel = `${weekDates[0].toLocaleDateString(locale, { day: 'numeric', month: 'short' })} — ${weekDates[6].toLocaleDateString(locale, { day: 'numeric', month: 'short' })}`;
 
-  const totalWeekBookings = Object.values(bookingsByDate).reduce((sum, arr) => sum + arr.length, 0);
+  const getDriver = (id) => drivers.find((d) => String(d.id) === String(id) || d.name === id);
 
   return (
     <div>
-      <div className="page-header mb-4">
+      <div className="page-header">
         <div>
           <h2>{t('scheduleTitle') || 'Horario Semanal'}</h2>
-          <p className="text-muted" style={{ margin: 0 }}>{t('scheduleSubtitle') || 'Vista de servicios asignados por semana'}</p>
+          <p className="page-subtitle">{t('scheduleSubtitle') || 'Servicios asignados por semana'}</p>
         </div>
         <div className="d-flex gap-2">
-          <button className="btn btn-outline" onClick={goToPrevWeek}>
-            <ChevronLeft size={18} />
-          </button>
-          <button className="btn btn-outline" onClick={goToToday} style={{ fontWeight: 600 }}>
-            <Calendar size={16} /> {t('today')}
-          </button>
-          <button className="btn btn-outline" onClick={goToNextWeek}>
-            <ChevronRight size={18} />
-          </button>
+          <button className="btn btn-outline" onClick={() => { const d = new Date(ref); d.setDate(d.getDate() - 7); setRef(d); }}><ChevronLeft size={16} /></button>
+          <button className="btn btn-outline" onClick={() => setRef(new Date())}><Calendar size={15} /> {t('today') || 'Hoy'}</button>
+          <button className="btn btn-outline" onClick={() => { const d = new Date(ref); d.setDate(d.getDate() + 7); setRef(d); }}><ChevronRight size={16} /></button>
         </div>
       </div>
 
-      {/* Stats row */}
-      <div className="d-flex gap-3 mb-4" style={{ flexWrap: 'wrap' }}>
-        <div className="card" style={{ flex: 1, minWidth: '140px', padding: '12px 14px', borderRadius: '10px', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--primary-color)' }}>{totalWeekBookings}</div>
-          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '2px' }}>{t('servicesThisWeek') || 'Servicios esta semana'}</div>
-        </div>
-        <div className="card" style={{ flex: 1, minWidth: '140px', padding: '12px 14px', borderRadius: '10px', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--success)' }}>
-            {Object.values(bookingsByDate).flat().filter(b => b.status === 'paid').length}
+      <div className="stats-grid mb-4">
+        <div className="stat-card tone-primary">
+          <div className="stat-header">
+            <span className="stat-label">{t('servicesThisWeek')}</span>
+            <div className="stat-icon"><Calendar size={18} /></div>
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '2px' }}>{t('paid') || 'Pagados'}</div>
+          <div className="stat-value">{totalWeek}</div>
         </div>
-        <div className="card" style={{ flex: 1, minWidth: '140px', padding: '12px 14px', borderRadius: '10px', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--warning)' }}>
-            {Object.values(bookingsByDate).flat().filter(b => b.status === 'pending').length}
+        <div className="stat-card tone-success">
+          <div className="stat-header">
+            <span className="stat-label">{t('paid')}</span>
+            <div className="stat-icon"><Calendar size={18} /></div>
           </div>
-          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '2px' }}>{t('pending') || 'Pendientes'}</div>
+          <div className="stat-value">{paid}</div>
         </div>
-        <div className="card" style={{ flex: 2, minWidth: '200px', padding: '12px 14px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Calendar size={18} color="var(--primary-color)" />
-          <div>
-            <div style={{ fontWeight: 600, fontSize: '0.85rem', textTransform: 'capitalize' }}>{monthYearLabel}</div>
-            <div className="text-muted" style={{ fontSize: '0.75rem', marginTop: '2px' }}>
-              {weekDates[0].toLocaleDateString('es-DO', { day: 'numeric', month: 'short' })} — {weekDates[6].toLocaleDateString('es-DO', { day: 'numeric', month: 'short' })}
-            </div>
+        <div className="stat-card tone-warning">
+          <div className="stat-header">
+            <span className="stat-label">{t('pending')}</span>
+            <div className="stat-icon"><Calendar size={18} /></div>
           </div>
+          <div className="stat-value">{pending}</div>
+        </div>
+        <div className="stat-card tone-info">
+          <div className="stat-header">
+            <span className="stat-label">{monthLabel}</span>
+            <div className="stat-icon"><Clock size={18} /></div>
+          </div>
+          <div className="stat-value" style={{ fontSize: '0.9375rem', textTransform: 'capitalize' }}>{rangeLabel}</div>
         </div>
       </div>
 
-      {/* Schedule Grid */}
-      <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
+      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         <div style={{ overflowX: 'auto' }}>
-          <div style={{ minWidth: '700px' }}>
-            {/* Header */}
-            <div style={{ display: 'grid', gridTemplateColumns: '70px repeat(7, minmax(0, 1fr))', borderBottom: '2px solid var(--border-color)' }}>
-              <div style={{ padding: '12px', backgroundColor: 'var(--secondary-color)', borderRight: '1px solid var(--border-color)' }}></div>
-              {weekDates.map((date, i) => {
-                const key = formatDateKey(date);
-                const isToday = key === todayKey;
-                const count = bookingsByDate[key]?.length || 0;
-                return (
-                  <div key={i} style={{
-                    padding: '12px 8px',
-                    textAlign: 'center',
-                    backgroundColor: isToday ? 'rgba(14,165,233,0.08)' : 'var(--secondary-color)',
-                    borderRight: i < 6 ? '1px solid var(--border-color)' : 'none',
-                    borderBottom: isToday ? '3px solid var(--primary-color)' : '3px solid transparent',
-                  }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: isToday ? 'var(--primary-color)' : 'var(--text-light)', textTransform: 'uppercase' }}>
-                      {DAYS[date.getDay()]}
-                    </div>
-                    <div style={{
-                      fontSize: '1.2rem', fontWeight: 700,
-                      color: isToday ? 'var(--primary-color)' : 'var(--text-dark)',
-                      marginTop: '2px'
-                    }}>
-                      {date.getDate()}
-                    </div>
-                    {count > 0 && (
-                      <div style={{ fontSize: '0.7rem', color: 'var(--primary-color)', fontWeight: 600, marginTop: '2px' }}>
-                        {count} serv.
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+          <div className="schedule-grid" style={{ minWidth: 720, borderRadius: 0, border: 'none' }}>
+            <div className="schedule-header-cell"></div>
+            {weekDates.map((d) => {
+              const key = fmt(d);
+              const isToday = key === todayKey;
+              const count = byDate[key]?.length || 0;
+              return (
+                <div
+                  key={key}
+                  className="schedule-header-cell"
+                  style={isToday ? { background: 'var(--primary-50)', color: 'var(--primary-color)', borderBottom: '3px solid var(--primary-color)' } : {}}
+                >
+                  <div style={{ fontSize: '0.7rem' }}>{DAYS_ES[d.getDay()]}</div>
+                  <div style={{ fontSize: '1rem', fontWeight: 700, marginTop: 2, color: isToday ? 'var(--primary-color)' : 'var(--text-dark)' }}>{d.getDate()}</div>
+                  {count > 0 && <div style={{ fontSize: '0.65rem', color: 'var(--primary-color)', fontWeight: 700, marginTop: 2 }}>{count} {t('serv')}</div>}
+                </div>
+              );
+            })}
 
-            {/* Body */}
-            <div style={{ display: 'grid', gridTemplateColumns: '70px repeat(7, minmax(0, 1fr))', minHeight: '300px' }}>
-              <div style={{
-                backgroundColor: 'var(--secondary-color)',
-                borderRight: '1px solid var(--border-color)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                padding: '10px 6px',
-              }}>
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-light)', fontWeight: 600, writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}>
-                  {t('servicesTitle') || 'SERVICIOS'}
-                </span>
-              </div>
-              {weekDates.map((date, i) => {
-                const key = formatDateKey(date);
-                const dayBookings = bookingsByDate[key] || [];
-                const isToday = key === todayKey;
-                return (
-                  <div key={i} style={{
-                    padding: '8px',
-                    borderRight: i < 6 ? '1px solid var(--border-color)' : 'none',
-                    backgroundColor: isToday ? 'rgba(14,165,233,0.03)' : 'transparent',
-                    minHeight: '200px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '4px',
-                  }}>
-                    {dayBookings.length === 0 && (
-                      <div style={{ textAlign: 'center', color: 'var(--text-light)', fontSize: '0.75rem', paddingTop: '20px', opacity: 0.5 }}>—</div>
-                    )}
-                    {dayBookings.map(b => (
+            <div className="schedule-time-cell" style={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)', fontSize: '0.7rem', color: 'var(--text-light)', fontWeight: 700, letterSpacing: '0.1em' }}>{t('servicesTitle')}</span>
+            </div>
+            {weekDates.map((d) => {
+              const key = fmt(d);
+              const dayBookings = byDate[key] || [];
+              const isToday = key === todayKey;
+              return (
+                <div
+                  key={key}
+                  className="schedule-day-cell"
+                  style={isToday ? { background: 'rgba(14, 165, 233, 0.04)', minHeight: 280 } : { minHeight: 280 }}
+                >
+                  {dayBookings.length === 0 ? (
+                    <div style={{ textAlign: 'center', color: 'var(--text-faint)', fontSize: '0.75rem', paddingTop: 24, opacity: 0.5 }}>—</div>
+                  ) : dayBookings.map((b) => {
+                    const isPaid = b.status === 'pagado' || b.status === 'paid' || b.paymentDone;
+                    return (
                       <div
                         key={b.id}
-                        onClick={() => setSelectedBooking(b)}
-                        style={{
-                          backgroundColor: b.status === 'paid' ? 'rgba(34,197,94,0.15)' : 'rgba(245,158,11,0.15)',
-                          borderLeft: `3px solid ${b.status === 'paid' ? 'var(--success)' : 'var(--warning)'}`,
-                          borderRadius: '4px',
-                          padding: '5px 7px',
-                          fontSize: '0.72rem',
-                          cursor: 'pointer',
-                          transition: 'all 0.15s',
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
-                        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                        className={`schedule-event ${isPaid ? 'paid' : 'pending'}`}
+                        onClick={() => setSelected(b)}
+                        title={`${b.tour} · ${b.customer}`}
                       >
-                        <div style={{ fontWeight: 700, color: 'var(--text-dark)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {b.tour}
-                        </div>
-                        <div style={{ color: 'var(--text-light)', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div style={{ fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{b.tour}</div>
+                        <div style={{ fontSize: '0.6rem', opacity: 0.85, marginTop: 1 }}>
                           {b.customer} · {b.pax} pax
                         </div>
                         {b.pickupTime && (
-                          <div style={{ color: 'var(--primary-color)', fontWeight: 600, marginTop: '2px' }}>
-                            <Clock size={10} style={{ verticalAlign: 'middle', marginRight: '2px' }} />
-                            {b.pickupTime}
+                          <div style={{ fontSize: '0.6rem', marginTop: 1 }}>
+                            <Clock size={9} style={{ verticalAlign: 'middle' }} /> {b.pickupTime}
                           </div>
                         )}
                       </div>
-                    ))}
-                  </div>
-                );
-              })}
-            </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Booking Detail Modal */}
-      {selectedBooking && (
-        <div className="modal-overlay">
-          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '420px' }}>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h3 style={{ margin: 0 }}>{selectedBooking.id}</h3>
-              <button onClick={() => setSelectedBooking(null)} style={{ background: 'none', color: 'var(--text-light)' }}>
-                <span style={{ fontSize: '1.2rem', fontWeight: 700 }}>×</span>
-              </button>
+      {selected && (
+        <div className="modal-overlay" onClick={() => setSelected(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
+            <div className="modal-header">
+              <h3>{selected.tour}</h3>
+              <button className="modal-close" onClick={() => setSelected(null)}><X size={16} /></button>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div className="d-flex align-items-center gap-2">
-                <MapPin size={16} color="var(--primary-color)" />
-                <span className="font-bold">{selectedBooking.tour}</span>
+                <User size={16} style={{ color: 'var(--primary-color)' }} />
+                <span className="font-bold">{selected.customer}</span>
               </div>
               <div className="d-flex align-items-center gap-2">
-                <User size={16} color="var(--text-light)" />
-                <span>{selectedBooking.customer}</span>
+                <Users size={15} style={{ color: 'var(--text-light)' }} />
+                <span>{selected.pax} {t('people')} · {selected.hotel || '—'}</span>
               </div>
               <div className="d-flex align-items-center gap-2">
-                <Users size={16} color="var(--text-light)" />
-                <span>{selectedBooking.pax} personas · {selectedBooking.hotel}</span>
+                <Calendar size={15} style={{ color: 'var(--text-light)' }} />
+                <span>{selected.date}</span>
+                {selected.pickupTime && <><Clock size={15} style={{ color: 'var(--text-light)' }} /><span>{selected.pickupTime}</span></>}
               </div>
-              <div className="d-flex align-items-center gap-2">
-                <Calendar size={16} color="var(--text-light)" />
-                <span>{selectedBooking.date}</span>
-                {selectedBooking.pickupTime && (
-                  <>
-                    <Clock size={16} color="var(--text-light)" />
-                    <span>{selectedBooking.pickupTime}</span>
-                  </>
-                )}
-              </div>
-              {selectedBooking.driverId && (
-                <div style={{ padding: '8px 12px', backgroundColor: 'var(--bg-color)', borderRadius: 'var(--radius-md)', fontSize: '0.85rem' }}>
-                  <strong>Chofer:</strong> {getDriverName(selectedBooking.driverId) || 'Asignado'}
+              {(selected.driverId || selected.driver) && (
+                <div style={{ padding: '0.65rem 0.85rem', background: 'var(--bg-soft)', borderRadius: 'var(--radius-md)', fontSize: '0.85rem' }}>
+                  <strong>{t('driver')}:</strong> {getDriver(selected.driverId || selected.driver)?.name || selected.driver}
                 </div>
               )}
               <div>
-                <span className={`badge badge-${selectedBooking.status === 'paid' ? 'success' : selectedBooking.status === 'pending' ? 'warning' : 'danger'}`}>
-                  {selectedBooking.status === 'paid' ? t('paid') : selectedBooking.status === 'pending' ? t('pending') : t('canceled')}
+                <span className={`badge badge-${selected.status === 'pagado' || selected.status === 'paid' || selected.paymentDone ? 'success' : 'warning'}`}>
+                  {selected.status || 'pendiente'}
                 </span>
-                <span style={{ marginLeft: '8px', fontWeight: 700, color: 'var(--primary-color)' }}>{selectedBooking.amount}</span>
               </div>
             </div>
             <div className="modal-actions">
-              <button className="btn btn-outline" onClick={() => setSelectedBooking(null)}>{t('close')}</button>
+              <button className="btn btn-outline" onClick={() => setSelected(null)}>{t('close')}</button>
             </div>
           </div>
         </div>

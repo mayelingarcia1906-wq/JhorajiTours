@@ -9,7 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './layouts/DashboardLayout';
 import DashboardHome from './pages/DashboardHome';
 import BookingsPage from './pages/BookingsPage';
-import ToursPage from './pages/ToursPage';
+
 import CustomersPage from './pages/CustomersPage';
 import SettingsPage from './pages/SettingsPage';
 import LoginPage from './pages/LoginPage';
@@ -20,6 +20,7 @@ import ActivitiesPage from './pages/ActivitiesPage';
 import AuditPage from './pages/AuditPage';
 import SchedulePage from './pages/SchedulePage';
 import AgenciesPage from './pages/AgenciesPage';
+import OrdersPage from './pages/OrdersPage';
 
 import FinancesPage from './pages/FinancesPage';
 
@@ -42,13 +43,14 @@ function App() {
                     <Route index element={<Navigate to="/dashboard" replace />} />
                     <Route path="dashboard" element={<DashboardHome />} />
                     <Route path="bookings" element={<BookingsPage />} />
-                    <Route path="tours" element={<ToursPage />} />
+
                     <Route path="customers" element={<CustomersPage />} />
                     <Route path="users" element={<UsersPage />} />
                     <Route path="drivers" element={<DriversPage />} />
                     <Route path="providers" element={<ProvidersPage />} />
                     <Route path="activities" element={<ActivitiesPage />} />
                     <Route path="agencies" element={<AgenciesPage />} />
+                    <Route path="orders" element={<OrdersPage />} />
 
                     <Route path="finances" element={<FinancesPage />} />
                     <Route path="audit" element={<AuditPage />} />

@@ -227,7 +227,7 @@ const SettingsPage = () => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    addToast('Copia de seguridad descargada exitosamente', 'success');
+    addToast(t('backupDownloaded'), 'success');
   };
 
   const handleImportData = (event) => {
@@ -241,7 +241,7 @@ const SettingsPage = () => {
         if (!importedData.bookings) throw new Error('Formato inválido');
         setPendingImport(importedData);
       } catch (error) {
-        addToast('Error al importar. El archivo no es un respaldo válido.', 'error');
+        addToast(t('importError'), 'error');
       }
     };
     reader.readAsText(file);
@@ -293,97 +293,70 @@ const SettingsPage = () => {
         mergeArrays('jhoraji_audit', pendingImport.audit);
       }
       
-      addToast(mode === 'merge' ? 'Datos fusionados correctamente.' : 'Datos restaurados correctamente.', 'success');
+      addToast(mode === 'merge' ? t('dataMerged') : t('dataRestored'), 'success');
       setPendingImport(null);
       setTimeout(() => window.location.reload(), 1500);
     } catch (error) {
-      addToast('Error al procesar los datos.', 'error');
+      addToast(t('processError'), 'error');
     }
   };
 
   return (
     <div>
-      <div className="page-header mb-4">
+      <div className="page-header">
         <div>
-          <h2>{t('settings')}</h2>
-          <p className="text-muted" style={{ margin: 0 }}>{t('systemPreferences')}</p>
+          <h2>{t('settingsTitle') || 'Configuración'}</h2>
+          <p className="page-subtitle">{t('settingsSubtitle')}</p>
         </div>
       </div>
 
-      <div className="card" style={{ padding: 0 }}>
-        <div className="settings-container">
-          <div style={{ width: '250px', borderRight: '1px solid var(--border-color)', padding: '20px' }} className="d-none d-md-block">
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-              {sections.map((section) => (
-                <button
-                  key={section.id}
-                  onClick={() => setSearchParams(section.id === 'general' ? {} : { section: section.id })}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '15px',
-                    padding: '12px 20px',
-                    borderRadius: 'var(--radius-md)',
-                    backgroundColor: activeSection === section.id ? 'var(--bg-color)' : 'transparent',
-                    color: activeSection === section.id ? 'var(--primary-color)' : 'var(--text-dark)',
-                    fontWeight: activeSection === section.id ? '600' : '500',
-                    textAlign: 'left',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {section.icon}
-                  {section.name}
-                </button>
-              ))}
-            </nav>
-          </div>
+      {/* ── HORIZONTAL TABS ── */}
+      <nav className="settings-tabs-bar">
+        {sections.map((section) => (
+          <button
+            key={section.id}
+            onClick={() => setSearchParams(section.id === 'general' ? {} : { section: section.id })}
+            className={`settings-tab ${activeSection === section.id ? 'active' : ''}`}
+          >
+            <span className="settings-tab-icon">{section.icon}</span>
+            <span className="settings-tab-label">{section.name}</span>
+          </button>
+        ))}
+      </nav>
 
-          <div className="d-md-none" style={{ padding: '15px', borderBottom: '1px solid var(--border-color)', display: 'flex', gap: '10px', overflowX: 'auto' }}>
-            {sections.map((section) => (
-              <button
-                key={section.id}
-                onClick={() => setSearchParams(section.id === 'general' ? {} : { section: section.id })}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '8px 16px',
-                  borderRadius: 'var(--radius-full)',
-                  backgroundColor: activeSection === section.id ? 'var(--primary-color)' : 'transparent',
-                  color: activeSection === section.id ? 'white' : 'var(--text-dark)',
-                  border: activeSection === section.id ? 'none' : '1px solid var(--border-color)',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {section.icon}
-                {section.name}
-              </button>
-            ))}
-          </div>
+      {/* ── CONTENT PANEL ── */}
+      <div className="settings-content">
 
-          <div style={{ flex: 1, padding: '30px', maxWidth: '850px' }}>
-            {activeSection === 'general' && (
+          {/* ━━━ GENERAL ━━━ */}
+          {activeSection === 'general' && (
+            <div className="card settings-card">
+              <div className="settings-card-header">
+                <div className="settings-card-icon"><Building size={20} /></div>
+                <div>
+                  <h3 className="settings-card-title">{t('companyInfo')}</h3>
+                  <p className="settings-card-desc">{t('companyInfoDesc')}</p>
+                </div>
+              </div>
+              <div className="settings-card-divider" />
               <form onSubmit={handleSaveGeneral}>
-                <h3 className="mb-4">{t('companyInfo')}</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
-                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.25rem' }}>
+                  <div className="form-group mb-0" style={{ gridColumn: '1 / -1' }}>
                     <label>{t('companyName')}</label>
                     <input type="text" className="form-control" value={settings.companyName} onChange={(e) => handleChange('companyName', e.target.value)} />
                   </div>
-                  <div className="form-group">
+                  <div className="form-group mb-0">
                     <label>{t('email')}</label>
                     <input type="email" className="form-control" value={settings.email} onChange={(e) => handleChange('email', e.target.value)} />
                   </div>
-                  <div className="form-group">
+                  <div className="form-group mb-0">
                     <label>{t('phone')}</label>
                     <input type="tel" className="form-control" value={settings.phone} onChange={(e) => handleChange('phone', e.target.value)} />
                   </div>
-                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <div className="form-group mb-0">
                     <label>{t('website')}</label>
                     <input type="url" className="form-control" value={settings.website} onChange={(e) => handleChange('website', e.target.value)} />
                   </div>
-                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <div className="form-group mb-0">
                     <label>{t('currency')}</label>
                     <select className="form-control" value={settings.currency} onChange={(e) => handleChange('currency', e.target.value)}>
                       <option value="USD">{t('usdCurrency')}</option>
@@ -392,280 +365,345 @@ const SettingsPage = () => {
                     </select>
                   </div>
                 </div>
-                <div className="mt-4" style={{ paddingTop: '20px', borderTop: '1px solid var(--border-color)' }}>
-                  <button type="submit" className="btn btn-primary"><Save size={18} /> {t('saveChanges')}</button>
+                <div className="settings-card-divider" style={{ margin: '1.5rem 0 1rem' }} />
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <button type="submit" className="btn btn-primary"><Save size={16} /> {t('saveChanges')}</button>
                 </div>
               </form>
-            )}
+            </div>
+          )}
 
-            {activeSection === 'profile' && (
-              <div>
-                <h3 className="mb-4">{t('accountData')}</h3>
-                <div style={{ ...settingCardStyle, display: 'flex', gap: '20px', alignItems: 'center', marginBottom: '20px' }}>
-                  <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'var(--primary-color)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', fontWeight: 700 }}>
+          {/* ━━━ PROFILE ━━━ */}
+          {activeSection === 'profile' && (
+            <>
+              <div className="card settings-card">
+                <div className="settings-card-header">
+                  <div className="settings-card-icon" style={{ background: 'var(--primary-color)', color: '#fff', fontSize: '1.1rem', fontWeight: 700 }}>
                     {currentUser.name?.charAt(0) || 'A'}
                   </div>
+                  <div style={{ flex: 1 }}>
+                    <h3 className="settings-card-title">{currentUser.name}</h3>
+                    <p className="settings-card-desc">{currentUser.email}</p>
+                  </div>
+                  <span className="badge badge-primary" style={{ fontSize: '0.7rem', alignSelf: 'center' }}>{currentUser.role}</span>
+                </div>
+              </div>
+              <div className="card settings-card" style={{ marginTop: '1rem' }}>
+                <div className="settings-card-header">
+                  <div className="settings-card-icon"><UserCircle size={20} /></div>
                   <div>
-                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1.05rem' }}>{currentUser.name}</h4>
-                    <p className="text-muted" style={{ margin: 0, fontSize: '0.85rem' }}>{currentUser.email}</p>
-                    <span className="badge badge-primary" style={{ marginTop: '8px', fontSize: '0.7rem' }}>{currentUser.role}</span>
+                    <h3 className="settings-card-title">{t('accountData')}</h3>
+                    <p className="settings-card-desc">{t('accountDataDesc')}</p>
                   </div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '15px' }}>
+                <div className="settings-card-divider" />
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                   {[
-                    [t('fullName'), currentUser.name, <UserCircle size={18} />],
-                    [t('email'), currentUser.email, <Mail size={18} />],
-                    [t('phone'), currentUser.phone || '829-580-8964', <Phone size={18} />],
-                    [t('role'), currentUser.role, <Shield size={18} />],
-                    [t('department'), currentUser.department || 'Administración', <Users size={18} />],
-                    [t('status'), currentUser.status || 'Activo', <Globe size={18} />],
-                    [t('lastAccess'), currentUser.lastAccess || '2026-06-03 10:45 AM', <Bell size={18} />],
-                    [t('accessLevel'), currentUser.role === 'Administrador' ? 'Full Access' : 'Standard', <Shield size={18} />],
+                    [t('fullName'), currentUser.name, <UserCircle size={16} key="n" />],
+                    [t('email'), currentUser.email, <Mail size={16} key="e" />],
+                    [t('phone'), currentUser.phone || '829-580-8964', <Phone size={16} key="p" />],
+                    [t('role'), currentUser.role, <Shield size={16} key="r" />],
+                    [t('department'), currentUser.department || 'Administración', <Users size={16} key="d" />],
+                    [t('status'), currentUser.status || 'Activo', <Globe size={16} key="s" />],
+                    [t('lastAccess'), currentUser.lastAccess || '2026-06-03 10:45 AM', <Bell size={16} key="l" />],
+                    [t('accessLevel'), currentUser.role === 'Administrador' ? 'Full Access' : 'Standard', <Shield size={16} key="a" />],
                   ].map(([label, value, icon]) => (
-                    <div key={label} style={settingCardStyle}>
-                      <p className="text-muted" style={{ margin: '0 0 4px 0', fontSize: '0.85rem' }}>{label}</p>
-                      <div className="d-flex align-items-center gap-2" style={{ fontWeight: 600, fontSize: '0.9rem' }}>
-                        <span style={{ color: 'var(--primary-color)', flexShrink: 0 }}>{icon}</span>
-                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={value}>{value}</span>
+                    <div key={label} className="settings-info-item">
+                      <span className="settings-info-icon">{icon}</span>
+                      <div>
+                        <div className="settings-info-label">{label}</div>
+                        <div className="settings-info-value">{value}</div>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-            )}
+            </>
+          )}
 
-            {activeSection === 'appearance' && (
-              <div>
-                <h3 className="mb-4">{t('visualCustomization')}</h3>
-                <div className="mb-4">
-                  <label style={{ display: 'block', marginBottom: '10px', fontWeight: 500 }}>{t('systemTheme')}</label>
-                  <div className="d-flex align-items-center justify-content-between" style={settingCardStyle}>
-                    <div>
-                      <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{theme === 'dark' ? t('darkMode') : t('lightMode')}</h4>
-                      <p className="text-muted" style={{ margin: 0, fontSize: '0.85rem' }}>{t('darkModeDesc')}</p>
-                    </div>
-                    <ToggleSwitch checked={theme === 'dark'} onChange={toggleTheme} activeColor="#f59e0b" label={t('systemTheme')} />
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label style={{ display: 'block', marginBottom: '10px', fontWeight: 500 }}>{t('panelLanguage')}</label>
-                  <div className="d-flex align-items-center justify-content-between" style={settingCardStyle}>
-                    <div>
-                      <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{language === 'es' ? t('spanish') : t('english')}</h4>
-                      <p className="text-muted" style={{ margin: 0, fontSize: '0.85rem' }}>{t('panelLanguageDesc')}</p>
-                    </div>
-                    <select className="form-control" style={{ width: '150px' }} value={language} onChange={(e) => changeLanguage(e.target.value)}>
-                      <option value="es">Español</option>
-                      <option value="en">English</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label style={{ display: 'block', marginBottom: '10px', fontWeight: 500 }}>{t('primaryColor')}</label>
-                  <div className="d-flex gap-3 mt-2">
-                    {['#0ea5e9', '#3b82f6', '#8b5cf6', '#10b981', '#f59e0b'].map((color) => (
-                      <button
-                        key={color}
-                        type="button"
-                        onClick={() => handleSaveColor(color)}
-                        aria-label={color}
-                        style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: color, border: settings.primaryColor === color ? '3px solid white' : 'none', outline: settings.primaryColor === color ? `2px solid ${color}` : 'none' }}
-                      />
-                    ))}
-                  </div>
+          {/* ━━━ APPEARANCE ━━━ */}
+          {activeSection === 'appearance' && (
+            <div className="card settings-card">
+              <div className="settings-card-header">
+                <div className="settings-card-icon"><Palette size={20} /></div>
+                <div>
+                  <h3 className="settings-card-title">{t('visualCustomization')}</h3>
+                  <p className="settings-card-desc">{t('appearanceDesc')}</p>
                 </div>
               </div>
-            )}
+              <div className="settings-card-divider" />
 
-            {activeSection === 'notifications' && (
+              <div className="settings-toggle-row">
+                <div className="settings-toggle-info">
+                  <h4>{t('systemTheme')}</h4>
+                  <p>{theme === 'dark' ? t('darkMode') : t('lightMode')} — {t('darkModeDesc')}</p>
+                </div>
+                <ToggleSwitch checked={theme === 'dark'} onChange={toggleTheme} activeColor="#f59e0b" label={t('systemTheme')} />
+              </div>
+
+              <div className="settings-card-divider" />
+
+              <div className="settings-toggle-row">
+                <div className="settings-toggle-info">
+                  <h4>{t('panelLanguage')}</h4>
+                  <p>{language === 'es' ? t('spanish') : t('english')} — {t('panelLanguageDesc')}</p>
+                </div>
+                <select className="form-control" style={{ width: '150px' }} value={language} onChange={(e) => changeLanguage(e.target.value)}>
+                  <option value="es">{t('spanish')}</option>
+                  <option value="en">{t('english')}</option>
+                </select>
+              </div>
+
+              <div className="settings-card-divider" />
+
               <div>
-                <h3 className="mb-4">{t('notifPreferences')}</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                  {notificationItems.map((item) => (
-                    <div key={item.key} className="d-flex align-items-center justify-content-between" style={settingCardStyle}>
-                      <div>
-                        <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{item.title}</h4>
-                        <p className="text-muted" style={{ margin: 0, fontSize: '0.85rem' }}>{item.desc}</p>
+                <h4 style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.75rem' }}>{t('primaryColor')}</h4>
+                <div className="d-flex gap-3">
+                  {['#0ea5e9', '#3b82f6', '#8b5cf6', '#10b981', '#f59e0b'].map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => handleSaveColor(color)}
+                      aria-label={color}
+                      className="settings-color-btn"
+                      style={{
+                        backgroundColor: color,
+                        boxShadow: settings.primaryColor === color ? `0 0 0 3px var(--card-bg), 0 0 0 5px ${color}` : 'none',
+                        transform: settings.primaryColor === color ? 'scale(1.15)' : 'scale(1)',
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ━━━ NOTIFICATIONS ━━━ */}
+          {activeSection === 'notifications' && (
+            <div className="card settings-card">
+              <div className="settings-card-header">
+                <div className="settings-card-icon"><Bell size={20} /></div>
+                <div>
+                  <h3 className="settings-card-title">{t('notifPreferences')}</h3>
+                  <p className="settings-card-desc">{t('notifDesc')}</p>
+                </div>
+              </div>
+              <div className="settings-card-divider" />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+                {notificationItems.map((item, idx) => (
+                  <div key={item.key}>
+                    <div className="settings-toggle-row">
+                      <div className="settings-toggle-info">
+                        <h4>{item.title}</h4>
+                        <p>{item.desc}</p>
                       </div>
                       <div className="d-flex align-items-center gap-3">
                         {settings[item.key] && (
-                          <select 
-                            className="form-control" 
-                            style={{ height: '32px', padding: '0 10px', fontSize: '0.85rem', width: 'auto', borderRadius: 'var(--radius-md)' }}
+                          <select
+                            className="form-control"
+                            style={{ height: '32px', padding: '0 10px', fontSize: '0.8rem', width: 'auto', borderRadius: 'var(--radius-md)' }}
                             value={settings[`${item.key}Freq`] || (item.key === 'emailNotif' ? 'daily' : 'instant')}
                             onChange={(e) => {
                               persistSettings({ ...settings, [`${item.key}Freq`]: e.target.value });
                               addToast(t('preferenceUpdated') || 'Preferencia actualizada', 'success');
                             }}
                           >
-                            <option value="instant">Inmediato</option>
-                            <option value="hourly">Cada hora</option>
-                            <option value="daily">Diario</option>
-                            <option value="weekly">Semanal</option>
+                            <option value="instant">{t('instant')}</option>
+                            <option value="hourly">{t('hourly')}</option>
+                            <option value="daily">{t('daily')}</option>
+                            <option value="weekly">{t('weekly')}</option>
                           </select>
                         )}
                         <ToggleSwitch checked={Boolean(settings[item.key])} onChange={(checked) => handleNotificationChange(item.key, checked)} label={item.title} />
                       </div>
                     </div>
-                  ))}
-                </div>
+                    {idx < notificationItems.length - 1 && <div className="settings-card-divider" />}
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
+          )}
 
-            {activeSection === 'security' && (
-              <form onSubmit={handleUpdatePassword}>
-                <h3 className="mb-4">{t('accountSecurity')}</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '520px' }}>
-                  <div className="form-group mb-0">
-                    <label>{t('currentPassword')}</label>
-                    <input type="password" className="form-control" required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
-                  </div>
-                  <div className="form-group mb-0">
-                    <label>{t('newPassword')}</label>
-                    <input type="password" className="form-control" required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-                  </div>
-                  <div className="form-group mb-0">
-                    <label>{t('confirmPassword')}</label>
-                    <input type="password" className="form-control" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-                  </div>
-                  <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#f59e0b' }}>{t('updatePassword')}</button>
-                </div>
-
-                <div className="mt-4">
-                  <h4 style={{ fontSize: '1.1rem', marginBottom: '15px' }}>{t('activeSessions')}</h4>
-                  <div style={{ border: '1px solid var(--border-color)', borderRadius: '8px', overflow: 'hidden' }}>
-                    {sessions.map((session, index) => (
-                      <div key={session.id} className="p-3 d-flex justify-content-between align-items-center" style={{ padding: '1rem', borderBottom: index === sessions.length - 1 ? 'none' : '1px solid var(--border-color)' }}>
-                        <div>
-                          <div style={{ fontWeight: 600 }}>{session.device}</div>
-                          <div className="text-muted">{session.location} - {session.lastSeen}</div>
-                        </div>
-                        {session.current ? (
-                          <span className="badge badge-warning">{t('currentSession')}</span>
-                        ) : (
-                          <button type="button" className="btn btn-outline" onClick={() => handleCloseSession(session.id)}>{t('closeSession')}</button>
-                        )}
-                      </div>
-                    ))}
+          {/* ━━━ SECURITY ━━━ */}
+          {activeSection === 'security' && (
+            <>
+              <div className="card settings-card">
+                <div className="settings-card-header">
+                  <div className="settings-card-icon"><Shield size={20} /></div>
+                  <div>
+                    <h3 className="settings-card-title">{t('accountSecurity')}</h3>
+                    <p className="settings-card-desc">{t('securityDesc')}</p>
                   </div>
                 </div>
-              </form>
-            )}
-
-            {activeSection === 'permissions' && isAdmin && (
-              <div>
-                <h3 className="mb-4">{t('permissions')}</h3>
-                <p className="text-muted mb-4">{t('permissionsDesc')}</p>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  {Object.entries(permissions).map(([role, roleData]) => (
-                    <div key={role} className="card" style={{ padding: '1.2rem', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
-                      <h4 style={{ margin: '0 0 15px 0', fontSize: '1.05rem', color: 'var(--primary-color)' }}>{t(role === 'Operador de Reservas' ? 'roleOperator' : 'roleAgent')}</h4>
-                      
-                      <div style={{ marginBottom: '10px', fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.9rem' }}>{t('moduleAccess')}</div>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px', marginBottom: '20px' }}>
-                        {allModules.map((module) => {
-                          const isGranted = roleData.modules?.[module] || false;
-                          return (
-                            <div key={module} className="d-flex align-items-center gap-2" style={{ cursor: 'pointer' }} onClick={() => handlePermissionChange(role, 'modules', module, !isGranted)}>
-                              {isGranted ? <CheckSquare size={16} color="var(--primary-color)" /> : <Square size={16} color="var(--text-light)" />}
-                              <span style={{ fontWeight: 500, fontSize: '0.85rem', color: isGranted ? 'var(--text-dark)' : 'var(--text-light)' }}>
-                                {t('module' + module.charAt(0).toUpperCase() + module.slice(1))}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
-
-                      <div style={{ marginBottom: '10px', fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.9rem' }}>{t('actionPermissions')}</div>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px' }}>
-                        {allActions.map((action) => {
-                          const isGranted = roleData.actions?.[action] || false;
-                          return (
-                            <div key={action} className="d-flex align-items-center gap-2" style={{ cursor: 'pointer' }} onClick={() => handlePermissionChange(role, 'actions', action, !isGranted)}>
-                              {isGranted ? <CheckSquare size={16} color="var(--primary-color)" /> : <Square size={16} color="var(--text-light)" />}
-                              <span style={{ fontWeight: 500, fontSize: '0.85rem', color: isGranted ? 'var(--text-dark)' : 'var(--text-light)' }}>
-                                {t('action' + action.charAt(0).toUpperCase() + action.slice(1))}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
+                <div className="settings-card-divider" />
+                <form onSubmit={handleUpdatePassword}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
+                    <div className="form-group mb-0">
+                      <label>{t('currentPassword')}</label>
+                      <input type="password" className="form-control" required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activeSection === 'backup' && isAdmin && (
-              <div>
-                <h3 className="mb-4">Respaldo y Recuperación (JSON)</h3>
-                <p className="text-muted mb-4">Protege tu información exportando tus datos periódicamente. Si alguna vez pierdes información, puedes restaurarla subiendo el archivo JSON de respaldo.</p>
-                
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-                  <div className="card" style={{ padding: '1.5rem', textAlign: 'center', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
-                    <Download size={32} color="var(--primary-color)" style={{ marginBottom: '12px' }} />
-                    <h4 style={{ marginBottom: '8px', fontSize: '1.05rem' }}>Exportar Datos</h4>
-                    <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '15px' }}>Descarga un archivo JSON con todas tus reservas, clientes, choferes y configuraciones.</p>
-                    <button onClick={handleExportData} className="btn btn-primary" style={{ width: '100%', height: '36px', fontSize: '0.85rem' }}>
-                      Descargar Copia (JSON)
-                    </button>
+                    <div className="form-group mb-0">
+                      <label>{t('newPassword')}</label>
+                      <input type="password" className="form-control" required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                    </div>
+                    <div className="form-group mb-0">
+                      <label>{t('confirmPassword')}</label>
+                      <input type="password" className="form-control" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                    </div>
                   </div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+                    <button type="submit" className="btn btn-warning">{t('updatePassword')}</button>
+                  </div>
+                </form>
+              </div>
 
-                  <div className="card" style={{ padding: '1.5rem', textAlign: 'center', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
-                    <Upload size={32} color="var(--warning)" style={{ marginBottom: '12px' }} />
-                    <h4 style={{ marginBottom: '8px', fontSize: '1.05rem' }}>Importar / Restaurar</h4>
-                    <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '15px' }}>Sube tu archivo JSON previamente descargado para restaurar el sistema completo.</p>
-                    <label className="btn btn-outline" style={{ width: '100%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '36px', fontSize: '0.85rem', margin: 0 }}>
-                      Subir Archivo JSON
-                      <input type="file" accept=".json" style={{ display: 'none' }} onChange={handleImportData} />
-                    </label>
+              <div className="card settings-card" style={{ marginTop: '1rem' }}>
+                <div className="settings-card-header">
+                  <div className="settings-card-icon"><Globe size={20} /></div>
+                  <div>
+                    <h3 className="settings-card-title">{t('activeSessions')}</h3>
+                    <p className="settings-card-desc">{t('activeSessionsDesc')}</p>
                   </div>
                 </div>
+                <div className="settings-card-divider" />
+                {sessions.map((session, index) => (
+                  <div key={session.id}>
+                    <div className="settings-toggle-row">
+                      <div className="settings-toggle-info">
+                        <h4>{session.device}</h4>
+                        <p>{session.location} — {session.lastSeen}</p>
+                      </div>
+                      {session.current ? (
+                        <span className="badge badge-warning">{t('currentSession')}</span>
+                      ) : (
+                        <button type="button" className="btn btn-outline btn-sm" onClick={() => handleCloseSession(session.id)}>{t('closeSession')}</button>
+                      )}
+                    </div>
+                    {index < sessions.length - 1 && <div className="settings-card-divider" />}
+                  </div>
+                ))}
               </div>
-            )}
-          </div>
+            </>
+          )}
+
+          {/* ━━━ PERMISSIONS ━━━ */}
+          {activeSection === 'permissions' && isAdmin && (
+            <div className="card settings-card">
+              <div className="settings-card-header">
+                <div className="settings-card-icon"><Unlock size={20} /></div>
+                <div>
+                  <h3 className="settings-card-title">{t('permissions')}</h3>
+                  <p className="settings-card-desc">{t('permissionsDesc')}</p>
+                </div>
+              </div>
+              <div className="settings-card-divider" />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {Object.entries(permissions).map(([role, roleData]) => (
+                  <div key={role} style={{ padding: '1.25rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)', background: 'var(--bg-color)' }}>
+                    <h4 style={{ margin: '0 0 1rem 0', fontSize: '1rem', color: 'var(--primary-color)', fontWeight: 700 }}>
+                      {t(role === 'Operador de Reservas' ? 'roleOperator' : 'roleAgent')}
+                    </h4>
+
+                    <div style={{ marginBottom: '0.5rem', fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('moduleAccess')}</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.5rem', marginBottom: '1.25rem' }}>
+                      {allModules.map((module) => {
+                        const isGranted = roleData.modules?.[module] || false;
+                        return (
+                          <div key={module} className="d-flex align-items-center gap-2" style={{ cursor: 'pointer', padding: '0.35rem 0' }} onClick={() => handlePermissionChange(role, 'modules', module, !isGranted)}>
+                            {isGranted ? <CheckSquare size={16} color="var(--primary-color)" /> : <Square size={16} color="var(--text-light)" />}
+                            <span style={{ fontWeight: 500, fontSize: '0.85rem', color: isGranted ? 'var(--text-dark)' : 'var(--text-light)' }}>
+                              {t('module' + module.charAt(0).toUpperCase() + module.slice(1))}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div style={{ marginBottom: '0.5rem', fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('actionPermissions')}</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.5rem' }}>
+                      {allActions.map((action) => {
+                        const isGranted = roleData.actions?.[action] || false;
+                        return (
+                          <div key={action} className="d-flex align-items-center gap-2" style={{ cursor: 'pointer', padding: '0.35rem 0' }} onClick={() => handlePermissionChange(role, 'actions', action, !isGranted)}>
+                            {isGranted ? <CheckSquare size={16} color="var(--primary-color)" /> : <Square size={16} color="var(--text-light)" />}
+                            <span style={{ fontWeight: 500, fontSize: '0.85rem', color: isGranted ? 'var(--text-dark)' : 'var(--text-light)' }}>
+                              {t('action' + action.charAt(0).toUpperCase() + action.slice(1))}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ━━━ BACKUP ━━━ */}
+          {activeSection === 'backup' && isAdmin && (
+            <div className="card settings-card">
+              <div className="settings-card-header">
+                <div className="settings-card-icon"><Database size={20} /></div>
+                <div>
+                  <h3 className="settings-card-title">{t('backupRecovery')}</h3>
+                  <p className="settings-card-desc">{t('backupRecoveryDesc')}</p>
+                </div>
+              </div>
+              <div className="settings-card-divider" />
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.25rem' }}>
+                <div style={{ padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)', background: 'var(--bg-color)', textAlign: 'center' }}>
+                  <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--primary-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                    <Download size={22} color="var(--primary-color)" />
+                  </div>
+                  <h4 style={{ marginBottom: '0.5rem', fontSize: '1rem' }}>{t('exportData')}</h4>
+                  <p className="text-muted" style={{ fontSize: '0.8rem', marginBottom: '1rem', lineHeight: 1.5 }}>{t('exportDataDesc')}</p>
+                  <button onClick={handleExportData} className="btn btn-primary" style={{ width: '100%', fontSize: '0.85rem' }}>
+                    <Download size={15} /> {t('downloadCopy')}
+                  </button>
+                </div>
+                <div style={{ padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)', background: 'var(--bg-color)', textAlign: 'center' }}>
+                  <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'hsl(38, 92%, 95%)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                    <Upload size={22} color="var(--warning)" />
+                  </div>
+                  <h4 style={{ marginBottom: '0.5rem', fontSize: '1rem' }}>{t('importRestore')}</h4>
+                  <p className="text-muted" style={{ fontSize: '0.8rem', marginBottom: '1rem', lineHeight: 1.5 }}>{t('importRestoreDesc')}</p>
+                  <label className="btn btn-outline" style={{ width: '100%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', margin: 0 }}>
+                    <Upload size={15} /> {t('uploadJson')}
+                    <input type="file" accept=".json" style={{ display: 'none' }} onChange={handleImportData} />
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
-      </div>
 
+      {/* ── IMPORT MODAL ── */}
       {pendingImport && (
         <div className="modal-overlay">
           <div className="modal-content" style={{ maxWidth: '500px' }}>
             <div className="d-flex justify-content-between align-items-center mb-4">
-              <h3 style={{ margin: 0 }}>Importar Datos</h3>
+              <h3 style={{ margin: 0 }}>{t('importData')}</h3>
               <button onClick={() => setPendingImport(null)} style={{ background: 'none', color: 'var(--text-light)', border: 'none', cursor: 'pointer' }}>
                 <X size={24} />
               </button>
             </div>
-            
             <div className="mb-4">
-              <p>Has seleccionado un archivo de respaldo. ¿Cómo deseas proceder con la información?</p>
+              <p>{t('importDataPrompt')}</p>
             </div>
-
             <div className="d-flex flex-column gap-3">
-              <button 
-                onClick={() => executeImport('merge')} 
-                className="btn btn-primary" 
-                style={{ justifyContent: 'center', padding: '15px' }}
-              >
+              <button onClick={() => executeImport('merge')} className="btn btn-primary" style={{ justifyContent: 'center', padding: '15px' }}>
                 <div style={{ textAlign: 'left', width: '100%' }}>
-                  <div style={{ fontWeight: 'bold', fontSize: '1.05rem', marginBottom: '5px' }}>Fusionar Datos (Seguro)</div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 'normal', opacity: 0.9 }}>Agrega la información nueva del archivo sin borrar lo que ya tienes en el sistema.</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '1.05rem', marginBottom: '5px' }}>{t('mergeData')}</div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 'normal', opacity: 0.9 }}>{t('mergeDataDesc')}</div>
                 </div>
               </button>
-
-              <button 
-                onClick={() => executeImport('overwrite')} 
-                className="btn btn-outline" 
-                style={{ justifyContent: 'center', padding: '15px', borderColor: 'var(--danger)', color: 'var(--danger)' }}
-              >
+              <button onClick={() => executeImport('overwrite')} className="btn btn-outline" style={{ justifyContent: 'center', padding: '15px', borderColor: 'var(--danger)', color: 'var(--danger)' }}>
                 <div style={{ textAlign: 'left', width: '100%' }}>
                   <div className="d-flex align-items-center gap-2" style={{ fontWeight: 'bold', fontSize: '1.05rem', marginBottom: '5px' }}>
-                    <AlertTriangle size={18} /> Reemplazar Todo (Peligroso)
+                    <AlertTriangle size={18} /> {t('replaceData')}
                   </div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 'normal', color: 'var(--text-light)' }}>Borra todos tus datos actuales y deja el sistema exactamente como está en el archivo.</div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 'normal', color: 'var(--text-light)' }}>{t('replaceDataDesc')}</div>
                 </div>
               </button>
             </div>

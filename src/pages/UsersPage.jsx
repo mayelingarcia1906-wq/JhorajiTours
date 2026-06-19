@@ -1,10 +1,22 @@
 import { useMemo, useState } from 'react';
-import { Edit3, Eraser, Plus, Search, Trash2, Shield, User, X, Eye, EyeOff, AlertTriangle } from 'lucide-react';
+import { Edit3, Eraser, Plus, Search, Shield, User, X, Eye, EyeOff, AlertTriangle, CheckCircle2, Mail } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
 import usersData from '../data/users.json';
+
+const STORAGE_KEY = 'jhoraji_users_list_v3';
+const AUDIT_KEY = 'jhoraji_audit';
+
+const read = (k, fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } };
+const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+const logAudit = (action, detail) => {
+  const logs = read(AUDIT_KEY, []);
+  logs.unshift({ id: Date.now(), module: 'Usuarios', action, detail, user: 'Administrador', timestamp: new Date().toISOString() });
+  write(AUDIT_KEY, logs.slice(0, 200));
+};
 
 const initialUsers = usersData.map((u, i) => ({
   id: Date.now() + i,
@@ -14,341 +26,259 @@ const initialUsers = usersData.map((u, i) => ({
   active: u.status === 'Activo',
 }));
 
-const emptyUser = {
-  name: '',
-  email: '',
-  role: 'Operaciones',
-  password: '',
-  active: true,
-};
-
-const logAudit = (action, detail) => {
-  try {
-    const logs = JSON.parse(localStorage.getItem('jhoraji_audit') || '[]');
-    logs.unshift({ id: Date.now(), module: 'Usuarios', action, detail, user: 'Administrador', timestamp: new Date().toISOString() });
-    localStorage.setItem('jhoraji_audit', JSON.stringify(logs.slice(0, 200)));
-  } catch (e) {}
-};
-
-const readStoredUsers = () => {
-  const saved = localStorage.getItem('jhoraji_users_list_v3');
-  if (!saved) return initialUsers;
-  try {
-    const parsed = JSON.parse(saved);
-    if (Array.isArray(parsed) && parsed.length === 0) return initialUsers;
-    return parsed;
-  } catch {
-    return initialUsers;
-  }
-};
+const emptyUser = { name: '', email: '', role: 'Operaciones', password: '', active: true };
 
 const UsersPage = () => {
+  const { t, language } = useLanguage();
   const { addToast } = useToast();
-  const { t } = useLanguage();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [appliedSearch, setAppliedSearch] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [users, setUsers] = useState(() => read(STORAGE_KEY, initialUsers));
+  const [search, setSearch] = useState('');
+  const [applied, setApplied] = useState('');
+  const [page, setPage] = useState(1);
   const itemsPerPage = 12;
-  
-  const [users, setUsers] = useState(readStoredUsers);
-  const [editingUser, setEditingUser] = useState(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [capsLockOn, setCapsLockOn] = useState(false);
-  const [focusedField, setFocusedField] = useState(null);
+  const [editing, setEditing] = useState(null);
+  const [showDelete, setShowDelete] = useState(null);
+  const [showPwd, setShowPwd] = useState(false);
+  const [showConfirmPwd, setShowConfirmPwd] = useState(false);
 
-  const checkCapsLock = (e) => {
-    if (e.getModifierState) {
-      setCapsLockOn(e.getModifierState('CapsLock'));
-    }
-  };
+  const filtered = useMemo(() => {
+    const term = applied.toLowerCase();
+    return users.filter((u) => u.name?.toLowerCase().includes(term) || u.email?.toLowerCase().includes(term) || u.role?.toLowerCase().includes(term));
+  }, [users, applied]);
 
-  const persistUsers = (nextUsers) => {
-    setUsers(nextUsers);
-    localStorage.setItem('jhoraji_users_list_v3', JSON.stringify(nextUsers));
-  };
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const currentItems = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
-  const filteredUsers = useMemo(() => {
-    return users.filter((u) => {
-      const term = appliedSearch.toLowerCase();
-      return (u.name || '').toLowerCase().includes(term) || (u.email || '').toLowerCase().includes(term) || (u.role || '').toLowerCase().includes(term);
-    });
-  }, [users, appliedSearch]);
-
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-  const currentItems = filteredUsers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-  const handleSearch = () => {
-    setAppliedSearch(searchQuery);
-    setCurrentPage(1);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') handleSearch();
-  };
-
-  const clearSearch = () => {
-    setSearchQuery('');
-    setAppliedSearch('');
-    setCurrentPage(1);
-  };
+  const persist = (next) => { setUsers(next); write(STORAGE_KEY, next); };
 
   const toggleActive = (id) => {
-    const user = users.find(u => u.id === id);
-    if (!user) return;
+    const user = users.find((u) => u.id === id);
     const newState = !user.active;
-    const nextUsers = users.map((u) => (u.id === id ? { ...u, active: newState } : u));
-    persistUsers(nextUsers);
-    logAudit(newState ? 'Activó usuario' : 'Desactivó usuario', user.name);
-    addToast(t('preferenceUpdated'), 'success');
+    persist(users.map((u) => (u.id === id ? { ...u, active: newState } : u)));
+    logAudit(newState ? t('statusUpdated') : t('statusUpdated'), user.name);
+    addToast(t('statusUpdated'), 'success');
   };
 
-  const handleSaveUser = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const password = formData.get('password');
-    const confirmPassword = formData.get('confirmPassword');
-    
-    if (!editingUser.id || password) {
-      if (password !== confirmPassword) {
-        addToast('Las contraseñas no coinciden', 'error');
-        return;
-      }
+  const handleSave = (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const password = fd.get('password');
+    const confirm = fd.get('confirmPassword');
+    if (!editing.id || password) {
+      if (password !== confirm) return addToast(t('passwordsDontMatch'), 'error');
     }
-
     const submitted = {
-      id: editingUser.id || Date.now(),
-      name: formData.get('name').trim(),
-      email: formData.get('email').trim(),
-      role: formData.get('role'),
-      active: editingUser.id ? editingUser.active : true,
+      id: editing.id || Date.now(),
+      name: fd.get('name').trim(),
+      email: fd.get('email').trim(),
+      role: fd.get('role'),
+      active: editing.id ? editing.active : true,
     };
-
-    const nextUsers = editingUser.id
-      ? users.map((u) => (u.id === editingUser.id ? { ...u, ...submitted } : u))
-      : [submitted, ...users];
-
-    persistUsers(nextUsers);
-    setEditingUser(null);
-    setShowPassword(false);
-    setShowConfirmPassword(false);
-    setCapsLockOn(false);
-    setFocusedField(null);
-    addToast(t('preferenceUpdated'), 'success');
+    persist(editing.id ? users.map((u) => (u.id === editing.id ? { ...u, ...submitted } : u)) : [submitted, ...users]);
+    setEditing(null);
+    setShowPwd(false); setShowConfirmPwd(false);
+    addToast(t('userSaved'), 'success');
   };
 
   const handleDelete = () => {
-    persistUsers(users.filter((u) => u.id !== showDeleteConfirm));
-    addToast(t('preferenceUpdated'), 'success');
-    setShowDeleteConfirm(null);
+    persist(users.filter((u) => u.id !== showDelete));
+    addToast(t('userDeleted'), 'success');
+    setShowDelete(null);
   };
+
+  const total = users.length;
+  const admins = users.filter((u) => u.role === 'Admin').length;
+  const ops = users.filter((u) => u.role === 'Operaciones').length;
 
   return (
     <div>
-      <div className="page-header mb-4">
+      <div className="page-header">
         <div>
           <h2>{t('moduleUsers') || 'Gestión de Usuarios'}</h2>
-          <p className="text-muted" style={{ margin: 0 }}>{t('usersSubtitle') || 'Administra los accesos al sistema'}</p>
+          <p className="page-subtitle">{t('usersSubtitle')}</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setEditingUser({ ...emptyUser })}>
-          <Plus size={18} /> {t('newUser') || 'Nuevo Usuario'}
+        <button className="btn btn-primary" onClick={() => setEditing({ ...emptyUser })}>
+          <Plus size={16} /> {t('newUser') || 'Nuevo Usuario'}
         </button>
       </div>
 
-      <div className="d-flex gap-3 mb-4 flex-wrap">
-        <div className="card flex-fill" style={{ minWidth: '150px', padding: '12px 14px', borderRadius: '10px' }}>
-          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Total de Usuarios</div>
-          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--primary-color)' }}>{users.length}</div>
+      <div className="stats-grid mb-4">
+        <div className="stat-card tone-primary">
+          <div className="stat-header">
+            <span className="stat-label">{t('totalUsers')}</span>
+            <div className="stat-icon"><User size={18} /></div>
+          </div>
+          <div className="stat-value">{total}</div>
         </div>
-        <div className="card flex-fill" style={{ minWidth: '150px', padding: '12px 14px', borderRadius: '10px' }}>
-          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Administradores</div>
-          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--danger)' }}>{users.filter(u => u.role === 'Admin').length}</div>
+        <div className="stat-card tone-danger">
+          <div className="stat-header">
+            <span className="stat-label">{t('admins')}</span>
+            <div className="stat-icon"><Shield size={18} /></div>
+          </div>
+          <div className="stat-value">{admins}</div>
         </div>
-        <div className="card flex-fill" style={{ minWidth: '150px', padding: '12px 14px', borderRadius: '10px' }}>
-          <div className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Operaciones</div>
-          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--success)' }}>{users.filter(u => u.role === 'Operaciones').length}</div>
+        <div className="stat-card tone-success">
+          <div className="stat-header">
+            <span className="stat-label">{t('ops')}</span>
+            <div className="stat-icon"><User size={18} /></div>
+          </div>
+          <div className="stat-value">{ops}</div>
         </div>
       </div>
 
-      <div className="dashboard-grid-2" style={{ gridTemplateColumns: '1fr', gap: '20px' }}>
-        <div className="card">
-          <div className="page-toolbar mb-4">
-            <div className="search-integrated">
-              <Search size={16} className="search-icon" />
-              <input
-                type="text"
-                placeholder={t('searchUser') || 'Buscar usuarios...'}
-                className="form-control"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-              />
-              <button
-                className={`search-clear-btn ${searchQuery ? 'visible' : ''}`}
-                onClick={clearSearch}
-                title="Limpiar búsqueda"
-                type="button"
-              >
-                <Eraser size={15} />
+      <div className="card mb-4">
+        <div className="page-toolbar">
+          <div className="search-integrated">
+            <Search size={15} className="search-icon" />
+            <input
+              type="text"
+              placeholder={t('searchUsersPlaceholder')}
+              className="form-control"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && (setApplied(search), setPage(1))}
+            />
+            {search && (
+              <button className="search-clear-btn visible" onClick={() => { setSearch(''); setApplied(''); setPage(1); }} type="button">
+                <Eraser size={14} />
               </button>
-              <button className="search-btn-inner" onClick={handleSearch} type="button">
-                <Search size={13} /> {t('search') || 'Buscar'}
-              </button>
-            </div>
+            )}
+            <button className="search-btn-inner" onClick={() => { setApplied(search); setPage(1); }} type="button">
+              <Search size={12} /> {t('search')}
+            </button>
           </div>
+        </div>
+      </div>
 
-          <div className="table-wrapper">
-            <table className="table compact-table" style={{ minWidth: '0', width: '100%', fontSize: '0.85rem' }}>
-              <thead style={{ fontSize: '0.75rem' }}>
+      <div className="card" style={{ padding: 0 }}>
+        <div className="table-wrapper" style={{ borderRadius: 0, border: 'none' }}>
+          <table className="table compact-table">
+            <thead>
+              <tr>
+                <th>{t('user')}</th>
+                <th>{t('role')}</th>
+                <th>{t('status')}</th>
+                <th style={{ textAlign: 'right' }}>{t('actions')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentItems.length === 0 ? (
                 <tr>
-                  <th>{t('user') || 'Usuario'}</th>
-                  <th>{t('role') || 'Rol'}</th>
-                  <th>{t('status') || 'Estado'}</th>
-                  <th>{t('actions') || 'Acciones'}</th>
+                  <td colSpan="4" style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-faint)' }}>
+                    <User size={32} style={{ opacity: 0.3, marginBottom: 8 }} />
+                    <div>{t('noUsers')}</div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {currentItems.map((u) => (
+              ) : currentItems.map((u) => {
+                const initials = u.name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
+                return (
                   <tr key={u.id}>
                     <td>
                       <div className="d-flex align-items-center gap-3">
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'var(--bg-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-color)', flexShrink: 0 }}>
-                          <User size={20} />
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-                          <span className="font-bold" style={{ color: 'var(--text-dark)' }}>{u.name}</span>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--text-light)', marginTop: '2px' }}>{u.email}</span>
+                        <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary-color), var(--primary-hover))', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.78rem', flexShrink: 0 }}>{initials}</div>
+                        <div>
+                          <div className="font-bold">{u.name}</div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <Mail size={11} /> {u.email}
+                          </div>
                         </div>
                       </div>
                     </td>
                     <td>
-                      <div className="d-flex align-items-center gap-2">
-                        <Shield size={16} color={u.role === 'Admin' ? 'var(--danger)' : 'var(--primary-color)'} />
-                        <span style={{ fontWeight: u.role === 'Admin' ? 600 : 400 }}>{u.role}</span>
-                      </div>
+                      <span className={`badge ${u.role === 'Admin' ? 'badge-danger' : 'badge-primary'}`}>
+                        <Shield size={11} /> {u.role}
+                      </span>
                     </td>
                     <td>
-                      <button className={`badge ${u.active ? 'badge-success' : 'badge-danger'}`} style={{ border: 'none', cursor: 'pointer' }} onClick={() => toggleActive(u.id)}>
-                        {u.active ? 'Activo' : 'Inactivo'}
+                      <button
+                        className={`badge ${u.active ? 'badge-success' : 'badge-neutral'}`}
+                        style={{ border: 'none', cursor: 'pointer' }}
+                        onClick={() => toggleActive(u.id)}
+                      >
+                        <span className="status-dot" style={{ background: u.active ? 'var(--success)' : 'var(--text-faint)' }} />
+                        {u.active ? t('active') : t('inactive')}
                       </button>
                     </td>
                     <td>
-                      <div className="action-buttons">
-                        <button className="icon-btn" onClick={() => setEditingUser(u)} title={t('edit')}><Edit3 size={18} /></button>
-                        <button className="icon-btn" onClick={() => setShowDeleteConfirm(u.id)} title={t('delete')} style={{ color: 'var(--danger)' }}><Trash2 size={18} /></button>
+                      <div className="action-buttons" style={{ justifyContent: 'flex-end' }}>
+                        <button className="icon-btn" onClick={() => setEditing({ ...u })} title={t('edit')}><Edit3 size={15} /></button>
+                        <button className="icon-btn danger" onClick={() => setShowDelete(u.id)} title={t('delete')}><X size={15} /></button>
                       </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div style={{ padding: '0 1rem', paddingBottom: '1rem' }}>
-            <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredUsers.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} />
-          </div>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
+        <Pagination currentPage={page} totalPages={totalPages} totalItems={filtered.length} itemsPerPage={itemsPerPage} onPageChange={setPage} />
       </div>
 
-      {editingUser && (
-        <div className="modal-overlay">
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '450px' }}>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h3 style={{ margin: 0 }}>{editingUser.id ? (t('editUser') || 'Editar Usuario') : (t('newUser') || 'Nuevo Usuario')}</h3>
-              <button onClick={() => setEditingUser(null)} style={{ background: 'none', color: 'var(--text-light)' }}><X size={24} /></button>
+      {editing && (
+        <div className="modal-overlay" onClick={() => setEditing(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
+            <div className="modal-header">
+              <h3>{editing.id ? t('editUser') : t('newUser')}</h3>
+              <button className="modal-close" onClick={() => setEditing(null)}><X size={16} /></button>
             </div>
-            <form onSubmit={handleSaveUser}>
+            <form onSubmit={handleSave}>
               <div className="form-group">
-                <label>Nombre</label>
-                <input name="name" type="text" className="form-control" required defaultValue={editingUser.name} />
+                <label>{t('name')}</label>
+                <input name="name" type="text" className="form-control" required defaultValue={editing.name} />
               </div>
               <div className="form-group">
-                <label>Correo</label>
-                <input name="email" type="email" className="form-control" required defaultValue={editingUser.email} />
+                <label>{t('email')}</label>
+                <input name="email" type="email" className="form-control" required defaultValue={editing.email} />
               </div>
               <div className="form-group">
-                <label>Rol</label>
-                <select name="role" className="form-control" defaultValue={editingUser.role}>
-                  <option value="Operaciones">Operaciones</option>
-                  <option value="Admin">Administrador</option>
+                <label>{t('role')}</label>
+                <select name="role" className="form-control" defaultValue={editing.role}>
+                  <option value="Operaciones">{t('ops')}</option>
+                  <option value="Admin">{t('admins')}</option>
                 </select>
               </div>
               <div className="form-group">
-                <label>Contraseña</label>
-                <div style={{ position: 'relative' }}>
-                  <input 
-                    name="password" 
-                    type={showPassword ? "text" : "password"} 
-                    className="form-control" 
-                    placeholder={editingUser.id ? "(Dejar en blanco para no cambiar)" : "(Requerida)"} 
-                    required={!editingUser.id}
-                    onKeyUp={checkCapsLock}
-                    onKeyDown={checkCapsLock}
-                    onClick={checkCapsLock}
-                    onFocus={(e) => { setFocusedField('password'); checkCapsLock(e); }}
-                    onBlur={() => setFocusedField(null)}
+                <label>{editing.id ? t('passwordOptional') : t('password')}</label>
+                <div className="input-with-icon" style={{ display: 'block' }}>
+                  <input
+                    name="password"
+                    type={showPwd ? 'text' : 'password'}
+                    className="form-control"
+                    placeholder={editing.id ? t('leaveBlank') : t('passwordRequired')}
+                    required={!editing.id}
+                    style={{ paddingRight: '2.5rem' }}
                   />
-                  <button 
-                    type="button" 
-                    onClick={() => setShowPassword(!showPassword)} 
-                    style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-light)', cursor: 'pointer', padding: 0, display: 'flex' }}
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  <button type="button" className="toggle-eye" onClick={() => setShowPwd(!showPwd)}>
+                    {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
-                {capsLockOn && focusedField === 'password' && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--warning)', fontSize: '0.85rem', marginTop: '5px' }}>
-                    <AlertTriangle size={16} /> Mayúsculas activadas
-                  </div>
-                )}
               </div>
               <div className="form-group">
-                <label>Confirmar Contraseña</label>
-                <div style={{ position: 'relative' }}>
-                  <input 
-                    name="confirmPassword" 
-                    type={showConfirmPassword ? "text" : "password"} 
-                    className="form-control" 
-                    placeholder={editingUser.id ? "(Dejar en blanco para no cambiar)" : "(Requerida)"} 
-                    required={!editingUser.id}
-                    onKeyUp={checkCapsLock}
-                    onKeyDown={checkCapsLock}
-                    onClick={checkCapsLock}
-                    onFocus={(e) => { setFocusedField('confirmPassword'); checkCapsLock(e); }}
-                    onBlur={() => setFocusedField(null)}
+                <label>{t('confirmPassword')}</label>
+                <div className="input-with-icon" style={{ display: 'block' }}>
+                  <input
+                    name="confirmPassword"
+                    type={showConfirmPwd ? 'text' : 'password'}
+                    className="form-control"
+                    placeholder={editing.id ? t('leaveBlank') : t('passwordRequired')}
+                    required={!editing.id}
+                    style={{ paddingRight: '2.5rem' }}
                   />
-                  <button 
-                    type="button" 
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
-                    style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-light)', cursor: 'pointer', padding: 0, display: 'flex' }}
-                  >
-                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  <button type="button" className="toggle-eye" onClick={() => setShowConfirmPwd(!showConfirmPwd)}>
+                    {showConfirmPwd ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
-                {capsLockOn && focusedField === 'confirmPassword' && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--warning)', fontSize: '0.85rem', marginTop: '5px' }}>
-                    <AlertTriangle size={16} /> Mayúsculas activadas
-                  </div>
-                )}
               </div>
-
-              <div className="modal-actions mt-4">
-                <button type="button" className="btn btn-outline" onClick={() => { setEditingUser(null); setShowPassword(false); setShowConfirmPassword(false); setCapsLockOn(false); setFocusedField(null); }}>{t('cancel')}</button>
-                <button type="submit" className="btn btn-primary">{editingUser.id ? t('update') : t('create')}</button>
+              <div className="modal-actions">
+                <button type="button" className="btn btn-outline" onClick={() => setEditing(null)}>{t('cancel')}</button>
+                <button type="submit" className="btn btn-primary">{editing.id ? t('update') : t('create')}</button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      <DeleteConfirmModal
-        isOpen={!!showDeleteConfirm}
-        onCancel={() => setShowDeleteConfirm(null)}
-        onConfirm={handleDelete}
-        title={t('deleteUserTitle') || 'Eliminar Usuario'}
-        message="¿Estás seguro que deseas eliminar este usuario? Esta acción no se puede deshacer."
-      />
+      <DeleteConfirmModal isOpen={!!showDelete} onCancel={() => setShowDelete(null)} onConfirm={handleDelete} title={t('deleteUserTitle')} message={t('deleteUserMessage')} />
     </div>
   );
 };

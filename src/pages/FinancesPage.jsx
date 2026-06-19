@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Calendar as CalendarIcon, DollarSign, Edit3, Printer, Trash2, X, Plus, Filter, Eraser, CheckCircle, AlertCircle, Fuel, Wrench, Users, Briefcase, FileText, ChevronDown } from 'lucide-react';
+import { Calendar as CalendarIcon, DollarSign, Edit3, Printer, Trash2, X, Plus, Filter, Eraser, CheckCircle, AlertCircle, Fuel, Wrench, Users, Briefcase, FileText, ChevronDown, Car } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
 import { useCurrency } from '../context/CurrencyContext';
@@ -43,11 +43,11 @@ const FinancesPage = () => {
   const [expenseCatOpen, setExpenseCatOpen] = useState(false);
   
   const expenseCategories = [
-    { value: 'Gasolina', label: 'Gasolina', icon: Fuel, color: '#ef4444' },
-    { value: 'Mantenimiento', label: 'Mantenimiento', icon: Wrench, color: '#64748b' },
-    { value: 'Pago Guías', label: 'Pago Guías', icon: Users, color: '#8b5cf6' },
-    { value: 'Pago Nómina', label: 'Pago Nómina', icon: Briefcase, color: '#d97706' },
-    { value: 'Otros', label: 'Otros', icon: FileText, color: '#f97316' }
+    { value: 'Gasolina', label: t('gas'), icon: Fuel, color: '#ef4444' },
+    { value: 'Mantenimiento', label: t('maintenance'), icon: Wrench, color: '#64748b' },
+    { value: 'Pago Guías', label: t('guidePay'), icon: Users, color: '#8b5cf6' },
+    { value: 'Pago Nómina', label: t('payroll'), icon: Briefcase, color: '#d97706' },
+    { value: 'Otros', label: t('others'), icon: FileText, color: '#f97316' }
   ];
   const selectedCatObj = expenseCategories.find(c => c.value === expenseCategory);
   const SelectedIcon = selectedCatObj ? selectedCatObj.icon : Fuel;
@@ -303,36 +303,53 @@ const FinancesPage = () => {
       </div>
 
       {/* METRICS ROW */}
-      <div className="metrics-row filter-row mb-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
-        <div className="card" style={{ padding: '12px 14px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase' }}>{t('grossIncome')}</div>
-          <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-dark)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatPrice(totalBruto)}</div>
-          <div style={{ fontSize: '0.7rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '6px', marginTop: 'auto' }}>{t('grossIncomeDesc')}</div>
+      <div className="stats-grid stats-grid-6 mb-4">
+        <div className="stat-card tone-primary">
+          <div className="stat-header">
+            <span className="stat-label" style={{ fontSize: '0.7rem' }}>{t('grossIncome')}</span>
+            <div className="stat-icon"><DollarSign size={16} /></div>
+          </div>
+          <div className="stat-value" style={{ fontSize: '1.15rem', fontWeight: 800 }}>{formatPrice(totalBruto)}</div>
+          <div style={{ fontSize: '0.65rem', color: 'var(--text-faint)', marginTop: 4, lineHeight: 1.2 }}>{t('grossIncomeDesc')}</div>
         </div>
-        <div className="card" style={{ padding: '12px 14px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase' }}>{t('provPayments')}</div>
-          <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ef4444', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatPrice(totalProv)}</div>
-          <div style={{ borderTop: '1px dashed transparent', paddingTop: '6px', marginTop: 'auto' }}></div>
+        <div className="stat-card tone-danger">
+          <div className="stat-header">
+            <span className="stat-label" style={{ fontSize: '0.7rem' }}>{t('provPayments')}</span>
+            <div className="stat-icon"><Briefcase size={16} /></div>
+          </div>
+          <div className="stat-value" style={{ fontSize: '1.15rem', fontWeight: 800 }}>{formatPrice(totalProv)}</div>
         </div>
-        <div className="card" style={{ padding: '12px 14px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase' }}>{t('otaCommissions')}</div>
-          <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f59e0b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatPrice(totalOta)}</div>
-          <div style={{ fontSize: '0.7rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '6px', marginTop: 'auto' }}>{t('otaDesc')}</div>
+        <div className="stat-card tone-warning">
+          <div className="stat-header">
+            <span className="stat-label" style={{ fontSize: '0.7rem' }}>{t('otaCommissions')}</span>
+            <div className="stat-icon"><FileText size={16} /></div>
+          </div>
+          <div className="stat-value" style={{ fontSize: '1.15rem', fontWeight: 800 }}>{formatPrice(totalOta)}</div>
+          <div style={{ fontSize: '0.65rem', color: 'var(--text-faint)', marginTop: 4, lineHeight: 1.2 }}>{t('otaDesc')}</div>
         </div>
-        <div className="card" style={{ padding: '12px 14px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase' }}>{t('drivers')}</div>
-          <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#3b82f6', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatPrice(totalDriver)}</div>
-          <div style={{ fontSize: '0.7rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '6px', marginTop: 'auto' }}>{t('driversDesc')}</div>
+        <div className="stat-card tone-info">
+          <div className="stat-header">
+            <span className="stat-label" style={{ fontSize: '0.7rem' }}>{t('drivers')}</span>
+            <div className="stat-icon"><Car size={16} /></div>
+          </div>
+          <div className="stat-value" style={{ fontSize: '1.15rem', fontWeight: 800 }}>{formatPrice(totalDriver)}</div>
+          <div style={{ fontSize: '0.65rem', color: 'var(--text-faint)', marginTop: 4, lineHeight: 1.2 }}>{t('driversDesc')}</div>
         </div>
-        <div className="card" style={{ padding: '12px 14px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase' }}>{t('operExpenses')}</div>
-          <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-dark)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatPrice(totalGastos)}</div>
-          <div style={{ fontSize: '0.7rem', color: 'var(--text-light)', borderTop: '1px dashed var(--border-color)', paddingTop: '6px', marginTop: 'auto' }}>{t('operExpensesDesc')}</div>
+        <div className="stat-card">
+          <div className="stat-header">
+            <span className="stat-label" style={{ fontSize: '0.7rem' }}>{t('operExpenses')}</span>
+            <div className="stat-icon"><Fuel size={16} /></div>
+          </div>
+          <div className="stat-value" style={{ fontSize: '1.15rem', fontWeight: 800 }}>{formatPrice(totalGastos)}</div>
+          <div style={{ fontSize: '0.65rem', color: 'var(--text-faint)', marginTop: 4, lineHeight: 1.2 }}>{t('operExpensesDesc')}</div>
         </div>
-        <div className="card card-ganancia" style={{ padding: '12px 14px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px', backgroundColor: '#ecfdf5', borderColor: '#a7f3d0' }}>
-          <div className="ganancia-title" style={{ fontSize: '0.7rem', fontWeight: 700, color: '#065f46', textTransform: 'uppercase' }}>{t('realProfit')}</div>
-          <div className="ganancia-amount" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#047857', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatPrice(gananciaReal)}</div>
-          <div className="ganancia-subtitle" style={{ fontSize: '0.7rem', color: '#065f46', borderTop: '1px dashed #a7f3d0', paddingTop: '6px', marginTop: 'auto' }}>{t('profitDesc')}</div>
+        <div className="card-ganancia stat-card">
+          <div className="stat-header">
+            <span className="ganancia-title stat-label" style={{ fontSize: '0.7rem' }}>{t('realProfit')}</span>
+            <div className="stat-icon" style={{ background: 'var(--success-soft)', color: 'var(--success)' }}><CheckCircle size={16} /></div>
+          </div>
+          <div className="ganancia-amount" style={{ fontSize: '1.25rem', fontWeight: 800 }}>{formatPrice(gananciaReal)}</div>
+          <div className="ganancia-subtitle" style={{ fontSize: '0.65rem' }}>{t('profitDesc')}</div>
         </div>
       </div>
 
@@ -343,73 +360,67 @@ const FinancesPage = () => {
           
           {activeTab === 'choferes' && (
             <select className="form-control" style={{ maxWidth: '160px', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }} value={driverFilter} onChange={e => setDriverFilter(e.target.value)}>
-              <option value="all">-- Chofer --</option>
+              <option value="all">{t('driverFilterPlaceholder')}</option>
               {drivers.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
           )}
 
           {activeTab === 'proveedores' && (
             <select className="form-control" style={{ maxWidth: '160px', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }} value={providerFilter} onChange={e => setProviderFilter(e.target.value)}>
-              <option value="all">-- Proveedor --</option>
+              <option value="all">{t('providerFilterPlaceholder')}</option>
               {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
           )}
 
           {activeTab === 'gastos' && (
             <select className="form-control" style={{ maxWidth: '160px', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }} value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)}>
-              <option value="all">-- Categoría --</option>
+              <option value="all">{t('categoryFilterPlaceholder')}</option>
               {expenseCategories.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
             </select>
           )}
 
           {(activeTab === 'proveedores' || activeTab === 'choferes') && (
-            <input type="text" className="form-control" style={{ maxWidth: '160px', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }} placeholder="Buscar cliente..." value={clientFilter} onChange={e => setClientFilter(e.target.value)} />
+            <input type="text" className="form-control" style={{ maxWidth: '160px', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }} placeholder={t('searchClientPlaceholder')} value={clientFilter} onChange={e => setClientFilter(e.target.value)} />
           )}
 
           <button className="btn btn-primary" onClick={handleRefresh} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '0.35rem 0.75rem', fontSize: '0.85rem' }}>
             <Filter size={14} /> {t('search')}
           </button>
           <button className="btn btn-outline" onClick={handleClear} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '0.35rem 0.75rem', fontSize: '0.85rem' }}>
-            <Eraser size={14} /> Limpiar
+            <Eraser size={14} /> {t('clear')}
           </button>
         </div>
       </div>
 
-      <div className="card mb-4">
-        <div className="tabs" style={{ display: 'flex', borderBottom: '1px solid var(--border-color)' }}>
+      <div className="card mb-4" style={{ padding: '1.25rem 1.5rem' }}>
+        <div className="tabs">
           {['proveedores', 'choferes', 'gastos'].map(tab => (
-            <button 
+            <button
               key={tab}
+              className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
               onClick={() => { setActiveTab(tab); setSelectedProv([]); setSelectedDriver([]); setSelectedExp([]); setCurrentPageProv(1); setCurrentPageDriver(1); setCurrentPageExp(1); }}
-              style={{
-                flex: 1, padding: '15px', background: 'none', border: 'none', 
-                borderBottom: activeTab === tab ? '3px solid var(--primary-color)' : '3px solid transparent',
-                color: activeTab === tab ? 'var(--primary-color)' : 'var(--text-light)',
-                fontWeight: activeTab === tab ? 'bold' : 'normal',
-                textTransform: 'uppercase', fontSize: '0.85rem'
-              }}
             >
               {tab === 'proveedores' ? t('provAndComm') : tab === 'choferes' ? t('driverLiq') : t('expenseLog')}
             </button>
           ))}
         </div>
 
-        <div style={{ padding: '20px' }}>
-          
+        <div style={{ paddingTop: '1.25rem' }}>
+
           {/* TAB: PROVEEDORES */}
           {activeTab === 'proveedores' && (
             <div>
               {selectedProv.length > 0 && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: '#f8fafc', padding: '10px 15px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '15px' }}>
-                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem' }}>{selectedProv.length} {t('selected')}</span>
-                  <div style={{ width: '1px', height: '20px', backgroundColor: '#cbd5e1' }}></div>
-                  <button className="btn btn-link" onClick={() => toggleProvStatus('Pagado')} style={{ color: '#10b981', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><CheckCircle size={16}/> {t('pay')}</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: 'var(--bg-soft)', padding: '10px 15px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)', marginBottom: '15px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.8125rem' }}>{selectedProv.length} {t('selected')}</span>
+                  <div style={{ width: '1px', height: '20px', backgroundColor: 'var(--border-strong)' }}></div>
+                  <button className="btn btn-link" onClick={() => toggleProvStatus('Pagado')} style={{ color: 'var(--success)', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><CheckCircle size={16}/> {t('pay')}</button>
                   <button className="btn btn-link" onClick={() => toggleProvStatus('Pendiente')} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><AlertCircle size={16}/> {t('pending')}</button>
                 </div>
               )}
-              <div className="table-wrapper" style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflowX: 'auto' }}>
+              <div className="table-wrapper" style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-xl)', overflowX: 'auto' }}>
                 <table className="table compact-table" style={{ margin: 0, fontSize: '0.8rem', width: '100%', tableLayout: 'auto' }}>
-                  <thead style={{ backgroundColor: '#f8fafc', color: '#64748b', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '1px solid #e2e8f0' }}>
+                  <thead style={{ backgroundColor: 'var(--bg-soft)', color: 'var(--text-light)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '1px solid var(--border-color)' }}>
                     <tr>
                       <th style={{width: '40px', padding: '0.5rem'}}><input type="checkbox" onChange={e => setSelectedProv(e.target.checked ? filteredProvLiq.map(p=>p.id) : [])} checked={filteredProvLiq.length > 0 && selectedProv.length === filteredProvLiq.length}/></th>
                       <th style={{ padding: '0.5rem', whiteSpace: 'nowrap' }}>{t('date')}</th>
@@ -426,36 +437,28 @@ const FinancesPage = () => {
                   </thead>
                   <tbody>
                     {currentProvLiq.map(p => (
-                      <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <tr key={p.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                         <td style={{ padding: '0.5rem' }}><input type="checkbox" checked={selectedProv.includes(p.id)} onChange={() => setSelectedProv(prev => prev.includes(p.id) ? prev.filter(id => id !== p.id) : [...prev, p.id])}/></td>
-                        <td style={{ padding: '0.5rem', color: '#475569', whiteSpace: 'nowrap' }}>{p.date}</td>
-                        <td style={{ padding: '0.5rem', color: '#1e293b' }}>{p.client}</td>
-                        <td style={{ padding: '0.5rem', fontWeight: '700', color: '#0f172a' }}>{p.provider}</td>
-                        <td style={{ padding: '0.5rem', color: '#475569', whiteSpace: 'nowrap' }}>{formatPrice(p.costBase)}</td>
-                        <td style={{ padding: '0.5rem', color: '#475569', whiteSpace: 'nowrap' }}>{formatPrice(p.extras)}</td>
-                        <td style={{ padding: '0.5rem', fontWeight: '800', color: '#0f172a', whiteSpace: 'nowrap' }}>{formatPrice(p.costTotal)}</td>
-                        <td style={{ padding: '0.5rem', color: '#475569', whiteSpace: 'nowrap' }}>{formatPrice(p.priceClient)}</td>
-                        <td style={{ padding: '0.5rem', color: '#475569', whiteSpace: 'nowrap' }}>{formatPrice(p.ota)}</td>
-                        <td style={{ padding: '0.5rem', color: '#16a34a', fontWeight: '800', whiteSpace: 'nowrap' }}>{formatPrice(p.profit)}</td>
+                        <td style={{ padding: '0.5rem', color: 'var(--text-medium)', whiteSpace: 'nowrap' }}>{p.date}</td>
+                        <td style={{ padding: '0.5rem', color: 'var(--text-dark)' }}>{p.client}</td>
+                        <td style={{ padding: '0.5rem', fontWeight: '700', color: 'var(--text-dark)' }}>{p.provider}</td>
+                        <td style={{ padding: '0.5rem', color: 'var(--text-medium)', whiteSpace: 'nowrap' }}>{formatPrice(p.costBase)}</td>
+                        <td style={{ padding: '0.5rem', color: 'var(--text-medium)', whiteSpace: 'nowrap' }}>{formatPrice(p.extras)}</td>
+                        <td style={{ padding: '0.5rem', fontWeight: '800', color: 'var(--text-dark)', whiteSpace: 'nowrap' }}>{formatPrice(p.costTotal)}</td>
+                        <td style={{ padding: '0.5rem', color: 'var(--text-medium)', whiteSpace: 'nowrap' }}>{formatPrice(p.priceClient)}</td>
+                        <td style={{ padding: '0.5rem', color: 'var(--text-medium)', whiteSpace: 'nowrap' }}>{formatPrice(p.ota)}</td>
+                        <td style={{ padding: '0.5rem', color: 'var(--success)', fontWeight: '800', whiteSpace: 'nowrap' }}>{formatPrice(p.profit)}</td>
                         <td style={{ padding: '0.5rem', whiteSpace: 'nowrap' }}>
-                          {p.status === 'Pagado' ? (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: '#ecfdf5', color: '#059669', padding: '4px 10px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px' }}>
-                              {t('paid').toUpperCase()}
-                            </span>
-                          ) : (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: '#fef2f2', color: '#ef4444', padding: '4px 10px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px' }}>
-                              {t('pending').toUpperCase()}
-                            </span>
-                          )}
+                          <span className={`badge badge-${p.status === 'Pagado' ? 'success' : 'danger'}`}>{p.status === 'Pagado' ? t('paid') : t('pending')}</span>
                         </td>
                       </tr>
                     ))}
-                    <tr style={{ backgroundColor: '#f8fafc', color: '#0f172a' }}>
-                      <td colSpan="6" style={{ padding: '0.5rem', textAlign: 'right', fontWeight: '700', fontSize: '0.85rem', letterSpacing: '0.5px', color: '#64748b' }}>{t('totals')}</td>
+                    <tr style={{ backgroundColor: 'var(--bg-soft)', color: 'var(--text-dark)' }}>
+                      <td colSpan="6" style={{ padding: '0.5rem', textAlign: 'right', fontWeight: '700', fontSize: '0.85rem', letterSpacing: '0.5px', color: 'var(--text-light)' }}>{t('totals')}</td>
                       <td style={{ padding: '0.5rem', fontWeight: '800', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>{formatPrice(totalProv)}</td>
-                      <td style={{ padding: '0.5rem', fontWeight: '700', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>{formatPrice(totalBruto)}</td>
-                      <td style={{ padding: '0.5rem', color: '#f59e0b', fontWeight: '800', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>{formatPrice(totalOta)}</td>
-                      <td style={{ padding: '0.5rem', color: '#16a34a', fontWeight: '800', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>{formatPrice(totalBruto - totalProv - totalOta)}</td>
+                      <td style={{ padding: '0.5rem', fontWeight: '700', fontSize: '0.8125rem', whiteSpace: 'nowrap' }}>{formatPrice(totalBruto)}</td>
+                      <td style={{ padding: '0.5rem', color: 'var(--warning)', fontWeight: '800', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>{formatPrice(totalOta)}</td>
+                      <td style={{ padding: '0.5rem', color: 'var(--success)', fontWeight: '800', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>{formatPrice(totalBruto - totalProv - totalOta)}</td>
                       <td style={{ padding: '0.5rem' }}></td>
                     </tr>
                   </tbody>
@@ -469,10 +472,10 @@ const FinancesPage = () => {
           {activeTab === 'choferes' && (
             <div>
               {selectedDriver.length > 0 && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: '#f8fafc', padding: '10px 15px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '15px' }}>
-                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem' }}>{selectedDriver.length} {t('selected')}</span>
-                  <div style={{ width: '1px', height: '20px', backgroundColor: '#cbd5e1' }}></div>
-                  <button className="btn btn-link" onClick={() => toggleDriverStatus('Pagado')} style={{ color: '#10b981', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><CheckCircle size={16}/> {t('pay')}</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: 'var(--bg-soft)', padding: '10px 15px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)', marginBottom: '15px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.8125rem' }}>{selectedDriver.length} {t('selected')}</span>
+                  <div style={{ width: '1px', height: '20px', backgroundColor: 'var(--border-strong)' }}></div>
+                  <button className="btn btn-link" onClick={() => toggleDriverStatus('Pagado')} style={{ color: 'var(--success)', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><CheckCircle size={16}/> {t('pay')}</button>
                   <button className="btn btn-link" onClick={() => toggleDriverStatus('Pendiente')} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 600 }}><AlertCircle size={16}/> {t('pending')}</button>
                 </div>
               )}
@@ -501,15 +504,15 @@ const FinancesPage = () => {
                         <td style={{ padding: '0.5rem' }}>{d.service}</td>
                         <td style={{ padding: '0.5rem' }}>{d.adults}</td>
                         <td style={{ padding: '0.5rem' }}>{d.children}</td>
-                        <td style={{fontWeight: '700', color: '#3b82f6', whiteSpace: 'nowrap', padding: '0.5rem'}}>{formatPrice(d.amount)}</td>
+                        <td style={{fontWeight: '700', color: 'var(--info)', whiteSpace: 'nowrap', padding: '0.5rem'}}>{formatPrice(d.amount)}</td>
                         <td style={{ whiteSpace: 'nowrap', padding: '0.5rem' }}>
-                          <span className={`badge badge-${d.status === 'Pagado' ? 'success' : 'danger'}`}>{d.status}</span>
+                          <span className={`badge badge-${d.status === 'Pagado' ? 'success' : 'danger'}`}>{d.status === 'Pagado' ? t('paid') : t('pending')}</span>
                         </td>
                       </tr>
                     ))}
-                    <tr style={{ backgroundColor: '#f8fafc', fontWeight: 'bold' }}>
-                      <td colSpan="7" style={{ textAlign: 'right', padding: '0.5rem' }}>TOTAL CHOFERES:</td>
-                      <td style={{color: '#3b82f6', whiteSpace: 'nowrap', padding: '0.5rem'}}>{formatPrice(totalDriver)}</td>
+                    <tr style={{ backgroundColor: 'var(--bg-soft)', fontWeight: 'bold' }}>
+                      <td colSpan="7" style={{ textAlign: 'right', padding: '0.5rem', color: 'var(--text-light)' }}>{t('totalDrivers')}</td>
+                      <td style={{color: 'var(--info)', whiteSpace: 'nowrap', padding: '0.5rem'}}>{formatPrice(totalDriver)}</td>
                       <td style={{ padding: '0.5rem' }}></td>
                     </tr>
                   </tbody>
@@ -523,10 +526,10 @@ const FinancesPage = () => {
           {activeTab === 'gastos' && (
             <div>
               {selectedExp.length > 0 && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: '#f8fafc', padding: '10px 15px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '15px' }}>
-                  <span style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem' }}>{selectedExp.length} seleccionada(s)</span>
-                  <div style={{ width: '1px', height: '20px', backgroundColor: '#cbd5e1' }}></div>
-                  <button className="btn btn-link no-print" onClick={confirmDeleteExpense} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Trash2 size={16}/> Eliminar</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: 'var(--bg-soft)', padding: '10px 15px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)', marginBottom: '15px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.8125rem' }}>{selectedExp.length} {t('selectedFem')}</span>
+                  <div style={{ width: '1px', height: '20px', backgroundColor: 'var(--border-strong)' }}></div>
+                  <button className="btn btn-link no-print" onClick={confirmDeleteExpense} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Trash2 size={16}/> {t('delete')}</button>
                 </div>
               )}
               <div className="table-wrapper" style={{ overflowX: 'auto' }}>
@@ -547,12 +550,12 @@ const FinancesPage = () => {
                         <td style={{ whiteSpace: 'nowrap', padding: '0.5rem' }}>{ex.date}</td>
                         <td style={{fontWeight: '600', whiteSpace: 'nowrap', padding: '0.5rem'}}>{ex.category}</td>
                         <td style={{ padding: '0.5rem' }}>{ex.desc}</td>
-                        <td style={{fontWeight: '700', color: '#ef4444', whiteSpace: 'nowrap', padding: '0.5rem'}}>{formatPrice(ex.amount)}</td>
+                        <td style={{fontWeight: '700', color: 'var(--danger)', whiteSpace: 'nowrap', padding: '0.5rem'}}>{formatPrice(ex.amount)}</td>
                       </tr>
                     ))}
-                    <tr style={{ backgroundColor: '#f8fafc', fontWeight: 'bold' }}>
-                      <td colSpan="4" style={{ textAlign: 'right', padding: '0.5rem' }}>TOTAL GASTOS:</td>
-                      <td style={{color: '#ef4444', whiteSpace: 'nowrap', padding: '0.5rem'}}>{formatPrice(totalGastos)}</td>
+                    <tr style={{ backgroundColor: 'var(--bg-soft)', fontWeight: 'bold' }}>
+                      <td colSpan="4" style={{ textAlign: 'right', padding: '0.5rem', color: 'var(--text-light)' }}>{t('totalExpenses')}</td>
+                      <td style={{color: 'var(--danger)', whiteSpace: 'nowrap', padding: '0.5rem'}}>{formatPrice(totalGastos)}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -567,67 +570,67 @@ const FinancesPage = () => {
       {showSummaryModal && (
         <div className="modal-overlay">
           <div className="modal-content" style={{ maxWidth: '400px', padding: 0 }}>
-            <div className="card" style={{ width: '100%', margin: 0, padding: '20px', backgroundColor: '#fff', border: 'none', borderRadius: '12px', boxShadow: 'none' }}>
+            <div className="card" style={{ width: '100%', margin: 0, padding: '20px', backgroundColor: 'var(--card-bg)', border: 'none', borderRadius: 'var(--radius-xl)', boxShadow: 'none' }}>
               <div className="d-flex justify-content-between align-items-center mb-4">
-                <h3 style={{ color: '#0f172a', fontSize: '0.95rem', fontWeight: 700, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <h3 style={{ color: 'var(--text-dark)', fontSize: '0.95rem', fontWeight: 700, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   {t('periodSummary')}
                 </h3>
-                <button onClick={() => setShowSummaryModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: 0, display: 'flex' }}><X size={20} /></button>
+                <button onClick={() => setShowSummaryModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-light)', cursor: 'pointer', padding: 0, display: 'flex' }}><X size={20} /></button>
               </div>
         
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
-          <span style={{ color: '#333' }}>{t('totalBookingsLabel')}</span>
-          <span style={{ fontWeight: 'bold', color: '#000' }}>{allBookings.length}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8125rem' }}>
+          <span style={{ color: 'var(--text-medium)' }}>{t('totalBookingsLabel')}</span>
+          <span style={{ fontWeight: 'bold', color: 'var(--text-dark)' }}>{allBookings.length}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
-          <span style={{ color: '#333' }}>{t('grossIncomeLabel')}</span>
-          <span style={{ fontWeight: 'bold', color: '#10b981' }}>{formatPrice(totalBruto)}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8125rem' }}>
+          <span style={{ color: 'var(--text-medium)' }}>{t('grossIncomeLabel')}</span>
+          <span style={{ fontWeight: 'bold', color: 'var(--success)' }}>{formatPrice(totalBruto)}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
-          <span style={{ color: '#333' }}>{t('provPaymentLabel')}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8125rem' }}>
+          <span style={{ color: 'var(--text-medium)' }}>{t('provPaymentLabel')}</span>
           <span style={{ fontWeight: 'bold', color: '#ef4444' }}>{formatPrice(totalProv)}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
-          <span style={{ color: '#333' }}>{t('otaCommLabel')}</span>
-          <span style={{ fontWeight: 'bold', color: '#f59e0b' }}>{formatPrice(totalOta)}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8125rem' }}>
+          <span style={{ color: 'var(--text-medium)' }}>{t('otaCommLabel')}</span>
+          <span style={{ fontWeight: 'bold', color: 'var(--warning)' }}>{formatPrice(totalOta)}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
-          <span style={{ color: '#333' }}>{t('driverPayLabel')}</span>
-          <span style={{ fontWeight: 'bold', color: '#3b82f6' }}>{formatPrice(totalDriver)}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8125rem' }}>
+          <span style={{ color: 'var(--text-medium)' }}>{t('driverPayLabel')}</span>
+          <span style={{ fontWeight: 'bold', color: 'var(--info)' }}>{formatPrice(totalDriver)}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '0.9rem' }}>
-          <span style={{ color: '#333' }}>{t('operExpLabel')}</span>
-          <span style={{ fontWeight: 'bold', color: '#000' }}>{formatPrice(totalGastos)}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '0.8125rem' }}>
+          <span style={{ color: 'var(--text-medium)' }}>{t('operExpLabel')}</span>
+          <span style={{ fontWeight: 'bold', color: 'var(--text-dark)' }}>{formatPrice(totalGastos)}</span>
         </div>
 
-        <div style={{ fontWeight: 'bold', marginBottom: '12px', fontSize: '0.95rem', color: '#000' }}>
+        <div style={{ fontWeight: 'bold', marginBottom: '12px', fontSize: '0.95rem', color: 'var(--text-dark)' }}>
           {t('expBreakdown')}
         </div>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
-          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>⛽ {t('gas')}</span>
-          <span style={{ color: '#333' }}>{formatPrice(gasTotal)}</span>
+          <span style={{ color: 'var(--text-medium)', display: 'flex', alignItems: 'center', gap: '6px' }}>⛽ {t('gas')}</span>
+          <span style={{ color: 'var(--text-medium)' }}>{formatPrice(gasTotal)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
-          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>🔧 {t('maintenance')}</span>
-          <span style={{ color: '#333' }}>{formatPrice(mantTotal)}</span>
+          <span style={{ color: 'var(--text-medium)', display: 'flex', alignItems: 'center', gap: '6px' }}>🔧 {t('maintenance')}</span>
+          <span style={{ color: 'var(--text-medium)' }}>{formatPrice(mantTotal)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
-          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>👥 {t('guidePay')}</span>
-          <span style={{ color: '#333' }}>{formatPrice(guiasTotal)}</span>
+          <span style={{ color: 'var(--text-medium)', display: 'flex', alignItems: 'center', gap: '6px' }}>👥 {t('guidePay')}</span>
+          <span style={{ color: 'var(--text-medium)' }}>{formatPrice(guiasTotal)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.85rem' }}>
-          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>💼 {t('payroll')}</span>
-          <span style={{ color: '#333' }}>{formatPrice(nominaTotal)}</span>
+          <span style={{ color: 'var(--text-medium)', display: 'flex', alignItems: 'center', gap: '6px' }}>💼 {t('payroll')}</span>
+          <span style={{ color: 'var(--text-medium)' }}>{formatPrice(nominaTotal)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '0.85rem' }}>
-          <span style={{ color: '#333', display: 'flex', alignItems: 'center', gap: '6px' }}>📝 {t('others')}</span>
-          <span style={{ color: '#333' }}>{formatPrice(otrosTotal)}</span>
+          <span style={{ color: 'var(--text-medium)', display: 'flex', alignItems: 'center', gap: '6px' }}>📝 {t('others')}</span>
+          <span style={{ color: 'var(--text-medium)' }}>{formatPrice(otrosTotal)}</span>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px', paddingTop: '15px', borderTop: '1px solid #e2e8f0', fontSize: '0.95rem' }}>
-          <span style={{ fontWeight: '800', color: '#000' }}>{t('realProfitLabel')}</span>
-          <span style={{ fontWeight: '800', color: '#10b981' }}>{formatPrice(gananciaReal)}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px', paddingTop: '15px', borderTop: '1px solid var(--border-color)', fontSize: '0.95rem' }}>
+          <span style={{ fontWeight: '800', color: 'var(--text-dark)' }}>{t('realProfitLabel')}</span>
+          <span style={{ fontWeight: '800', color: 'var(--success)' }}>{formatPrice(gananciaReal)}</span>
         </div>
             </div>
           </div>
@@ -644,46 +647,46 @@ const FinancesPage = () => {
             </div>
             <form onSubmit={handleSaveExpense}>
               <div className="form-group" style={{ position: 'relative' }}>
-                <label>Categoría</label>
+                <label>{t('category')}</label>
                 <input type="hidden" name="category" value={expenseCategory} />
                 <div 
                   className="form-control d-flex align-items-center justify-content-between" 
                   onClick={() => setExpenseCatOpen(!expenseCatOpen)}
-                  style={{ cursor: 'pointer', backgroundColor: '#fff' }}
+                  style={{ cursor: 'pointer', backgroundColor: 'var(--card-bg)' }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <SelectedIcon size={18} color={selectedCatObj?.color} />
                     <span>{selectedCatObj?.label}</span>
                   </div>
-                  <ChevronDown size={18} color="#64748b" />
+                  <ChevronDown size={18} color="var(--text-light)" />
                 </div>
 
                 {expenseCatOpen && (
-                  <div style={{ 
-                    position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 10, 
-                    backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', 
-                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', marginTop: '4px', overflow: 'hidden' 
+                  <div style={{
+                    position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 10,
+                    backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+                    boxShadow: 'var(--shadow-md)', marginTop: '4px', overflow: 'hidden'
                   }}>
                     {expenseCategories.map(cat => {
                       const Icon = cat.icon;
                       const isSelected = expenseCategory === cat.value;
                       return (
-                        <div 
+                        <div
                           key={cat.value}
                           onClick={() => {
                             setExpenseCategory(cat.value);
                             setExpenseCatOpen(false);
                           }}
-                          style={{ 
+                          style={{
                             padding: '10px 15px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
-                            backgroundColor: isSelected ? '#f8fafc' : '#fff',
+                            backgroundColor: isSelected ? 'var(--bg-soft)' : 'var(--card-bg)',
                             borderLeft: isSelected ? `3px solid ${cat.color}` : '3px solid transparent'
                           }}
-                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
-                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = isSelected ? '#f8fafc' : '#fff'}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-color)'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = isSelected ? 'var(--bg-soft)' : 'var(--card-bg)'}
                         >
                           <Icon size={18} color={cat.color} />
-                          <span style={{ fontWeight: isSelected ? '600' : 'normal', color: '#1e293b' }}>{cat.label}</span>
+                          <span style={{ fontWeight: isSelected ? '600' : 'normal', color: 'var(--text-dark)' }}>{cat.label}</span>
                         </div>
                       );
                     })}
@@ -715,8 +718,8 @@ const FinancesPage = () => {
         isOpen={showDeleteConfirm}
         onCancel={() => setShowDeleteConfirm(false)}
         onConfirm={handleDeleteExpense}
-        title="Eliminar Gastos"
-        message={`¿Estás seguro de que deseas eliminar ${selectedExp.length} gasto(s)? Esta acción no se puede deshacer.`}
+        title={t('deleteExpenses')}
+        message={t('deleteExpensesConfirm')?.replace('{count}', selectedExp.length)}
       />
     </div>
   );

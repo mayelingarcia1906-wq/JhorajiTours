@@ -1,201 +1,139 @@
-import { useState, useMemo, useEffect } from 'react';
-import { Edit3, MessageCircle, Plus, Trash2, X, Search, Eraser } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Edit3, Globe, MessageCircle, Plus, Search, Trash2, X, Eraser } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
-import { useLanguage } from '../context/LanguageContext';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
-const initialAgencies = Array.from({ length: 15 }, (_, i) => ({
-  id: 1000 + i,
-  name: `Agencia ${i + 1} ${['VIP', 'Tours', 'Travel', 'Punta Cana'][i % 4]}`,
-  whatsapp: `809-555-${String(1000 + i).padStart(4, '0')}`,
-}));
+const read = (k, fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } };
+const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+const logAudit = (action, detail) => {
+  const logs = read('jhoraji_audit', []);
+  logs.unshift({ id: Date.now(), module: 'Agencias', action, detail, user: 'Administrador', timestamp: new Date().toISOString() });
+  write('jhoraji_audit', logs.slice(0, 200));
+};
 
 const emptyAgency = { name: '', whatsapp: '' };
 
-const readStoredData = (key, defaultData) => {
-  const saved = localStorage.getItem(key);
-  if (!saved) return defaultData;
-  try { return JSON.parse(saved); } catch { return defaultData; }
-};
-
-const logAudit = (action, detail) => {
-  try {
-    const logs = JSON.parse(localStorage.getItem('jhoraji_audit') || '[]');
-    logs.unshift({ id: Date.now(), module: 'Agencias', action, detail, user: 'Administrador', timestamp: new Date().toISOString() });
-    localStorage.setItem('jhoraji_audit', JSON.stringify(logs.slice(0, 200)));
-  } catch (e) {}
-};
-
 const AgenciesPage = () => {
-  const { addToast } = useToast();
   const { t } = useLanguage();
-  const [agencies, setAgencies] = useState(() => readStoredData('jhoraji_agencies', initialAgencies));
-  const [editingAgency, setEditingAgency] = useState(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [appliedSearch, setAppliedSearch] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const { addToast } = useToast();
+  const [agencies, setAgencies] = useState(() => read('jhoraji_agencies', []));
+  const [editing, setEditing] = useState(null);
+  const [showDelete, setShowDelete] = useState(null);
+  const [search, setSearch] = useState('');
+  const [applied, setApplied] = useState('');
+  const [page, setPage] = useState(1);
   const itemsPerPage = 12;
 
-  const filteredAgencies = useMemo(() => {
-    return agencies.filter(a => 
-      (a.name || '').toLowerCase().includes((appliedSearch || '').toLowerCase()) || 
-      (a.whatsapp && a.whatsapp.toLowerCase().includes((appliedSearch || '').toLowerCase()))
-    );
-  }, [agencies, appliedSearch]);
+  const filtered = useMemo(() => {
+    const term = applied.toLowerCase();
+    return agencies.filter((a) => a.name?.toLowerCase().includes(term) || a.whatsapp?.toLowerCase().includes(term));
+  }, [agencies, applied]);
 
-  const totalPages = Math.ceil(filteredAgencies.length / itemsPerPage);
-  const currentItems = filteredAgencies.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const currentItems = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
-  // Force mock data to demonstrate pagination
-  useEffect(() => {
-    if (agencies.length < 15) {
-      const mock = Array.from({ length: 15 }, (_, i) => ({
-        id: 9000 + i,
-        name: `Agencia Demo ${i + 1}`,
-        whatsapp: `809-555-${String(9000 + i).padStart(4, '0')}`,
-      }));
-      const next = [...agencies, ...mock];
-      setAgencies(next);
-      localStorage.setItem('jhoraji_agencies', JSON.stringify(next));
-    }
-  }, [agencies]);
+  const persist = (next) => { setAgencies(next); write('jhoraji_agencies', next); };
 
-  const handleSearch = () => {
-    setAppliedSearch(searchTerm);
-    setCurrentPage(1);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') handleSearch();
-  };
-
-  const clearSearch = () => {
-    setSearchTerm('');
-    setAppliedSearch('');
-    setCurrentPage(1);
-  };
-
-  const persistAgencies = (nextAgencies) => {
-    setAgencies(nextAgencies);
-    localStorage.setItem('jhoraji_agencies', JSON.stringify(nextAgencies));
-  };
-
-  const handleSaveAgency = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const isNew = !editingAgency.id;
+  const handleSave = (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
     const submitted = {
-      id: editingAgency.id || Date.now(),
-      name: formData.get('name').trim(),
-      whatsapp: formData.get('whatsapp').trim(),
+      id: editing.id || Date.now(),
+      name: fd.get('name').trim(),
+      whatsapp: fd.get('whatsapp').trim(),
     };
-
-    const nextAgencies = editingAgency.id
-      ? agencies.map((a) => (a.id === editingAgency.id ? submitted : a))
-      : [...agencies, submitted];
-
-    persistAgencies(nextAgencies);
-    logAudit(isNew ? 'Creó agencia' : 'Editó agencia', submitted.name);
-    setEditingAgency(null);
-    addToast(isNew ? 'Agencia creada exitosamente' : 'Agencia actualizada', 'success');
+    persist(editing.id ? agencies.map((a) => (a.id === editing.id ? submitted : a)) : [submitted, ...agencies]);
+    logAudit(editing.id ? 'Editó agencia' : 'Creó agencia', submitted.name);
+    setEditing(null);
+    addToast(editing.id ? 'Agencia actualizada' : 'Agencia creada', 'success');
   };
 
   const handleDelete = () => {
-    const agency = agencies.find(a => a.id === showDeleteConfirm);
-    persistAgencies(agencies.filter(a => a.id !== showDeleteConfirm));
-    logAudit('Eliminó agencia', agency?.name || '');
+    const a = agencies.find((x) => x.id === showDelete);
+    persist(agencies.filter((x) => x.id !== showDelete));
+    logAudit('Eliminó agencia', a?.name || '');
     addToast('Agencia eliminada', 'success');
-    setShowDeleteConfirm(null);
+    setShowDelete(null);
   };
 
   return (
     <div>
-      <div className="page-header mb-4">
+      <div className="page-header">
         <div>
           <h2>{t('agenciesTitle')}</h2>
-          <p className="text-muted" style={{ margin: 0 }}>{t('agenciesSubtitle')}</p>
+          <p className="page-subtitle">{t('agenciesSubtitle')}</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setEditingAgency({ ...emptyAgency })}>
-          <Plus size={18} /> {t('newAgency')}
+        <button className="btn btn-primary" onClick={() => setEditing({ ...emptyAgency })}>
+          <Plus size={16} /> {t('newAgency')}
         </button>
       </div>
 
       <div className="card mb-4">
         <div className="page-toolbar">
-          <div className="d-flex gap-3" style={{ flexWrap: 'wrap', flex: 1, alignItems: 'center' }}>
-            <div className="search-integrated">
-              <Search size={16} className="search-icon" />
-              <input
-                type="text"
-                placeholder={t('searchAgency')}
-                className="form-control"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={handleKeyDown}
-              />
-              <button
-                className={`search-clear-btn ${searchTerm ? 'visible' : ''}`}
-                onClick={clearSearch}
-                title="Limpiar búsqueda"
-                type="button"
-              >
-                <Eraser size={15} />
+          <div className="search-integrated">
+            <Search size={15} className="search-icon" />
+            <input
+              type="text"
+              placeholder={t('searchAgency')}
+              className="form-control"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && (setApplied(search), setPage(1))}
+            />
+            {search && (
+              <button className="search-clear-btn visible" onClick={() => { setSearch(''); setApplied(''); setPage(1); }} type="button">
+                <Eraser size={14} />
               </button>
-              <button className="search-btn-inner" onClick={handleSearch} type="button">
-                <Search size={13} /> {t('search')}
-              </button>
-            </div>
+            )}
+            <button className="search-btn-inner" onClick={() => { setApplied(search); setPage(1); }} type="button">
+              <Search size={12} /> {t('search')}
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="card">
-        <div className="table-wrapper">
-          <table className="table compact-table" style={{ minWidth: '0', width: '100%', fontSize: '0.85rem' }}>
-            <thead style={{ fontSize: '0.75rem' }}>
-              <tr style={{ color: 'var(--text-light)', borderBottom: '1px solid var(--border-color)' }}>
+      <div className="card" style={{ padding: 0 }}>
+        <div className="table-wrapper" style={{ borderRadius: 0, border: 'none' }}>
+          <table className="table compact-table">
+            <thead>
+              <tr>
                 <th>{t('agencyName')}</th>
                 <th>WhatsApp</th>
                 <th style={{ textAlign: 'right' }}>{t('actions')}</th>
               </tr>
             </thead>
             <tbody>
-              {agencies.length === 0 && (
+              {currentItems.length === 0 ? (
                 <tr>
-                  <td colSpan="3" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-light)' }}>
-                    No hay agencias registradas. ¡Agrega la primera!
+                  <td colSpan="3" style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-faint)' }}>
+                    <Globe size={32} style={{ opacity: 0.3, marginBottom: 8 }} />
+                    <div>{t('noAgencies')}</div>
                   </td>
                 </tr>
-              )}
-              {filteredAgencies.length === 0 && agencies.length > 0 && (
-                <tr>
-                  <td colSpan="3" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-light)' }}>
-                    No se encontraron resultados para "{appliedSearch}".
-                  </td>
-                </tr>
-              )}
-              {currentItems.map(a => (
+              ) : currentItems.map((a) => (
                 <tr key={a.id}>
-                  <td className="font-bold">{a.name}</td>
+                  <td>
+                    <div className="d-flex align-items-center gap-3">
+                      <div className="stat-icon tone-info" style={{ width: 34, height: 34, flexShrink: 0 }}>
+                        <Globe size={15} />
+                      </div>
+                      <span className="font-bold">{a.name}</span>
+                    </div>
+                  </td>
                   <td>
                     {a.whatsapp ? (
-                      <div className="d-flex align-items-center gap-1" style={{ color: '#25D366', fontWeight: '500' }}>
-                        <MessageCircle size={15} /> {a.whatsapp}
-                      </div>
-                    ) : (
-                      <span className="text-muted">—</span>
-                    )}
+                      <a href={`https://wa.me/${a.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="d-flex align-items-center gap-1" style={{ color: 'var(--success)' }}>
+                        <MessageCircle size={13} /> {a.whatsapp}
+                      </a>
+                    ) : <span style={{ color: 'var(--text-faint)' }}>—</span>}
                   </td>
                   <td>
                     <div className="action-buttons" style={{ justifyContent: 'flex-end' }}>
-                      <button className="icon-btn" onClick={() => setEditingAgency(a)} title="Editar" style={{ backgroundColor: 'rgba(245,158,11,0.1)', color: 'var(--warning)' }}>
-                        <Edit3 size={16} />
-                      </button>
-                      <button className="icon-btn" onClick={() => setShowDeleteConfirm(a.id)} title="Eliminar" style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: 'var(--danger)' }}>
-                        <Trash2 size={16} />
-                      </button>
+                      <button className="icon-btn" onClick={() => setEditing({ ...a })} title={t('edit')}><Edit3 size={15} /></button>
+                      <button className="icon-btn danger" onClick={() => setShowDelete(a.id)} title={t('delete')}><Trash2 size={15} /></button>
                     </div>
                   </td>
                 </tr>
@@ -203,50 +141,35 @@ const AgenciesPage = () => {
             </tbody>
           </table>
         </div>
-        <div style={{ padding: '0 1rem', paddingBottom: '1rem' }}>
-          <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredAgencies.length} itemsPerPage={itemsPerPage} onPageChange={setCurrentPage} />
-        </div>
+        <Pagination currentPage={page} totalPages={totalPages} totalItems={filtered.length} itemsPerPage={itemsPerPage} onPageChange={setPage} />
       </div>
 
-      {/* Modal Crear/Editar */}
-      {editingAgency && (
-        <div className="modal-overlay">
-          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px' }}>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h3 style={{ margin: 0 }}>
-                {editingAgency.id ? t('editAgency') : t('newAgency')}
-              </h3>
-              <button onClick={() => setEditingAgency(null)} style={{ background: 'none', color: 'var(--text-light)' }}>
-                <X size={24} />
-              </button>
+      {editing && (
+        <div className="modal-overlay" onClick={() => setEditing(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
+            <div className="modal-header">
+              <h3>{editing.id ? t('editAgency') : t('newAgency')}</h3>
+              <button className="modal-close" onClick={() => setEditing(null)}><X size={16} /></button>
             </div>
-            <form onSubmit={handleSaveAgency}>
+            <form onSubmit={handleSave}>
               <div className="form-group">
-                <label>Nombre</label>
-                <input name="name" type="text" className="form-control" required defaultValue={editingAgency.name} />
+                <label>{t('name')}</label>
+                <input name="name" type="text" className="form-control" required defaultValue={editing.name} />
               </div>
               <div className="form-group">
                 <label>WhatsApp</label>
-                <input name="whatsapp" type="text" className="form-control" defaultValue={editingAgency.whatsapp} />
+                <input name="whatsapp" type="text" className="form-control" defaultValue={editing.whatsapp} placeholder="+1 809-555-0101" />
               </div>
-              <div className="modal-actions mt-4">
-                <button type="button" className="btn btn-outline" onClick={() => setEditingAgency(null)}>{t('cancel')}</button>
-                <button type="submit" className="btn btn-primary">
-                  {editingAgency.id ? t('update') : t('create')}
-                </button>
+              <div className="modal-actions">
+                <button type="button" className="btn btn-outline" onClick={() => setEditing(null)}>{t('cancel')}</button>
+                <button type="submit" className="btn btn-primary">{editing.id ? t('update') : t('create')}</button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      <DeleteConfirmModal
-        isOpen={!!showDeleteConfirm}
-        onCancel={() => setShowDeleteConfirm(null)}
-        onConfirm={handleDelete}
-        title={t('deleteAgencyTitle')}
-        message="¿Estás seguro que deseas eliminar esta agencia? Esta acción no se puede deshacer."
-      />
+      <DeleteConfirmModal isOpen={!!showDelete} onCancel={() => setShowDelete(null)} onConfirm={handleDelete} title={t('deleteAgencyTitle')} message={t('deleteAgencyText')} />
     </div>
   );
 };
