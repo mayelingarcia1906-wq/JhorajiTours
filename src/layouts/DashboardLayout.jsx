@@ -12,32 +12,31 @@ import { useNotifications } from '../context/NotificationsContext';
 
 const buildNavItems = (t, canAccessModule) => [
   {
-    title: t('modulos'),
+    title: t('modulesSection') || 'MÓDULOS',
     items: [
-      { to: '/', label: t('dashboard'), icon: LayoutDashboard, module: 'dashboard' },
-      { to: '/bookings', label: t('reservas'), icon: ClipboardList, module: 'bookings' },
-      { to: '/orders', label: t('ordenes'), icon: Truck, module: 'orders' },
-      { to: '/schedule', label: t('horario'), icon: Calendar, module: 'schedule' },
+      { to: '/dashboard', label: t('moduleDashboard'), icon: LayoutDashboard, module: 'dashboard' },
+      { to: '/bookings', label: t('moduleBookings'), icon: ClipboardList, module: 'bookings' },
+      { to: '/orders', label: t('moduleOrders'), icon: Truck, module: 'orders' },
+      { to: '/schedule', label: t('moduleSchedule'), icon: Calendar, module: 'schedule' },
     ].filter((i) => canAccessModule(i.module)),
   },
   {
-    title: t('gestion'),
+    title: t('managementSection') || 'GESTIÓN',
     items: [
-      { to: '/tours', label: t('tours'), icon: Map, module: 'tours' },
-      { to: '/activities', label: t('actividades'), icon: Activity, module: 'activities' },
-      { to: '/customers', label: t('clientes'), icon: Users, module: 'customers' },
-      { to: '/drivers', label: t('choferes'), icon: Car, module: 'drivers' },
-      { to: '/providers', label: t('proveedores'), icon: Building2, module: 'providers' },
-      { to: '/agencies', label: t('agencias'), icon: Globe, module: 'agencies' },
+      { to: '/activities', label: t('moduleActivities'), icon: Activity, module: 'activities' },
+      { to: '/customers', label: t('moduleCustomers'), icon: Users, module: 'customers' },
+      { to: '/drivers', label: t('moduleDrivers'), icon: Car, module: 'drivers' },
+      { to: '/providers', label: t('moduleProviders'), icon: Building2, module: 'providers' },
+      { to: '/agencies', label: t('moduleAgencies'), icon: Globe, module: 'agencies' },
     ].filter((i) => canAccessModule(i.module)),
   },
   {
-    title: t('administracion'),
+    title: t('adminSection') || 'ADMINISTRACIÓN',
     items: [
-      { to: '/finances', label: t('finanzas'), icon: Wallet, module: 'finances' },
-      { to: '/audit', label: t('auditoria'), icon: BarChart3, module: 'audit' },
-      { to: '/users', label: t('usuarios'), icon: UserCog, module: 'users' },
-      { to: '/settings', label: t('configuracion'), icon: Settings, module: 'settings' },
+      { to: '/finances', label: t('moduleFinances'), icon: Wallet, module: 'finances' },
+      { to: '/audit', label: t('moduleAudit'), icon: BarChart3, module: 'audit' },
+      { to: '/users', label: t('moduleUsers'), icon: UserCog, module: 'users' },
+      { to: '/settings', label: t('moduleSettings'), icon: Settings, module: 'settings' },
     ].filter((i) => canAccessModule(i.module)),
   },
 ];
@@ -45,7 +44,7 @@ const buildNavItems = (t, canAccessModule) => [
 const HeaderBell = ({ onLogout }) => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const { notifications, unreadCount, markAllRead, clearAll, isMuted, toggleMute } = useNotifications();
+  const { notifications, unreadCount, markAllNotificationsRead, clearAllNotifications, isMuted, toggleMute } = useNotifications();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -87,10 +86,10 @@ const HeaderBell = ({ onLogout }) => {
             <div className="d-flex gap-2">
               {notifications.length > 0 && (
                 <>
-                  <button className="btn btn-ghost btn-sm" onClick={markAllRead}>
+                  <button className="btn btn-ghost btn-sm" onClick={markAllNotificationsRead}>
                     {t('marcarLeidas')}
                   </button>
-                  <button className="btn btn-ghost btn-sm" onClick={clearAll} style={{ color: 'var(--danger)' }}>
+                  <button className="btn btn-ghost btn-sm" onClick={clearAllNotifications} style={{ color: 'var(--danger)' }}>
                     {t('limpiar')}
                   </button>
                 </>
@@ -121,13 +120,13 @@ const HeaderBell = ({ onLogout }) => {
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: '0.85rem', fontWeight: n.read ? 500 : 600, color: 'var(--text-dark)' }}>
-                      {n.title || n.message}
+                      {n.key ? t(n.key, n.args) : (n.title || n.message || n.text)}
                     </div>
-                    {n.title && (
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>{n.message}</div>
+                    {n.title && !n.key && (
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>{n.message || n.text}</div>
                     )}
                     <div style={{ fontSize: '0.7rem', color: 'var(--text-faint)', marginTop: 2 }}>
-                      {new Date(n.timestamp).toLocaleString()}
+                      {n.timestamp ? new Date(n.timestamp).toLocaleString() : n.time}
                     </div>
                   </div>
                 </div>
@@ -197,7 +196,7 @@ const UserMenu = ({ user, onLogout }) => {
               fontSize: '0.8125rem', color: 'var(--text-dark)',
             }}
           >
-            <Settings size={14} /> {t('configuracion')}
+            <Settings size={14} /> {t('settings')}
           </Link>
           <button
             onClick={onLogout}
@@ -207,7 +206,7 @@ const UserMenu = ({ user, onLogout }) => {
               fontSize: '0.8125rem', color: 'var(--danger)', background: 'transparent',
             }}
           >
-            <LogOut size={14} /> {t('cerrarSesion')}
+            <LogOut size={14} /> {t('logout')}
           </button>
         </div>
       )}
@@ -267,7 +266,7 @@ const DashboardLayout = () => {
           <button
             className="sidebar-toggle d-none d-md-block"
             onClick={() => setDesktopCollapsed(!desktopCollapsed)}
-            aria-label="Colapsar sidebar"
+            aria-label={t('collapseSidebar')}
             style={{ display: window.innerWidth >= 1024 ? 'flex' : 'none' }}
           >
             {desktopCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
@@ -275,7 +274,7 @@ const DashboardLayout = () => {
           <button
             className="sidebar-toggle d-md-none"
             onClick={() => setMobileOpen(false)}
-            aria-label="Cerrar sidebar"
+            aria-label={t('closeSidebar')}
           >
             <X size={16} />
           </button>
@@ -309,7 +308,7 @@ const DashboardLayout = () => {
           <div className="sidebar-user-card">
             <div className="sidebar-avatar">{initials}</div>
             <div className="sidebar-text" style={{ minWidth: 0 }}>
-              <div className="sidebar-user-name">{user?.name || 'Usuario'}</div>
+              <div className="sidebar-user-name">{user?.name || t('userDefault')}</div>
               <div className="sidebar-user-role">{user?.role || '—'}</div>
             </div>
           </div>
@@ -322,7 +321,7 @@ const DashboardLayout = () => {
             <button
               className="mobile-menu-btn"
               onClick={() => setMobileOpen(true)}
-              aria-label="Abrir menú"
+              aria-label={t('openMenu')}
             >
               <Menu size={20} />
             </button>
@@ -330,7 +329,7 @@ const DashboardLayout = () => {
               <Search size={13} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-faint)' }} />
               <input
                 className="form-control"
-                placeholder="Buscar reservas, tours, clientes…"
+                placeholder={t('searchPlaceholder')}
                 style={{ paddingLeft: '2rem', height: 32, borderRadius: 'var(--radius-full)', width: 280, fontSize: '0.8125rem' }}
               />
             </div>
@@ -341,7 +340,7 @@ const DashboardLayout = () => {
               className="icon-btn"
               onClick={toggleTheme}
               aria-label="Cambiar tema"
-              title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+              title={theme === 'dark' ? t('lightModeTooltip') : t('darkModeTooltip')}
             >
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>

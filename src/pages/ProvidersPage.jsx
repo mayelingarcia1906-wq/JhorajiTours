@@ -54,16 +54,16 @@ const ProvidersPage = () => {
     };
     const next = editing.id ? providers.map((p) => (p.id === editing.id ? submitted : p)) : [submitted, ...providers];
     persist(next);
-    logAudit(editing.id ? 'Editó proveedor' : 'Creó proveedor', submitted.name);
+    logAudit(editing.id ? t('updateProvider') : t('createProvider'), submitted.name);
     setEditing(null);
-    addToast(editing.id ? 'Proveedor actualizado' : 'Proveedor creado', 'success');
+    addToast(t('providerSaved'), 'success');
   };
 
   const handleDelete = () => {
     const p = providers.find((x) => x.id === showDelete);
     persist(providers.filter((x) => x.id !== showDelete));
-    logAudit('Eliminó proveedor', p?.name || '');
-    addToast('Proveedor eliminado', 'success');
+    logAudit(t('delete'), p?.name || '');
+    addToast(t('providerDeleted'), 'success');
     setShowDelete(null);
   };
 
@@ -119,7 +119,7 @@ const ProvidersPage = () => {
                 <tr>
                   <td colSpan="4" style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-faint)' }}>
                     <Building2 size={32} style={{ opacity: 0.3, marginBottom: 8 }} />
-                    <div>No hay proveedores registrados</div>
+                    <div>{t('noProviders') || 'No hay proveedores'}</div>
                   </td>
                 </tr>
               ) : (
@@ -184,22 +184,22 @@ const ProvidersPage = () => {
             </div>
             <form onSubmit={handleSave}>
               <div className="form-group">
-                <label>Nombre empresa o persona</label>
+                <label>{t('companyPersonName')}</label>
                 <input name="name" type="text" className="form-control" placeholder="Ej. Buggies Macao" required defaultValue={editing.name} />
               </div>
               <div className="responsive-grid">
                 <div className="form-group">
-                  <label>Teléfono</label>
+                  <label>{t('phone')}</label>
                   <input name="phone" type="tel" className="form-control" defaultValue={editing.phone} />
                 </div>
                 <div className="form-group">
-                  <label>Correo</label>
+                  <label>{t('email')}</label>
                   <input name="email" type="email" className="form-control" defaultValue={editing.email} />
                 </div>
               </div>
               <div className="form-group">
-                <label>Notas internas</label>
-                <textarea name="notes" className="form-control" rows="3" placeholder="Detalles de contacto, cuentas bancarias…" defaultValue={editing.notes} />
+                <label>{t('internalNotes')}</label>
+                <textarea name="notes" className="form-control" rows="3" defaultValue={editing.notes} />
               </div>
               <div className="modal-actions">
                 <button type="button" className="btn btn-outline" onClick={() => setEditing(null)}>{t('cancel')}</button>
@@ -214,8 +214,8 @@ const ProvidersPage = () => {
         isOpen={!!showDelete}
         onCancel={() => setShowDelete(null)}
         onConfirm={handleDelete}
-        title="¿Eliminar proveedor?"
-        message="Esta acción no se puede deshacer."
+        title={t('deleteProviderTitle')}
+        message={t('deleteUserMessage')}
       />
     </div>
   );

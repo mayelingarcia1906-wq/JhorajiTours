@@ -55,8 +55,8 @@ const UsersPage = () => {
     const user = users.find((u) => u.id === id);
     const newState = !user.active;
     persist(users.map((u) => (u.id === id ? { ...u, active: newState } : u)));
-    logAudit(newState ? 'Activó usuario' : 'Desactivó usuario', user.name);
-    addToast('Estado actualizado', 'success');
+    logAudit(newState ? t('statusUpdated') : t('statusUpdated'), user.name);
+    addToast(t('statusUpdated'), 'success');
   };
 
   const handleSave = (e) => {
@@ -65,7 +65,7 @@ const UsersPage = () => {
     const password = fd.get('password');
     const confirm = fd.get('confirmPassword');
     if (!editing.id || password) {
-      if (password !== confirm) return addToast('Las contraseñas no coinciden', 'error');
+      if (password !== confirm) return addToast(t('passwordsDontMatch'), 'error');
     }
     const submitted = {
       id: editing.id || Date.now(),
@@ -77,12 +77,12 @@ const UsersPage = () => {
     persist(editing.id ? users.map((u) => (u.id === editing.id ? { ...u, ...submitted } : u)) : [submitted, ...users]);
     setEditing(null);
     setShowPwd(false); setShowConfirmPwd(false);
-    addToast('Usuario guardado', 'success');
+    addToast(t('userSaved'), 'success');
   };
 
   const handleDelete = () => {
     persist(users.filter((u) => u.id !== showDelete));
-    addToast('Usuario eliminado', 'success');
+    addToast(t('userDeleted'), 'success');
     setShowDelete(null);
   };
 
@@ -95,7 +95,7 @@ const UsersPage = () => {
       <div className="page-header">
         <div>
           <h2>{t('moduleUsers') || 'Gestión de Usuarios'}</h2>
-          <p className="page-subtitle">Administra los accesos al sistema</p>
+          <p className="page-subtitle">{t('usersSubtitle')}</p>
         </div>
         <button className="btn btn-primary" onClick={() => setEditing({ ...emptyUser })}>
           <Plus size={16} /> {t('newUser') || 'Nuevo Usuario'}
@@ -105,21 +105,21 @@ const UsersPage = () => {
       <div className="stats-grid mb-4">
         <div className="stat-card tone-primary">
           <div className="stat-header">
-            <span className="stat-label">Total usuarios</span>
+            <span className="stat-label">{t('totalUsers')}</span>
             <div className="stat-icon"><User size={18} /></div>
           </div>
           <div className="stat-value">{total}</div>
         </div>
         <div className="stat-card tone-danger">
           <div className="stat-header">
-            <span className="stat-label">Administradores</span>
+            <span className="stat-label">{t('admins')}</span>
             <div className="stat-icon"><Shield size={18} /></div>
           </div>
           <div className="stat-value">{admins}</div>
         </div>
         <div className="stat-card tone-success">
           <div className="stat-header">
-            <span className="stat-label">Operaciones</span>
+            <span className="stat-label">{t('ops')}</span>
             <div className="stat-icon"><User size={18} /></div>
           </div>
           <div className="stat-value">{ops}</div>
@@ -132,7 +132,7 @@ const UsersPage = () => {
             <Search size={15} className="search-icon" />
             <input
               type="text"
-              placeholder="Buscar por nombre, email o rol…"
+              placeholder={t('searchUsersPlaceholder')}
               className="form-control"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -144,7 +144,7 @@ const UsersPage = () => {
               </button>
             )}
             <button className="search-btn-inner" onClick={() => { setApplied(search); setPage(1); }} type="button">
-              <Search size={12} /> Buscar
+              <Search size={12} /> {t('search')}
             </button>
           </div>
         </div>
@@ -155,10 +155,10 @@ const UsersPage = () => {
           <table className="table compact-table">
             <thead>
               <tr>
-                <th>Usuario</th>
-                <th>Rol</th>
-                <th>Estado</th>
-                <th style={{ textAlign: 'right' }}>Acciones</th>
+                <th>{t('user')}</th>
+                <th>{t('role')}</th>
+                <th>{t('status')}</th>
+                <th style={{ textAlign: 'right' }}>{t('actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -166,7 +166,7 @@ const UsersPage = () => {
                 <tr>
                   <td colSpan="4" style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-faint)' }}>
                     <User size={32} style={{ opacity: 0.3, marginBottom: 8 }} />
-                    <div>No hay usuarios</div>
+                    <div>{t('noUsers')}</div>
                   </td>
                 </tr>
               ) : currentItems.map((u) => {
@@ -196,13 +196,13 @@ const UsersPage = () => {
                         onClick={() => toggleActive(u.id)}
                       >
                         <span className="status-dot" style={{ background: u.active ? 'var(--success)' : 'var(--text-faint)' }} />
-                        {u.active ? 'Activo' : 'Inactivo'}
+                        {u.active ? t('active') : t('inactive')}
                       </button>
                     </td>
                     <td>
                       <div className="action-buttons" style={{ justifyContent: 'flex-end' }}>
-                        <button className="icon-btn" onClick={() => setEditing({ ...u })} title="Editar"><Edit3 size={15} /></button>
-                        <button className="icon-btn danger" onClick={() => setShowDelete(u.id)} title="Eliminar"><X size={15} /></button>
+                        <button className="icon-btn" onClick={() => setEditing({ ...u })} title={t('edit')}><Edit3 size={15} /></button>
+                        <button className="icon-btn danger" onClick={() => setShowDelete(u.id)} title={t('delete')}><X size={15} /></button>
                       </div>
                     </td>
                   </tr>
@@ -218,33 +218,33 @@ const UsersPage = () => {
         <div className="modal-overlay" onClick={() => setEditing(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
             <div className="modal-header">
-              <h3>{editing.id ? 'Editar usuario' : 'Nuevo usuario'}</h3>
+              <h3>{editing.id ? t('editUser') : t('newUser')}</h3>
               <button className="modal-close" onClick={() => setEditing(null)}><X size={16} /></button>
             </div>
             <form onSubmit={handleSave}>
               <div className="form-group">
-                <label>Nombre</label>
+                <label>{t('name')}</label>
                 <input name="name" type="text" className="form-control" required defaultValue={editing.name} />
               </div>
               <div className="form-group">
-                <label>Correo</label>
+                <label>{t('email')}</label>
                 <input name="email" type="email" className="form-control" required defaultValue={editing.email} />
               </div>
               <div className="form-group">
-                <label>Rol</label>
+                <label>{t('role')}</label>
                 <select name="role" className="form-control" defaultValue={editing.role}>
-                  <option value="Operaciones">Operaciones</option>
-                  <option value="Admin">Administrador</option>
+                  <option value="Operaciones">{t('ops')}</option>
+                  <option value="Admin">{t('admins')}</option>
                 </select>
               </div>
               <div className="form-group">
-                <label>{editing.id ? 'Nueva contraseña (opcional)' : 'Contraseña'}</label>
+                <label>{editing.id ? t('passwordOptional') : t('password')}</label>
                 <div className="input-with-icon" style={{ display: 'block' }}>
                   <input
                     name="password"
                     type={showPwd ? 'text' : 'password'}
                     className="form-control"
-                    placeholder={editing.id ? 'Dejar en blanco para no cambiar' : 'Requerida'}
+                    placeholder={editing.id ? t('leaveBlank') : t('passwordRequired')}
                     required={!editing.id}
                     style={{ paddingRight: '2.5rem' }}
                   />
@@ -254,13 +254,13 @@ const UsersPage = () => {
                 </div>
               </div>
               <div className="form-group">
-                <label>Confirmar contraseña</label>
+                <label>{t('confirmPassword')}</label>
                 <div className="input-with-icon" style={{ display: 'block' }}>
                   <input
                     name="confirmPassword"
                     type={showConfirmPwd ? 'text' : 'password'}
                     className="form-control"
-                    placeholder={editing.id ? 'Dejar en blanco para no cambiar' : 'Requerida'}
+                    placeholder={editing.id ? t('leaveBlank') : t('passwordRequired')}
                     required={!editing.id}
                     style={{ paddingRight: '2.5rem' }}
                   />
@@ -270,15 +270,15 @@ const UsersPage = () => {
                 </div>
               </div>
               <div className="modal-actions">
-                <button type="button" className="btn btn-outline" onClick={() => setEditing(null)}>Cancelar</button>
-                <button type="submit" className="btn btn-primary">{editing.id ? 'Actualizar' : 'Crear'}</button>
+                <button type="button" className="btn btn-outline" onClick={() => setEditing(null)}>{t('cancel')}</button>
+                <button type="submit" className="btn btn-primary">{editing.id ? t('update') : t('create')}</button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      <DeleteConfirmModal isOpen={!!showDelete} onCancel={() => setShowDelete(null)} onConfirm={handleDelete} title="¿Eliminar usuario?" message="Esta acción no se puede deshacer." />
+      <DeleteConfirmModal isOpen={!!showDelete} onCancel={() => setShowDelete(null)} onConfirm={handleDelete} title={t('deleteUserTitle')} message={t('deleteUserMessage')} />
     </div>
   );
 };

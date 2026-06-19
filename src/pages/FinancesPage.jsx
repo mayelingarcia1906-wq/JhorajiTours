@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Calendar as CalendarIcon, DollarSign, Edit3, Printer, Trash2, X, Plus, Filter, Eraser, CheckCircle, AlertCircle, Fuel, Wrench, Users, Briefcase, FileText, ChevronDown } from 'lucide-react';
+import { Calendar as CalendarIcon, DollarSign, Edit3, Printer, Trash2, X, Plus, Filter, Eraser, CheckCircle, AlertCircle, Fuel, Wrench, Users, Briefcase, FileText, ChevronDown, Car } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import { Pagination } from '../components/Pagination';
 import { useCurrency } from '../context/CurrencyContext';
@@ -43,11 +43,11 @@ const FinancesPage = () => {
   const [expenseCatOpen, setExpenseCatOpen] = useState(false);
   
   const expenseCategories = [
-    { value: 'Gasolina', label: 'Gasolina', icon: Fuel, color: '#ef4444' },
-    { value: 'Mantenimiento', label: 'Mantenimiento', icon: Wrench, color: '#64748b' },
-    { value: 'Pago Guías', label: 'Pago Guías', icon: Users, color: '#8b5cf6' },
-    { value: 'Pago Nómina', label: 'Pago Nómina', icon: Briefcase, color: '#d97706' },
-    { value: 'Otros', label: 'Otros', icon: FileText, color: '#f97316' }
+    { value: 'Gasolina', label: t('gas'), icon: Fuel, color: '#ef4444' },
+    { value: 'Mantenimiento', label: t('maintenance'), icon: Wrench, color: '#64748b' },
+    { value: 'Pago Guías', label: t('guidePay'), icon: Users, color: '#8b5cf6' },
+    { value: 'Pago Nómina', label: t('payroll'), icon: Briefcase, color: '#d97706' },
+    { value: 'Otros', label: t('others'), icon: FileText, color: '#f97316' }
   ];
   const selectedCatObj = expenseCategories.find(c => c.value === expenseCategory);
   const SelectedIcon = selectedCatObj ? selectedCatObj.icon : Fuel;
@@ -303,53 +303,53 @@ const FinancesPage = () => {
       </div>
 
       {/* METRICS ROW */}
-      <div className="stats-grid mb-4">
+      <div className="stats-grid stats-grid-6 mb-4">
         <div className="stat-card tone-primary">
           <div className="stat-header">
-            <span className="stat-label">{t('grossIncome')}</span>
-            <div className="stat-icon"><DollarSign size={18} /></div>
+            <span className="stat-label" style={{ fontSize: '0.7rem' }}>{t('grossIncome')}</span>
+            <div className="stat-icon"><DollarSign size={16} /></div>
           </div>
-          <div className="stat-value" style={{ fontSize: '1.5rem' }}>{formatPrice(totalBruto)}</div>
-          <div style={{ fontSize: '0.72rem', color: 'var(--text-faint)', marginTop: 4 }}>{t('grossIncomeDesc')}</div>
+          <div className="stat-value" style={{ fontSize: '1.15rem', fontWeight: 800 }}>{formatPrice(totalBruto)}</div>
+          <div style={{ fontSize: '0.65rem', color: 'var(--text-faint)', marginTop: 4, lineHeight: 1.2 }}>{t('grossIncomeDesc')}</div>
         </div>
         <div className="stat-card tone-danger">
           <div className="stat-header">
-            <span className="stat-label">{t('provPayments')}</span>
-            <div className="stat-icon"><Briefcase size={18} /></div>
+            <span className="stat-label" style={{ fontSize: '0.7rem' }}>{t('provPayments')}</span>
+            <div className="stat-icon"><Briefcase size={16} /></div>
           </div>
-          <div className="stat-value" style={{ fontSize: '1.5rem' }}>{formatPrice(totalProv)}</div>
+          <div className="stat-value" style={{ fontSize: '1.15rem', fontWeight: 800 }}>{formatPrice(totalProv)}</div>
         </div>
         <div className="stat-card tone-warning">
           <div className="stat-header">
-            <span className="stat-label">{t('otaCommissions')}</span>
-            <div className="stat-icon"><FileText size={18} /></div>
+            <span className="stat-label" style={{ fontSize: '0.7rem' }}>{t('otaCommissions')}</span>
+            <div className="stat-icon"><FileText size={16} /></div>
           </div>
-          <div className="stat-value" style={{ fontSize: '1.5rem' }}>{formatPrice(totalOta)}</div>
-          <div style={{ fontSize: '0.72rem', color: 'var(--text-faint)', marginTop: 4 }}>{t('otaDesc')}</div>
+          <div className="stat-value" style={{ fontSize: '1.15rem', fontWeight: 800 }}>{formatPrice(totalOta)}</div>
+          <div style={{ fontSize: '0.65rem', color: 'var(--text-faint)', marginTop: 4, lineHeight: 1.2 }}>{t('otaDesc')}</div>
         </div>
         <div className="stat-card tone-info">
           <div className="stat-header">
-            <span className="stat-label">{t('drivers')}</span>
-            <div className="stat-icon"><Car size={18} /></div>
+            <span className="stat-label" style={{ fontSize: '0.7rem' }}>{t('drivers')}</span>
+            <div className="stat-icon"><Car size={16} /></div>
           </div>
-          <div className="stat-value" style={{ fontSize: '1.5rem' }}>{formatPrice(totalDriver)}</div>
-          <div style={{ fontSize: '0.72rem', color: 'var(--text-faint)', marginTop: 4 }}>{t('driversDesc')}</div>
+          <div className="stat-value" style={{ fontSize: '1.15rem', fontWeight: 800 }}>{formatPrice(totalDriver)}</div>
+          <div style={{ fontSize: '0.65rem', color: 'var(--text-faint)', marginTop: 4, lineHeight: 1.2 }}>{t('driversDesc')}</div>
         </div>
         <div className="stat-card">
           <div className="stat-header">
-            <span className="stat-label">{t('operExpenses')}</span>
-            <div className="stat-icon"><Fuel size={18} /></div>
+            <span className="stat-label" style={{ fontSize: '0.7rem' }}>{t('operExpenses')}</span>
+            <div className="stat-icon"><Fuel size={16} /></div>
           </div>
-          <div className="stat-value" style={{ fontSize: '1.5rem' }}>{formatPrice(totalGastos)}</div>
-          <div style={{ fontSize: '0.72rem', color: 'var(--text-faint)', marginTop: 4 }}>{t('operExpensesDesc')}</div>
+          <div className="stat-value" style={{ fontSize: '1.15rem', fontWeight: 800 }}>{formatPrice(totalGastos)}</div>
+          <div style={{ fontSize: '0.65rem', color: 'var(--text-faint)', marginTop: 4, lineHeight: 1.2 }}>{t('operExpensesDesc')}</div>
         </div>
         <div className="card-ganancia stat-card">
           <div className="stat-header">
-            <span className="ganancia-title stat-label">{t('realProfit')}</span>
-            <div className="stat-icon" style={{ background: 'var(--success-soft)', color: 'var(--success)' }}><CheckCircle size={18} /></div>
+            <span className="ganancia-title stat-label" style={{ fontSize: '0.7rem' }}>{t('realProfit')}</span>
+            <div className="stat-icon" style={{ background: 'var(--success-soft)', color: 'var(--success)' }}><CheckCircle size={16} /></div>
           </div>
-          <div className="ganancia-amount" style={{ fontSize: '1.5rem' }}>{formatPrice(gananciaReal)}</div>
-          <div className="ganancia-subtitle">{t('profitDesc')}</div>
+          <div className="ganancia-amount" style={{ fontSize: '1.25rem', fontWeight: 800 }}>{formatPrice(gananciaReal)}</div>
+          <div className="ganancia-subtitle" style={{ fontSize: '0.65rem' }}>{t('profitDesc')}</div>
         </div>
       </div>
 
@@ -360,34 +360,34 @@ const FinancesPage = () => {
           
           {activeTab === 'choferes' && (
             <select className="form-control" style={{ maxWidth: '160px', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }} value={driverFilter} onChange={e => setDriverFilter(e.target.value)}>
-              <option value="all">-- Chofer --</option>
+              <option value="all">{t('driverFilterPlaceholder')}</option>
               {drivers.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
           )}
 
           {activeTab === 'proveedores' && (
             <select className="form-control" style={{ maxWidth: '160px', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }} value={providerFilter} onChange={e => setProviderFilter(e.target.value)}>
-              <option value="all">-- Proveedor --</option>
+              <option value="all">{t('providerFilterPlaceholder')}</option>
               {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
           )}
 
           {activeTab === 'gastos' && (
             <select className="form-control" style={{ maxWidth: '160px', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }} value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)}>
-              <option value="all">-- Categoría --</option>
+              <option value="all">{t('categoryFilterPlaceholder')}</option>
               {expenseCategories.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
             </select>
           )}
 
           {(activeTab === 'proveedores' || activeTab === 'choferes') && (
-            <input type="text" className="form-control" style={{ maxWidth: '160px', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }} placeholder="Buscar cliente..." value={clientFilter} onChange={e => setClientFilter(e.target.value)} />
+            <input type="text" className="form-control" style={{ maxWidth: '160px', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }} placeholder={t('searchClientPlaceholder')} value={clientFilter} onChange={e => setClientFilter(e.target.value)} />
           )}
 
           <button className="btn btn-primary" onClick={handleRefresh} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '0.35rem 0.75rem', fontSize: '0.85rem' }}>
             <Filter size={14} /> {t('search')}
           </button>
           <button className="btn btn-outline" onClick={handleClear} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '0.35rem 0.75rem', fontSize: '0.85rem' }}>
-            <Eraser size={14} /> Limpiar
+            <Eraser size={14} /> {t('clear')}
           </button>
         </div>
       </div>
@@ -506,12 +506,12 @@ const FinancesPage = () => {
                         <td style={{ padding: '0.5rem' }}>{d.children}</td>
                         <td style={{fontWeight: '700', color: 'var(--info)', whiteSpace: 'nowrap', padding: '0.5rem'}}>{formatPrice(d.amount)}</td>
                         <td style={{ whiteSpace: 'nowrap', padding: '0.5rem' }}>
-                          <span className={`badge badge-${d.status === 'Pagado' ? 'success' : 'danger'}`}>{d.status}</span>
+                          <span className={`badge badge-${d.status === 'Pagado' ? 'success' : 'danger'}`}>{d.status === 'Pagado' ? t('paid') : t('pending')}</span>
                         </td>
                       </tr>
                     ))}
                     <tr style={{ backgroundColor: 'var(--bg-soft)', fontWeight: 'bold' }}>
-                      <td colSpan="7" style={{ textAlign: 'right', padding: '0.5rem', color: 'var(--text-light)' }}>TOTAL CHOFERES:</td>
+                      <td colSpan="7" style={{ textAlign: 'right', padding: '0.5rem', color: 'var(--text-light)' }}>{t('totalDrivers')}</td>
                       <td style={{color: 'var(--info)', whiteSpace: 'nowrap', padding: '0.5rem'}}>{formatPrice(totalDriver)}</td>
                       <td style={{ padding: '0.5rem' }}></td>
                     </tr>
@@ -527,9 +527,9 @@ const FinancesPage = () => {
             <div>
               {selectedExp.length > 0 && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px', backgroundColor: 'var(--bg-soft)', padding: '10px 15px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)', marginBottom: '15px' }}>
-                  <span style={{ fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.8125rem' }}>{selectedExp.length} seleccionada(s)</span>
+                  <span style={{ fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.8125rem' }}>{selectedExp.length} {t('selectedFem')}</span>
                   <div style={{ width: '1px', height: '20px', backgroundColor: 'var(--border-strong)' }}></div>
-                  <button className="btn btn-link no-print" onClick={confirmDeleteExpense} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Trash2 size={16}/> Eliminar</button>
+                  <button className="btn btn-link no-print" onClick={confirmDeleteExpense} style={{ color: '#ef4444', padding: 0, fontSize: '0.85rem', display: 'flex', gap: '5px', alignItems: 'center', textDecoration: 'none', fontWeight: 600 }}><Trash2 size={16}/> {t('delete')}</button>
                 </div>
               )}
               <div className="table-wrapper" style={{ overflowX: 'auto' }}>
@@ -554,7 +554,7 @@ const FinancesPage = () => {
                       </tr>
                     ))}
                     <tr style={{ backgroundColor: 'var(--bg-soft)', fontWeight: 'bold' }}>
-                      <td colSpan="4" style={{ textAlign: 'right', padding: '0.5rem', color: 'var(--text-light)' }}>TOTAL GASTOS:</td>
+                      <td colSpan="4" style={{ textAlign: 'right', padding: '0.5rem', color: 'var(--text-light)' }}>{t('totalExpenses')}</td>
                       <td style={{color: 'var(--danger)', whiteSpace: 'nowrap', padding: '0.5rem'}}>{formatPrice(totalGastos)}</td>
                     </tr>
                   </tbody>
@@ -647,7 +647,7 @@ const FinancesPage = () => {
             </div>
             <form onSubmit={handleSaveExpense}>
               <div className="form-group" style={{ position: 'relative' }}>
-                <label>Categoría</label>
+                <label>{t('category')}</label>
                 <input type="hidden" name="category" value={expenseCategory} />
                 <div 
                   className="form-control d-flex align-items-center justify-content-between" 
@@ -718,8 +718,8 @@ const FinancesPage = () => {
         isOpen={showDeleteConfirm}
         onCancel={() => setShowDeleteConfirm(false)}
         onConfirm={handleDeleteExpense}
-        title="Eliminar Gastos"
-        message={`¿Estás seguro de que deseas eliminar ${selectedExp.length} gasto(s)? Esta acción no se puede deshacer.`}
+        title={t('deleteExpenses')}
+        message={t('deleteExpensesConfirm')?.replace('{count}', selectedExp.length)}
       />
     </div>
   );

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Calendar, ChevronLeft, ChevronRight, Clock, MapPin, User, Users, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
-const DAYS_ES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+
 
 const read = (k, fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } };
 
@@ -19,7 +19,8 @@ const getWeekDates = (ref) => {
 const fmt = (d) => d.toISOString().split('T')[0];
 
 const SchedulePage = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const DAYS_ES = [t('sun'), t('mon'), t('tue'), t('wed'), t('thu'), t('fri'), t('sat')];
   const [ref, setRef] = useState(new Date());
   const [selected, setSelected] = useState(null);
   const [bookings, setBookings] = useState(() => read('jhoraji_bookings', []));
@@ -50,8 +51,9 @@ const SchedulePage = () => {
   const paid = allWeek.filter((b) => b.status === 'pagado' || b.status === 'paid' || b.paymentDone).length;
   const pending = allWeek.filter((b) => b.status === 'pendiente' || b.status === 'pending').length;
 
-  const monthLabel = weekDates[0].toLocaleDateString('es-DO', { month: 'long', year: 'numeric' });
-  const rangeLabel = `${weekDates[0].toLocaleDateString('es-DO', { day: 'numeric', month: 'short' })} — ${weekDates[6].toLocaleDateString('es-DO', { day: 'numeric', month: 'short' })}`;
+  const locale = language === 'es' ? 'es-DO' : 'en-US';
+  const monthLabel = weekDates[0].toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+  const rangeLabel = `${weekDates[0].toLocaleDateString(locale, { day: 'numeric', month: 'short' })} — ${weekDates[6].toLocaleDateString(locale, { day: 'numeric', month: 'short' })}`;
 
   const getDriver = (id) => drivers.find((d) => String(d.id) === String(id) || d.name === id);
 
@@ -72,21 +74,21 @@ const SchedulePage = () => {
       <div className="stats-grid mb-4">
         <div className="stat-card tone-primary">
           <div className="stat-header">
-            <span className="stat-label">Servicios esta semana</span>
+            <span className="stat-label">{t('servicesThisWeek')}</span>
             <div className="stat-icon"><Calendar size={18} /></div>
           </div>
           <div className="stat-value">{totalWeek}</div>
         </div>
         <div className="stat-card tone-success">
           <div className="stat-header">
-            <span className="stat-label">Pagados</span>
+            <span className="stat-label">{t('paid')}</span>
             <div className="stat-icon"><Calendar size={18} /></div>
           </div>
           <div className="stat-value">{paid}</div>
         </div>
         <div className="stat-card tone-warning">
           <div className="stat-header">
-            <span className="stat-label">Pendientes</span>
+            <span className="stat-label">{t('pending')}</span>
             <div className="stat-icon"><Calendar size={18} /></div>
           </div>
           <div className="stat-value">{pending}</div>
@@ -116,13 +118,13 @@ const SchedulePage = () => {
                 >
                   <div style={{ fontSize: '0.7rem' }}>{DAYS_ES[d.getDay()]}</div>
                   <div style={{ fontSize: '1rem', fontWeight: 700, marginTop: 2, color: isToday ? 'var(--primary-color)' : 'var(--text-dark)' }}>{d.getDate()}</div>
-                  {count > 0 && <div style={{ fontSize: '0.65rem', color: 'var(--primary-color)', fontWeight: 700, marginTop: 2 }}>{count} serv.</div>}
+                  {count > 0 && <div style={{ fontSize: '0.65rem', color: 'var(--primary-color)', fontWeight: 700, marginTop: 2 }}>{count} {t('serv')}</div>}
                 </div>
               );
             })}
 
             <div className="schedule-time-cell" style={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)', fontSize: '0.7rem', color: 'var(--text-light)', fontWeight: 700, letterSpacing: '0.1em' }}>SERVICIOS</span>
+              <span style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)', fontSize: '0.7rem', color: 'var(--text-light)', fontWeight: 700, letterSpacing: '0.1em' }}>{t('servicesTitle')}</span>
             </div>
             {weekDates.map((d) => {
               const key = fmt(d);
@@ -178,7 +180,7 @@ const SchedulePage = () => {
               </div>
               <div className="d-flex align-items-center gap-2">
                 <Users size={15} style={{ color: 'var(--text-light)' }} />
-                <span>{selected.pax} personas · {selected.hotel || '—'}</span>
+                <span>{selected.pax} {t('people')} · {selected.hotel || '—'}</span>
               </div>
               <div className="d-flex align-items-center gap-2">
                 <Calendar size={15} style={{ color: 'var(--text-light)' }} />
@@ -187,7 +189,7 @@ const SchedulePage = () => {
               </div>
               {(selected.driverId || selected.driver) && (
                 <div style={{ padding: '0.65rem 0.85rem', background: 'var(--bg-soft)', borderRadius: 'var(--radius-md)', fontSize: '0.85rem' }}>
-                  <strong>Chofer:</strong> {getDriver(selected.driverId || selected.driver)?.name || selected.driver}
+                  <strong>{t('driver')}:</strong> {getDriver(selected.driverId || selected.driver)?.name || selected.driver}
                 </div>
               )}
               <div>

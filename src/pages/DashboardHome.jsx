@@ -136,19 +136,19 @@ const DashboardHome = () => {
         <div>
           <h2>{t('dashboardTitle')}</h2>
           <p className="page-subtitle">
-            {language === 'es' ? 'Resumen de operaciones — Punta Cana, RD' : 'Operations overview — Punta Cana, DR'}
+            {t('dashboardSubtitle')}
           </p>
         </div>
         <div className="d-flex gap-2">
           <div className="tabs" style={{ paddingBottom: 0 }}>
             <button className={`tab-btn ${period === 'week' ? 'active' : ''}`} onClick={() => setPeriod('week')}>
-              {language === 'es' ? 'Semana' : 'Week'}
+              {t('week')}
             </button>
             <button className={`tab-btn ${period === 'month' ? 'active' : ''}`} onClick={() => setPeriod('month')}>
-              {language === 'es' ? 'Mes' : 'Month'}
+              {t('month')}
             </button>
             <button className={`tab-btn ${period === 'year' ? 'active' : ''}`} onClick={() => setPeriod('year')}>
-              {language === 'es' ? 'Año' : 'Year'}
+              {t('year')}
             </button>
           </div>
           <button className="btn btn-primary" onClick={() => navigate('/bookings')}>
@@ -160,41 +160,41 @@ const DashboardHome = () => {
       <div className="stats-grid mb-4">
         <StatCard
           tone="primary"
-          label={t('totalReservas')}
+          label={t('totalBookings')}
           value={bookings.length.toLocaleString()}
           icon={Calendar}
           delta={12}
-          deltaLabel={language === 'es' ? 'vs semana pasada' : 'vs last week'}
+          deltaLabel={t('vsLastWeek')}
         />
         <StatCard
           tone="success"
-          label={t('ingresos')}
+          label={t('revenue')}
           value={formatPrice(totalRevenue.toFixed(2))}
           icon={DollarSign}
           delta={8}
-          deltaLabel={language === 'es' ? 'vs semana pasada' : 'vs last week'}
+          deltaLabel={t('vsLastWeek')}
         />
         <StatCard
           tone="warning"
-          label={t('pendientes')}
+          label={t('pending')}
           value={pendingBookings}
           icon={Clock}
           delta={-3}
-          deltaLabel={language === 'es' ? 'vs semana pasada' : 'vs last week'}
+          deltaLabel={t('vsLastWeek')}
         />
         <StatCard
           tone="info"
-          label={t('completadosHoy')}
+          label={t('completedToday')}
           value={completedToday}
           icon={CheckCircle2}
           delta={5}
-          deltaLabel={language === 'es' ? 'vs ayer' : 'vs yesterday'}
+          deltaLabel={t('vsYesterday')}
         />
       </div>
 
       <div className="dashboard-grid-2 mb-4">
         <Section
-          title={language === 'es' ? 'Reservas esta semana' : 'Bookings this week'}
+          title={t('bookingsThisWeek')}
           action={
             <button className="btn btn-ghost btn-sm" onClick={() => navigate('/bookings')}>
               {t('viewAll')} <ChevronRight size={14} />
@@ -227,10 +227,10 @@ const DashboardHome = () => {
           </ResponsiveContainer>
         </Section>
 
-        <Section title={language === 'es' ? 'Tours más reservados' : 'Top tours'}>
+        <Section title={t('topTours')}>
           {topTours.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '2rem 0', color: 'var(--text-faint)', fontSize: '0.88rem' }}>
-              {language === 'es' ? 'Sin datos aún' : 'No data yet'}
+              {t('noDataYet')}
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -271,7 +271,7 @@ const DashboardHome = () => {
 
       <div className="dashboard-grid-2 mb-4">
         <Section
-          title={language === 'es' ? 'Próximas reservas' : 'Upcoming bookings'}
+          title={t('upcomingBookings')}
           action={
             <button className="btn btn-ghost btn-sm" onClick={() => navigate('/bookings')}>
               {t('viewAll')} <ChevronRight size={14} />
@@ -280,7 +280,7 @@ const DashboardHome = () => {
         >
           {upcomingBookings.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '2rem 0', color: 'var(--text-faint)', fontSize: '0.88rem' }}>
-              {language === 'es' ? 'No hay reservas próximas' : 'No upcoming bookings'}
+              {t('noUpcomingBookings')}
             </div>
           ) : (
             upcomingBookings.map((b) => (
@@ -297,7 +297,7 @@ const DashboardHome = () => {
           )}
         </Section>
 
-        <Section title={language === 'es' ? 'Estado operativo' : 'Operational health'}>
+        <Section title={t('operationalHealth')}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <div className="d-flex justify-content-between align-items-center" style={{ padding: '0.4375rem 0.625rem', background: 'var(--bg-soft)', borderRadius: 'var(--radius-md)' }}>
               <div className="d-flex align-items-center gap-2">
@@ -314,7 +314,7 @@ const DashboardHome = () => {
                 <div className="stat-icon tone-info" style={{ width: 26, height: 26 }}>
                   <Car size={14} />
                 </div>
-                <span style={{ fontSize: '0.8125rem', fontWeight: 400 }}>{t('choferes')}</span>
+                <span style={{ fontSize: '0.8125rem', fontWeight: 400 }}>{t('moduleDrivers')}</span>
               </div>
               <span className="badge badge-primary">{drivers.length}</span>
             </div>
@@ -334,7 +334,7 @@ const DashboardHome = () => {
                 <div className="stat-icon tone-warning" style={{ width: 26, height: 26 }}>
                   <Wallet size={14} />
                 </div>
-                <span style={{ fontSize: '0.8125rem', fontWeight: 400 }}>{language === 'es' ? 'Gastos del periodo' : 'Period expenses'}</span>
+                <span style={{ fontSize: '0.8125rem', fontWeight: 400 }}>{t('periodExpenses')}</span>
               </div>
               <span className="badge badge-warning">{formatPrice(expenses.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0).toFixed(2))}</span>
             </div>

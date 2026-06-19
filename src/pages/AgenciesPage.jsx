@@ -110,7 +110,7 @@ const AgenciesPage = () => {
                 <tr>
                   <td colSpan="3" style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-faint)' }}>
                     <Globe size={32} style={{ opacity: 0.3, marginBottom: 8 }} />
-                    <div>No hay agencias registradas</div>
+                    <div>{t('noAgencies')}</div>
                   </td>
                 </tr>
               ) : currentItems.map((a) => (
@@ -153,7 +153,7 @@ const AgenciesPage = () => {
             </div>
             <form onSubmit={handleSave}>
               <div className="form-group">
-                <label>Nombre</label>
+                <label>{t('name')}</label>
                 <input name="name" type="text" className="form-control" required defaultValue={editing.name} />
               </div>
               <div className="form-group">
@@ -169,7 +169,7 @@ const AgenciesPage = () => {
         </div>
       )}
 
-      <DeleteConfirmModal isOpen={!!showDelete} onCancel={() => setShowDelete(null)} onConfirm={handleDelete} title="¿Eliminar agencia?" message="Esta acción no se puede deshacer." />
+      <DeleteConfirmModal isOpen={!!showDelete} onCancel={() => setShowDelete(null)} onConfirm={handleDelete} title={t('deleteAgencyTitle')} message={t('deleteAgencyText')} />
     </div>
   );
 };

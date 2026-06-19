@@ -8,9 +8,9 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const { addToast } = useToast();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [remember, setRemember] = useState(false);
+  const [email, setEmail] = useState(() => localStorage.getItem('jhoraji_remembered_email') || '');
+  const [password, setPassword] = useState(() => localStorage.getItem('jhoraji_remembered_password') || '');
+  const [remember, setRemember] = useState(() => !!localStorage.getItem('jhoraji_remembered_email'));
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -51,11 +51,13 @@ const LoginPage = () => {
 
       if (remember) {
         localStorage.setItem('jhoraji_remembered_email', email.trim());
+        localStorage.setItem('jhoraji_remembered_password', password);
       } else {
         localStorage.removeItem('jhoraji_remembered_email');
+        localStorage.removeItem('jhoraji_remembered_password');
       }
 
-      addToast(`Bienvenido, ${matched.name}`, 'success');
+      addToast(`${t('welcome')}, ${matched.name}`, 'success');
       navigate('/dashboard', { replace: true });
     } catch (e) {
       setError('Error al iniciar sesión');
@@ -112,8 +114,8 @@ const LoginPage = () => {
       <main className="login-form-wrap">
         <form className={`login-form ${shake ? 'shake' : ''}`} onSubmit={handleSubmit} noValidate>
           <div className="login-form-header">
-            <h1>Bienvenido de vuelta</h1>
-            <p>Ingresa tus credenciales para acceder al panel.</p>
+            <h1>{t('welcomeBack')}</h1>
+            <p>{t('enterCredentials')}</p>
           </div>
 
           {error && (
@@ -123,7 +125,7 @@ const LoginPage = () => {
           )}
 
           <div className="form-group" style={{ marginTop: error ? '1.25rem' : 0 }}>
-            <label htmlFor="email">Correo electrónico</label>
+            <label htmlFor="email">{t('email')}</label>
             <div className="input-with-icon">
               <Mail size={16} />
               <input
@@ -140,7 +142,7 @@ const LoginPage = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
+            <label htmlFor="password">{t('password')}</label>
             <div className="input-with-icon">
               <Lock size={16} />
               <input
@@ -165,28 +167,34 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <div className="d-flex justify-content-between align-items-center" style={{ marginBottom: '1.5rem' }}>
+          <div style={{ marginBottom: '1.5rem' }}>
             <label className="d-flex align-items-center gap-2" style={{ fontSize: '0.85rem', color: 'var(--text-medium)', cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={remember}
                 onChange={(e) => setRemember(e.target.checked)}
               />
-              Recordar mi correo
+              {t('rememberMe')}
             </label>
+          </div>
+
+          <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={loading}>
+            {loading ? `${t('entering')}…` : t('enterPanel')}
+          </button>
+
+          <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: 'var(--text-medium)' }}>
+            ¿Necesitas ayuda?{' '}
             <a
               href="https://wa.me/18295808964?text=Hola%20Jhonny%2C%20necesito%20ayuda%20con%20mi%20cuenta"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+              style={{ color: '#0284c7', textDecoration: 'none', fontWeight: 600 }}
+              onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
+              onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
             >
-              <MessageCircle size={14} /> Soporte
+              Contacta a soporte
             </a>
           </div>
-
-          <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={loading}>
-            {loading ? 'Ingresando…' : 'Ingresar al panel'}
-          </button>
 
         </form>
       </main>

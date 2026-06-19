@@ -64,14 +64,14 @@ const CustomersPage = () => {
       lastVisit: editing.lastVisit || new Date().toISOString().split('T')[0],
     };
     persist(editing.id ? customers.map((c) => (c.id === editing.id ? submitted : c)) : [submitted, ...customers]);
-    if (!editing.id) addNotification(`Nuevo cliente: ${submitted.name}`);
+    if (!editing.id) addNotification('notifNewCustomerManual', { name: submitted.name }, 'customer', '/customers');
     setEditing(null);
-    addToast('Cliente guardado', 'success');
+    addToast(t('customerSaved'), 'success');
   };
 
   const handleDelete = () => {
     persist(customers.filter((c) => c.id !== showDelete));
-    addToast('Cliente eliminado', 'success');
+    addToast(t('customerDeleted'), 'success');
     setShowDelete(null);
   };
 
@@ -138,7 +138,7 @@ const CustomersPage = () => {
                 <tr>
                   <td colSpan="8" style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-faint)' }}>
                     <Users size={32} style={{ opacity: 0.3, marginBottom: 8 }} />
-                    <div>No hay clientes</div>
+                    <div>{t('noCustomersFound')}</div>
                   </td>
                 </tr>
               ) : currentItems.map((c) => {
@@ -184,7 +184,7 @@ const CustomersPage = () => {
         <div className="modal-overlay" onClick={() => setSelected(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 540 }}>
             <div className="modal-header">
-              <h3>Perfil del cliente</h3>
+              <h3>{t('customerProfile')}</h3>
               <button className="modal-close" onClick={() => setSelected(null)}><X size={16} /></button>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.875rem', padding: '0.75rem', backgroundColor: 'var(--bg-soft)', borderRadius: 'var(--radius-md)' }}>
@@ -206,8 +206,8 @@ const CustomersPage = () => {
               <div><p className="text-muted mb-1">{t('lastVisit')}</p><div>{selected.lastVisit}</div></div>
             </div>
             <div className="modal-actions">
-              <button className="btn btn-outline" onClick={() => setSelected(null)}>Cerrar</button>
-              <button className="btn btn-primary" onClick={() => { setSelected(null); setEditing({ ...selected }); }}>Editar</button>
+              <button className="btn btn-outline" onClick={() => setSelected(null)}>{t('close')}</button>
+              <button className="btn btn-primary" onClick={() => { setSelected(null); setEditing({ ...selected }); }}>{t('edit')}</button>
             </div>
           </div>
         </div>
@@ -223,21 +223,21 @@ const CustomersPage = () => {
             <form onSubmit={handleSave}>
               <div className="responsive-grid">
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label>Nombre completo</label>
+                  <label>{t('fullName')}</label>
                   <input name="name" type="text" className="form-control" required defaultValue={editing.name} onInput={(e) => e.target.value = e.target.value.replace(/[0-9]/g, '')} />
                 </div>
                 <div className="form-group">
-                  <label>Email</label>
+                  <label>{t('email')}</label>
                   <input name="email" type="email" className="form-control" required defaultValue={editing.email} />
                 </div>
                 <div className="form-group">
-                  <label>Teléfono</label>
+                  <label>{t('phone')}</label>
                   <input name="phone" type="tel" className="form-control" required defaultValue={editing.phone} onInput={(e) => e.target.value = e.target.value.replace(/[^0-9+\-\s()]/g, '')} />
                 </div>
                 <div className="form-group">
-                  <label>País</label>
+                  <label>{t('country')}</label>
                   <select name="country" className="form-control" required defaultValue={editing.country || ''}>
-                    <option value="" disabled>Seleccionar…</option>
+                    <option value="" disabled>{t('selectCountry')}</option>
                     <option value="República Dominicana">República Dominicana</option>
                     <option value="United States">United States</option>
                     <option value="Canada">Canada</option>
@@ -260,7 +260,7 @@ const CustomersPage = () => {
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>Estado</label>
+                  <label>{t('status')}</label>
                   <select name="status" className="form-control" defaultValue={editing.status}>
                     <option value="new">{t('new')}</option>
                     <option value="active">{t('active')}</option>
@@ -269,15 +269,15 @@ const CustomersPage = () => {
                 </div>
               </div>
               <div className="modal-actions">
-                <button type="button" className="btn btn-outline" onClick={() => setEditing(null)}>Cancelar</button>
-                <button type="submit" className="btn btn-primary">Guardar</button>
+                <button type="button" className="btn btn-outline" onClick={() => setEditing(null)}>{t('cancel')}</button>
+                <button type="submit" className="btn btn-primary">{t('save')}</button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      <DeleteConfirmModal isOpen={!!showDelete} onCancel={() => setShowDelete(null)} onConfirm={handleDelete} title="¿Eliminar cliente?" message="Esta acción no se puede deshacer." />
+      <DeleteConfirmModal isOpen={!!showDelete} onCancel={() => setShowDelete(null)} onConfirm={handleDelete} title={t('deleteCustomerTitle')} message={t('deleteCustomerText')} />
     </div>
   );
 };

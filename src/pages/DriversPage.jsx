@@ -114,9 +114,9 @@ const DriversPage = () => {
 
       <div className="card mb-4 no-print" style={{ padding: '0.85rem' }}>
         <div className="tabs" style={{ paddingBottom: 0 }}>
-          <Tab active={activeTab === 'assign'} onClick={() => setActiveTab('assign')}>Asignar servicios</Tab>
-          <Tab active={activeTab === 'directory'} onClick={() => setActiveTab('directory')}>Directorio</Tab>
-          <Tab active={activeTab === 'orders'} onClick={() => setActiveTab('orders')}>Órdenes de recogida</Tab>
+          <Tab active={activeTab === 'assign'} onClick={() => setActiveTab('assign')}>{t('assignServices')}</Tab>
+          <Tab active={activeTab === 'directory'} onClick={() => setActiveTab('directory')}>{t('directory')}</Tab>
+          <Tab active={activeTab === 'orders'} onClick={() => setActiveTab('orders')}>{t('pickupOrders')}</Tab>
         </div>
       </div>
 
@@ -124,10 +124,10 @@ const DriversPage = () => {
         <div className="card" style={{ padding: 0 }}>
           <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border-color)' }}>
             <div className="page-toolbar filter-row">
-              <h3 style={{ margin: 0, fontSize: '1rem' }}>Reservas pendientes de asignar</h3>
+              <h3 style={{ margin: 0, fontSize: '1rem' }}>{t('pendingAssignments')}</h3>
               <div className="d-flex gap-2 filter-row" style={{ flex: 1, justifyContent: 'flex-end' }}>
                 <select className="form-control" style={{ width: 'auto', minWidth: 160 }} value={filterAct} onChange={(e) => setFilterAct(e.target.value)}>
-                  <option value="all">Todas las actividades</option>
+                  <option value="all">{t('allActivities')}</option>
                   {uniqueTours.map((tour) => <option key={tour} value={tour}>{tour}</option>)}
                 </select>
                 <input type="date" className="form-control" style={{ width: 150 }} value={filterDateStart} onChange={(e) => setFilterDateStart(e.target.value)} />
@@ -140,13 +140,13 @@ const DriversPage = () => {
             <table className="table compact-table">
               <thead>
                 <tr>
-                  <th>Fecha</th>
-                  <th>Cliente</th>
-                  <th>Actividad</th>
-                  <th>Hora</th>
-                  <th>Chofer</th>
-                  <th>Pago chofer</th>
-                  <th style={{ textAlign: 'right' }}>Acciones</th>
+                  <th>{t('date')}</th>
+                  <th>{t('customer')}</th>
+                  <th>{t('activityType')}</th>
+                  <th>{t('time')}</th>
+                  <th>{t('driver')}</th>
+                  <th>{t('driverPayment')}</th>
+                  <th style={{ textAlign: 'right' }}>{t('actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -154,7 +154,7 @@ const DriversPage = () => {
                   <tr>
                     <td colSpan="7" style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-faint)' }}>
                       <Calendar size={32} style={{ opacity: 0.3, marginBottom: 8 }} />
-                      <div>No hay servicios en este rango</div>
+                      <div>{t('noServicesInRange')}</div>
                     </td>
                   </tr>
                 ) : currentAssign.map((b) => {
@@ -173,11 +173,11 @@ const DriversPage = () => {
                       <td>
                         <span style={{ fontWeight: 600, color: 'var(--primary-color)' }}>{b.pickupTime || b.time || '--:--'}</span>
                       </td>
-                      <td>{d ? <span className="font-bold">{d.name}</span> : <span className="badge badge-warning">Sin chofer</span>}</td>
+                      <td>{d ? <span className="font-bold">{d.name}</span> : <span className="badge badge-warning">{t('noDriver')}</span>}</td>
                       <td className="font-bold">${b.driverPayment || '0.00'}</td>
                       <td>
                         <button className="btn btn-primary btn-sm" onClick={() => setAssigning(b)}>
-                          <Edit3 size={13} /> Asignar
+                          <Edit3 size={13} /> {t('assign')}
                         </button>
                       </td>
                     </tr>
@@ -193,17 +193,17 @@ const DriversPage = () => {
       {activeTab === 'directory' && (
         <div className="card" style={{ padding: 0 }}>
           <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border-color)' }}>
-            <h3 style={{ margin: 0, fontSize: '1rem' }}>Directorio de choferes</h3>
+            <h3 style={{ margin: 0, fontSize: '1rem' }}>{t('driversDirectory')}</h3>
           </div>
           <div className="table-wrapper" style={{ borderRadius: 0, border: 'none' }}>
             <table className="table compact-table">
               <thead>
                 <tr>
-                  <th>Nombre</th>
-                  <th>Contacto</th>
-                  <th>Vehículo</th>
-                  <th>Estado</th>
-                  <th style={{ textAlign: 'right' }}>Acciones</th>
+                  <th>{t('name')}</th>
+                  <th>{t('contact')}</th>
+                  <th>{t('vehicle')}</th>
+                  <th>{t('status')}</th>
+                  <th style={{ textAlign: 'right' }}>{t('actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -211,7 +211,7 @@ const DriversPage = () => {
                   <tr>
                     <td colSpan="5" style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-faint)' }}>
                       <Truck size={32} style={{ opacity: 0.3, marginBottom: 8 }} />
-                      <div>No hay choferes registrados</div>
+                      <div>{t('noDrivers')}</div>
                     </td>
                   </tr>
                 ) : currentDirectory.map((d) => {
@@ -233,13 +233,13 @@ const DriversPage = () => {
                       <td>
                         <span className={`badge ${d.active ? 'badge-success' : 'badge-neutral'}`}>
                           <span className="status-dot" style={{ background: d.active ? 'var(--success)' : 'var(--text-faint)' }} />
-                          {d.active ? 'Activo' : 'Inactivo'}
+                          {d.active ? t('active') : t('inactive')}
                         </span>
                       </td>
                       <td>
                         <div className="action-buttons" style={{ justifyContent: 'flex-end' }}>
-                          <button className="icon-btn" onClick={() => setEditing({ ...d })} title="Editar"><Edit3 size={15} /></button>
-                          <button className="icon-btn danger" onClick={() => setShowDelete(d.id)} title="Eliminar"><X size={15} /></button>
+                          <button className="icon-btn" onClick={() => setEditing({ ...d })} title={t('edit')}><Edit3 size={15} /></button>
+                          <button className="icon-btn danger" onClick={() => setShowDelete(d.id)} title={t('delete')}><X size={15} /></button>
                         </div>
                       </td>
                     </tr>
@@ -255,29 +255,29 @@ const DriversPage = () => {
       {activeTab === 'orders' && (
         <div className="card print-card">
           <div className="no-print" style={{ marginBottom: '1.25rem' }}>
-            <h3 style={{ margin: 0, marginBottom: 4, fontSize: '1.05rem' }}>Órdenes de recogida</h3>
-            <p style={{ color: 'var(--text-light)', fontSize: '0.88rem', margin: 0 }}>Consulta las rutas asignadas a los choferes para imprimir.</p>
+            <h3 style={{ margin: 0, marginBottom: 4, fontSize: '1.05rem' }}>{t('pickupOrders')}</h3>
+            <p style={{ color: 'var(--text-light)', fontSize: '0.88rem', margin: 0 }}>{t('printRoutesDesc')}</p>
           </div>
 
           <div className="no-print responsive-grid mb-4">
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <label>Chofer</label>
+              <label>{t('driver')}</label>
               <select className="form-control" value={orderFilterDriver} onChange={(e) => setOrderFilterDriver(e.target.value)}>
-                <option value="">— Todos —</option>
+                <option value="">— {t('all')} —</option>
                 {drivers.map((d) => <option key={d.id} value={d.id}>{d.name} · {d.vehicle}</option>)}
               </select>
             </div>
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <label>Desde</label>
+              <label>{t('from')}</label>
               <input type="date" className="form-control" value={orderDateStart} onChange={(e) => setOrderDateStart(e.target.value)} />
             </div>
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <label>Hasta</label>
+              <label>{t('to')}</label>
               <input type="date" className="form-control" value={orderDateEnd} onChange={(e) => setOrderDateEnd(e.target.value)} />
             </div>
             <div className="form-group" style={{ marginBottom: 0, display: 'flex', alignItems: 'flex-end' }}>
               <button className="btn btn-primary btn-block no-print" onClick={() => window.print()}>
-                <Printer size={15} /> Imprimir
+                <Printer size={15} /> {t('print')}
               </button>
             </div>
           </div>
@@ -286,19 +286,19 @@ const DriversPage = () => {
             <table className="table compact-table">
               <thead>
                 <tr>
-                  <th>Fecha / Hora</th>
-                  <th>Chofer</th>
-                  <th>Cliente</th>
-                  <th>Hotel / Ruta</th>
-                  <th>Servicio</th>
-                  <th>PAX</th>
+                  <th>{t('date')} / {t('time')}</th>
+                  <th>{t('driver')}</th>
+                  <th>{t('customer')}</th>
+                  <th>{t('hotelRoute')}</th>
+                  <th>{t('service')}</th>
+                  <th>{t('pax')}</th>
                 </tr>
               </thead>
               <tbody>
                 {reportBookings.length === 0 ? (
                   <tr>
                     <td colSpan="6" style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--text-faint)' }}>
-                      No se encontraron reservas con esos filtros
+                      {t('noBookingsFound')}
                     </td>
                   </tr>
                 ) : reportBookings.map((b) => {
@@ -318,7 +318,7 @@ const DriversPage = () => {
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>{b.phone}</div>
                       </td>
                       <td style={{ fontSize: '0.82rem' }}>{b.type === 'TRASLADO' ? `${b.pickupLocation || ''} → ${b.dropoffLocation || ''}` : b.hotel}</td>
-                      <td style={{ fontSize: '0.82rem' }}>{b.type === 'TRASLADO' ? 'Traslado' : b.tour}</td>
+                      <td style={{ fontSize: '0.82rem' }}>{b.type === 'TRASLADO' ? t('categoryTransfer') : b.tour}</td>
                       <td>
                         <span className="d-flex align-items-center gap-1" style={{ fontSize: '0.82rem' }}>
                           <Users size={12} style={{ color: 'var(--text-faint)' }} />
@@ -343,22 +343,22 @@ const DriversPage = () => {
             </div>
             <form onSubmit={handleSaveDriver}>
               <div className="form-group">
-                <label>Nombre del chofer</label>
+                <label>{t('driverName')}</label>
                 <input name="name" type="text" className="form-control" placeholder="Ej. Carlos Transporte" required defaultValue={editing.name} />
               </div>
               <div className="responsive-grid">
                 <div className="form-group">
-                  <label>WhatsApp / Teléfono</label>
+                  <label>{t('whatsappPhone')}</label>
                   <input name="whatsapp" type="tel" className="form-control" placeholder="+1 809-555-0101" required defaultValue={editing.whatsapp} />
                 </div>
                 <div className="form-group">
-                  <label>Vehículo</label>
+                  <label>{t('vehicle')}</label>
                   <input name="vehicle" type="text" className="form-control" placeholder="Ej. Minivan Hyundai" required defaultValue={editing.vehicle} />
                 </div>
               </div>
               <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <input type="checkbox" id="driverActive" name="active" defaultChecked={editing.active} />
-                <label htmlFor="driverActive" style={{ margin: 0, cursor: 'pointer' }}>Chofer activo (disponible para asignaciones)</label>
+                <label htmlFor="driverActive" style={{ margin: 0, cursor: 'pointer' }}>{t('driverActive')}</label>
               </div>
               <div className="modal-actions">
                 <button type="button" className="btn btn-outline" onClick={() => setEditing(null)}>{t('cancel')}</button>
@@ -373,7 +373,7 @@ const DriversPage = () => {
         <div className="modal-overlay" onClick={() => setAssigning(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 500 }}>
             <div className="modal-header">
-              <h3>Asignar chofer</h3>
+              <h3>{t('assignDriver')}</h3>
               <button className="modal-close" onClick={() => setAssigning(null)}><X size={16} /></button>
             </div>
             <div style={{ marginBottom: '1.25rem', padding: '0.85rem 1rem', background: 'var(--bg-soft)', borderRadius: 'var(--radius-md)', borderLeft: '3px solid var(--primary-color)' }}>
@@ -382,9 +382,9 @@ const DriversPage = () => {
             </div>
             <form onSubmit={handleAssign}>
               <div className="form-group">
-                <label>Chofer</label>
+                <label>{t('driver')}</label>
                 <select name="driverId" className="form-control" required defaultValue={assigning.driverId || assigning.driver || ''}>
-                  <option value="">— Seleccionar chofer —</option>
+                  <option value="">— {t('selectCountry').replace('país', 'chofer').replace('country', 'driver')} —</option>
                   {drivers.filter((d) => d.active).map((d) => (
                     <option key={d.id} value={d.id}>{d.name} · {d.vehicle}</option>
                   ))}
@@ -392,17 +392,17 @@ const DriversPage = () => {
               </div>
               <div className="responsive-grid">
                 <div className="form-group">
-                  <label>Hora de recogida</label>
+                  <label>{t('pickupTime')}</label>
                   <input name="pickupTime" type="time" className="form-control" required defaultValue={assigning.pickupTime || assigning.time || ''} />
                 </div>
                 <div className="form-group">
-                  <label>Pago chofer (US$)</label>
+                  <label>{t('driverPaymentUsd')}</label>
                   <input name="payment" type="number" step="0.01" min="0.01" className="form-control" required defaultValue={assigning.driverPayment || ''} />
                 </div>
               </div>
               <div className="modal-actions">
                 <button type="button" className="btn btn-outline" onClick={() => setAssigning(null)}>{t('cancel')}</button>
-                <button type="submit" className="btn btn-primary">Guardar asignación</button>
+                <button type="submit" className="btn btn-primary">{t('saveAssignment')}</button>
               </div>
             </form>
           </div>
@@ -413,8 +413,8 @@ const DriversPage = () => {
         isOpen={!!showDelete}
         onCancel={() => setShowDelete(null)}
         onConfirm={handleDelete}
-        title="¿Eliminar chofer?"
-        message="Esta acción no se puede deshacer y desvinculará sus asignaciones."
+        title={t('deleteDriverTitle')}
+        message={t('deleteDriverText')}
       />
     </div>
   );

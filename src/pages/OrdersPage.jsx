@@ -83,14 +83,14 @@ const OrdersPage = () => {
       driver: fd.get('driver'),
     };
     persist(editing.id ? orders.map((o) => (o.id === editing.id ? submitted : o)) : [submitted, ...orders]);
-    if (!editing.id) addNotification(`Nueva orden para ${submitted.client}`);
+    if (!editing.id) addNotification('notifNewOrder', { client: submitted.client }, 'order', '/orders');
     setEditing(null);
-    addToast(editing.id ? 'Orden actualizada' : 'Orden creada', 'success');
+    addToast(editing.id ? t('orderUpdated') : t('orderCreated'), 'success');
   };
 
   const handleDeleteSelected = () => {
     persist(orders.filter((o) => !selected.includes(o.id)));
-    addToast(`${selected.length} órdenes eliminadas`, 'success');
+    addToast(`${selected.length} ${t('ordersDeleted')}`, 'success');
     setSelected([]);
     setShowDelete(false);
   };
@@ -103,7 +103,7 @@ const OrdersPage = () => {
       <div className="page-header">
         <div>
           <h2>{t('ordersTitle')}</h2>
-          <p className="page-subtitle">{filtered.length} órdenes {selected.length > 0 && `· ${selected.length} seleccionadas`}</p>
+          <p className="page-subtitle">{filtered.length} {t('ordersCount')} {selected.length > 0 && `· ${selected.length} ${t('selectedCount')}`}</p>
         </div>
         {canPerformAction('create') && (
           <button className="btn btn-primary" onClick={() => {
@@ -128,14 +128,14 @@ const OrdersPage = () => {
               <input type="date" className="form-control" value={toDate} onChange={(e) => setToDate(e.target.value)} title="Hasta" />
             </div>
             <select className="form-control" style={{ width: 180 }} value={providerFilter} onChange={(e) => setProviderFilter(e.target.value)}>
-              <option value="all">Todos los proveedores</option>
+              <option value="all">{t('allProviders')}</option>
               {providers.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
             <select className="form-control" style={{ width: 180 }} value={driverFilter} onChange={(e) => setDriverFilter(e.target.value)}>
-              <option value="all">Todos los choferes</option>
+              <option value="all">{t('allDrivers')}</option>
               {drivers.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
-            <input type="text" className="form-control" style={{ width: 200 }} placeholder="Buscar cliente…" value={clientSearch} onChange={(e) => setClientSearch(e.target.value)} />
+            <input type="text" className="form-control" style={{ width: 200 }} placeholder={t('searchClient')} value={clientSearch} onChange={(e) => setClientSearch(e.target.value)} />
           </div>
         </div>
       </div>
@@ -143,12 +143,12 @@ const OrdersPage = () => {
       {selected.length > 0 && (
         <div className="card mb-4" style={{ padding: '0.85rem 1.15rem', background: 'var(--primary-50)', borderColor: 'var(--primary-100)', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <span className="d-flex align-items-center gap-2 font-bold" style={{ color: 'var(--primary-hover)', fontSize: '0.88rem' }}>
-            <CheckCircle2 size={16} /> {selected.length} seleccionadas
+            <CheckCircle2 size={16} /> {selected.length} {t('selectedCount')}
           </span>
           <div style={{ flex: 1 }} />
           {canPerformAction('delete') && (
             <button className="btn btn-danger btn-sm" onClick={() => setShowDelete(true)}>
-              <Trash2 size={14} /> Eliminar
+              <Trash2 size={14} /> {t('delete')}
             </button>
           )}
         </div>
@@ -166,16 +166,16 @@ const OrdersPage = () => {
                     onChange={toggleSelectAll}
                   />
                 </th>
-                <th>Ref</th>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Tipo</th>
-                <th>Cliente</th>
-                <th>Ruta</th>
-                <th>Servicio</th>
-                <th>Pax</th>
-                <th>Precio</th>
-                <th>Pago</th>
+                <th>{t('ref')}</th>
+                <th>{t('date')}</th>
+                <th>{t('time')}</th>
+                <th>{t('type')}</th>
+                <th>{t('client')}</th>
+                <th>{t('route')}</th>
+                <th>{t('service')}</th>
+                <th>{t('pax')}</th>
+                <th>{t('price')}</th>
+                <th>{t('payment')}</th>
               </tr>
             </thead>
             <tbody>
@@ -183,7 +183,7 @@ const OrdersPage = () => {
                 <tr>
                   <td colSpan="11" style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-faint)' }}>
                     <ClipboardList size={32} style={{ opacity: 0.3, marginBottom: 8 }} />
-                    <div>No hay órdenes con esos filtros</div>
+                    <div>{t('noOrdersFilters')}</div>
                   </td>
                 </tr>
               ) : currentItems.map((o) => (
@@ -203,7 +203,7 @@ const OrdersPage = () => {
                   <td>
                     <span className={`badge ${o.paymentDone ? 'badge-success' : 'badge-warning'}`}>
                       <span className="status-dot" style={{ background: o.paymentDone ? 'var(--success)' : 'var(--warning)' }} />
-                      {o.paymentDone ? 'Pagado' : 'Pendiente'}
+                      {o.paymentDone ? t('paid') : t('pending')}
                     </span>
                   </td>
                 </tr>
@@ -223,32 +223,32 @@ const OrdersPage = () => {
             </div>
             <form onSubmit={handleSave}>
               <div className="responsive-grid">
-                <div className="form-group"><label>Fecha</label><input name="date" type="date" className="form-control" required defaultValue={editing.date} /></div>
-                <div className="form-group"><label>Hora</label><input name="time" type="time" className="form-control" required defaultValue={editing.time} /></div>
+                <div className="form-group"><label>{t('date')}</label><input name="date" type="date" className="form-control" required defaultValue={editing.date} /></div>
+                <div className="form-group"><label>{t('time')}</label><input name="time" type="time" className="form-control" required defaultValue={editing.time} /></div>
                 <div className="form-group">
-                  <label>Tipo</label>
+                  <label>{t('type')}</label>
                   <select name="type" className="form-control" defaultValue={editing.type}>
                     <option value="ACTIVIDAD">ACTIVIDAD</option>
                     <option value="TRASLADO">TRASLADO</option>
                   </select>
                 </div>
-                <div className="form-group"><label>Cliente</label><input name="client" type="text" className="form-control" required defaultValue={editing.client} /></div>
-                <div className="form-group" style={{ gridColumn: '1 / -1' }}><label>Punto / Ruta</label><input name="route" type="text" className="form-control" defaultValue={editing.route} /></div>
-                <div className="form-group" style={{ gridColumn: '1 / -1' }}><label>Servicio</label><input name="service" type="text" className="form-control" defaultValue={editing.service} /></div>
-                <div className="form-group"><label>Adultos</label><input name="adults" type="number" min="0" className="form-control" defaultValue={editing.adults} /></div>
-                <div className="form-group"><label>Niños</label><input name="children" type="number" min="0" className="form-control" defaultValue={editing.children} /></div>
-                <div className="form-group"><label>Precio proveedor</label><input name="providerPrice" type="text" className="form-control" defaultValue={editing.providerPrice} /></div>
+                <div className="form-group"><label>{t('client')}</label><input name="client" type="text" className="form-control" required defaultValue={editing.client} /></div>
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}><label>Punto / {t('route')}</label><input name="route" type="text" className="form-control" defaultValue={editing.route} /></div>
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}><label>{t('service')}</label><input name="service" type="text" className="form-control" defaultValue={editing.service} /></div>
+                <div className="form-group"><label>{t('adults')}</label><input name="adults" type="number" min="0" className="form-control" defaultValue={editing.adults} /></div>
+                <div className="form-group"><label>{t('children')}</label><input name="children" type="number" min="0" className="form-control" defaultValue={editing.children} /></div>
+                <div className="form-group"><label>{t('providerPrice')}</label><input name="providerPrice" type="text" className="form-control" defaultValue={editing.providerPrice} /></div>
                 <div className="form-group">
-                  <label>Proveedor</label>
+                  <label>{t('provider')}</label>
                   <select name="provider" className="form-control" defaultValue={editing.provider}>
-                    <option value="">— Ninguno —</option>
+                    <option value="">{t('none')}</option>
                     {providers.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>Chofer</label>
+                  <label>{t('driver')}</label>
                   <select name="driver" className="form-control" defaultValue={editing.driver}>
-                    <option value="">— Ninguno —</option>
+                    <option value="">{t('none')}</option>
                     {drivers.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
                   </select>
                 </div>
@@ -262,7 +262,7 @@ const OrdersPage = () => {
         </div>
       )}
 
-      <DeleteConfirmModal isOpen={showDelete} onCancel={() => setShowDelete(false)} onConfirm={handleDeleteSelected} title="¿Eliminar órdenes?" message={`Vas a eliminar ${selected.length} órdenes. Esta acción no se puede deshacer.`} />
+      <DeleteConfirmModal isOpen={showDelete} onCancel={() => setShowDelete(false)} onConfirm={handleDeleteSelected} title={t('deleteOrdersTitle')} message={t('deleteOrdersMsg')?.replace('{count}', selected.length)} />
     </div>
   );
 };

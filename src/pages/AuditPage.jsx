@@ -67,35 +67,35 @@ const AuditPage = () => {
       <div className="page-header">
         <div>
           <h2>{t('auditTitle') || 'Auditoría'}</h2>
-          <p className="page-subtitle">Registro completo de acciones del sistema</p>
+          <p className="page-subtitle">{t('auditSubtitle')}</p>
         </div>
       </div>
 
       <div className="stats-grid mb-4">
         <div className="stat-card tone-primary">
           <div className="stat-header">
-            <span className="stat-label">Total eventos</span>
+            <span className="stat-label">{t('totalEvents')}</span>
             <div className="stat-icon"><BarChart3 size={18} /></div>
           </div>
           <div className="stat-value">{totalLogs}</div>
         </div>
         <div className="stat-card tone-info">
           <div className="stat-header">
-            <span className="stat-label">Eventos hoy</span>
+            <span className="stat-label">{t('eventsToday')}</span>
             <div className="stat-icon"><Clock size={18} /></div>
           </div>
           <div className="stat-value">{todayLogs}</div>
         </div>
         <div className="stat-card tone-success">
           <div className="stat-header">
-            <span className="stat-label">Creaciones hoy</span>
+            <span className="stat-label">{t('createsToday')}</span>
             <div className="stat-icon"><Plus size={18} /></div>
           </div>
           <div className="stat-value">{createsToday}</div>
         </div>
         <div className="stat-card tone-warning">
           <div className="stat-header">
-            <span className="stat-label">Módulos</span>
+            <span className="stat-label">{t('modules')}</span>
             <div className="stat-icon"><Activity size={18} /></div>
           </div>
           <div className="stat-value">{modules.length}</div>
@@ -109,7 +109,7 @@ const AuditPage = () => {
               <Search size={15} className="search-icon" />
               <input
                 type="text"
-                placeholder="Buscar en auditoría…"
+                placeholder={t('searchAudit')}
                 className="form-control"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -121,12 +121,12 @@ const AuditPage = () => {
                 </button>
               )}
               <button className="search-btn-inner" onClick={() => { setApplied(search); setPage(1); }} type="button">
-                <Search size={12} /> Buscar
+                <Search size={12} /> {t('search')}
               </button>
             </div>
           </div>
           <select className="form-control" style={{ width: 'auto', minWidth: 180 }} value={moduleFilter} onChange={(e) => { setModuleFilter(e.target.value); setPage(1); }}>
-            <option value="all">Todos los módulos</option>
+            <option value="all">{t('allModulesFilter')}</option>
             {modules.map((m) => <option key={m} value={m}>{m}</option>)}
           </select>
         </div>
@@ -138,11 +138,11 @@ const AuditPage = () => {
             <thead>
               <tr>
                 <th style={{ width: 50 }}></th>
-                <th>Módulo</th>
-                <th>Acción</th>
-                <th>Detalle</th>
-                <th>Usuario</th>
-                <th>Fecha y hora</th>
+                <th>{t('module')}</th>
+                <th>{t('action')}</th>
+                <th>{t('detail')}</th>
+                <th>{t('user')}</th>
+                <th>{t('dateTime')}</th>
               </tr>
             </thead>
             <tbody>
@@ -150,7 +150,7 @@ const AuditPage = () => {
                 <tr>
                   <td colSpan="6" style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-faint)' }}>
                     <BarChart3 size={32} style={{ opacity: 0.3, marginBottom: 8 }} />
-                    <div>No hay eventos de auditoría</div>
+                    <div>{t('noAuditEvents')}</div>
                   </td>
                 </tr>
               ) : currentItems.map((log) => {

@@ -174,7 +174,7 @@ const BookingsPage = () => {
       next = bookings.map((b) => (b.id === editing.id ? submitted : b));
     } else {
       next = [submitted, ...bookings];
-      addNotification(`Nueva reserva: ${submitted.customer || submitted.tour || submitted.id}`);
+      addNotification('notifNewBooking', { ref: submitted.customer || submitted.tour || submitted.id }, 'booking', '/bookings');
     }
     setBookings(next);
     setEditing(null);
@@ -240,8 +240,8 @@ const BookingsPage = () => {
         <div>
           <h2>{t('reservasTitle')}</h2>
           <p className="page-subtitle">
-            {filtered.length} {filtered.length === 1 ? 'reserva' : 'reservas'}
-            {statusFilter !== 'all' || typeFilter !== 'all' ? ' (filtradas)' : ''}
+            {filtered.length} {filtered.length === 1 ? t('bookingSingular') : t('bookingsPlural')}
+            {statusFilter !== 'all' || typeFilter !== 'all' ? ` (${t('filtered')})` : ''}
           </p>
         </div>
         {canPerformAction('create') && (
@@ -338,7 +338,7 @@ const BookingsPage = () => {
                 <th>{t('type')}</th>
                 <SortHeader col="customer">{t('customer')}</SortHeader>
                 <th>{t('tour')}</th>
-                <th>{t('date').includes('Fecha') ? 'Pax' : 'Pax'}</th>
+                <th>{t('pax')}</th>
                 <SortHeader col="clientPrice" align="right">{t('price')}</SortHeader>
                 <th>{t('status')}</th>
                 <th className="action-col" style={{ textAlign: 'right' }}>{t('actions')}</th>
@@ -384,7 +384,7 @@ const BookingsPage = () => {
                     <td>
                       <span className={`badge badge-${STATUS_TONE[b.status] || 'neutral'}`}>
                         <span className="status-dot pulse" style={{ background: `var(--${STATUS_TONE[b.status] === 'warning' ? 'warning' : STATUS_TONE[b.status] === 'success' ? 'success' : STATUS_TONE[b.status] === 'danger' ? 'danger' : 'info'})` }} />
-                        {b.status}
+                        {t(b.status)}
                       </span>
                     </td>
                     <td className="action-col" onClick={(e) => e.stopPropagation()}>
@@ -431,7 +431,7 @@ const BookingsPage = () => {
                     {selected.type === 'TRASLADO' ? t('traslado') : t('actividad')}
                   </span>
                   <span className={`badge badge-${STATUS_TONE[selected.status] || 'neutral'}`}>
-                    {selected.status}
+                    {t(selected.status)}
                   </span>
                 </div>
                 <h3 style={{ margin: 0 }}>{selected.tour || selected.provider || 'Reserva'}</h3>
@@ -460,7 +460,7 @@ const BookingsPage = () => {
               <div>
                 <p className="text-muted mb-1" style={{ margin: 0, fontSize: '0.72rem' }}>{t('pax')}</p>
                 <div className="d-flex align-items-center gap-1" style={{ fontWeight: 500, marginTop: 4 }}>
-                  <Users size={14} /> {selected.pax || 1} {selected.children > 0 && `(+${selected.children} niños)`}
+                  <Users size={14} /> {selected.pax || 1} {selected.children > 0 && `(+${selected.children} ${t('children').toLowerCase()})`}
                 </div>
               </div>
               <div>
@@ -551,7 +551,30 @@ const BookingsPage = () => {
                 <div className="form-group"><label>{t('phone')}</label><input name="phone" type="tel" className="form-control" defaultValue={editing.phone} /></div>
                 <div className="form-group"><label>{t('email')}</label><input name="email" type="email" className="form-control" defaultValue={editing.email} /></div>
                 <div className="form-group"><label>{t('hotel')}</label><input name="hotel" type="text" className="form-control" defaultValue={editing.hotel} /></div>
-                <div className="form-group"><label>{t('tour')}</label><input name="tour" type="text" className="form-control" defaultValue={editing.tour} /></div>
+                <div className="form-group">
+                  <label>{t('tour')}</label>
+                  <input name="tour" type="text" list="tour-options" className="form-control" defaultValue={editing.tour} onChange={(e) => {
+                    const act = read('jhoraji_act').find(a => a.name === e.target.value);
+                    if (act) {
+                      const pCostInput = document.getElementsByName('providerCost')[0];
+                      const cPriceInput = document.getElementsByName('clientPrice')[0];
+                      const provInput = document.getElementsByName('provider')[0];
+                      
+                      if (pCostInput) pCostInput.value = act.costBase || 0;
+                      if (cPriceInput) {
+                        const cp = ((Number(act.costBase) || 0) * (1 + (Object.values(act.commissions || {}).reduce((acc, v) => acc + (Number(v) || 0), 0)) / 100)).toFixed(2);
+                        cPriceInput.value = cp;
+                      }
+                      if (provInput && act.providerId) {
+                        const prov = read('jhoraji_providers').find(p => p.id === act.providerId);
+                        if (prov) provInput.value = prov.name;
+                      }
+                    }
+                  }} />
+                  <datalist id="tour-options">
+                    {read('jhoraji_act').map(a => <option key={a.id} value={a.name}>{a.category ? `[${a.category.toUpperCase()}] ` : ''}{a.name}</option>)}
+                  </datalist>
+                </div>
                 <div className="form-group"><label>{t('provider')}</label><input name="provider" type="text" className="form-control" defaultValue={editing.provider} /></div>
                 <div className="form-group"><label>{t('pax')}</label><input name="pax" type="number" min="1" className="form-control" defaultValue={editing.pax} /></div>
                 <div className="form-group"><label>{t('children')}</label><input name="children" type="number" min="0" className="form-control" defaultValue={editing.children} /></div>

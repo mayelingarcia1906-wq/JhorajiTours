@@ -8,13 +8,13 @@ const generateSeedNotifications = () => {
   const now = Date.now();
   const mins = (m) => new Date(now - m * 60000).toLocaleString();
   return [
-    { id: now - 1, text: '🎉 Bienvenido a Jhoraji Tours. Tu panel está listo.', time: mins(1), read: false, type: 'system' },
-    { id: now - 2, text: '📊 Reporte financiero del mes disponible en Finanzas.', time: mins(15), read: false, type: 'finance' },
-    { id: now - 3, text: '📅 Tienes 3 reservas programadas para hoy.', time: mins(30), read: false, type: 'booking' },
-    { id: now - 4, text: '🚗 Chofer "Carlos Méndez" asignado a traslado aeropuerto.', time: mins(45), read: false, type: 'driver' },
-    { id: now - 5, text: '👤 Nuevo cliente registrado: María González.', time: mins(60), read: true, type: 'customer' },
-    { id: now - 6, text: '✅ Reserva #RES-001 marcada como pagada.', time: mins(120), read: true, type: 'payment' },
-    { id: now - 7, text: '🏝️ Tour "Isla Saona VIP" activado en la web.', time: mins(180), read: true, type: 'tour' },
+    { id: now - 1, key: 'notifWelcome', args: {}, time: mins(1), read: false, type: 'system', link: '/dashboard' },
+    { id: now - 2, key: 'notifFinance', args: {}, time: mins(15), read: false, type: 'finance', link: '/finances' },
+    { id: now - 3, key: 'notifSchedule', args: { count: 3 }, time: mins(30), read: false, type: 'booking', link: '/schedule' },
+    { id: now - 4, key: 'notifDriver', args: { name: 'Carlos Méndez' }, time: mins(45), read: false, type: 'driver', link: '/drivers' },
+    { id: now - 5, key: 'notifCustomer', args: { name: 'María González' }, time: mins(60), read: true, type: 'customer', link: '/customers' },
+    { id: now - 6, key: 'notifPaymentDone', args: { ref: 'RES-001' }, time: mins(120), read: true, type: 'payment', link: '/bookings' },
+    { id: now - 7, key: 'notifTour', args: { name: 'Isla Saona VIP' }, time: mins(180), read: true, type: 'tour', link: '/activities' },
   ];
 };
 
@@ -35,7 +35,8 @@ export const NotificationsProvider = ({ children }) => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.length > 0) return parsed;
+        // Only use saved if it's using the new key format
+        if (parsed.length > 0 && parsed[0].key !== undefined) return parsed;
       } catch (e) {
         // fall through to seed
       }
@@ -56,22 +57,21 @@ export const NotificationsProvider = ({ children }) => {
     localStorage.setItem('jhoraji_notif_muted', isMuted);
   }, [isMuted]);
 
-  const addNotification = useCallback((text, type = 'system') => {
-    const icon = NOTIF_TYPE_ICONS[type] || '';
-    const fullText = icon ? `${icon} ${text}` : text;
-    
+  const addNotification = useCallback((key, args = {}, type = 'system', link = '/') => {
     setNotifications(prev => {
       // Evitar que se repita exactamente la misma notificación si aún no ha sido leída
-      if (prev.some(n => !n.read && n.text === fullText)) {
+      if (prev.some(n => !n.read && n.key === key && JSON.stringify(n.args) === JSON.stringify(args))) {
         return prev;
       }
 
       const newNotif = {
         id: Date.now(),
-        text: fullText,
+        key,
+        args,
         time: new Date().toLocaleString(),
         read: false,
         type,
+        link,
       };
       return [newNotif, ...prev].slice(0, 50);
     });
@@ -112,19 +112,19 @@ export const NotificationsProvider = ({ children }) => {
       () => {
         const bookings = JSON.parse(localStorage.getItem('jhoraji_bookings') || '[]');
         const pending = bookings.filter(b => b.status === 'pending').length;
-        if (pending > 0) return { text: `Tienes ${pending} reservas pendientes de pago.`, type: 'payment' };
+        if (pending > 0) return { key: 'notifPendingPayments', args: { count: pending }, type: 'payment', link: '/bookings' };
         return null;
       },
       () => {
         const bookings = JSON.parse(localStorage.getItem('jhoraji_bookings') || '[]');
         const today = new Date().toISOString().split('T')[0];
         const todayBookings = bookings.filter(b => b.date === today && b.status !== 'canceled').length;
-        if (todayBookings > 0) return { text: `${todayBookings} servicio(s) programados para hoy.`, type: 'booking' };
+        if (todayBookings > 0) return { key: 'notifScheduleItems', args: { count: todayBookings }, type: 'booking', link: '/schedule' };
         return null;
       },
       () => {
         const customers = JSON.parse(localStorage.getItem('jhoraji_customers') || '[]');
-        if (customers.length > 0) return { text: `Tu base de clientes tiene ${customers.length} registro(s).`, type: 'customer' };
+        if (customers.length > 0) return { key: 'notifCustomerBase', args: { count: customers.length }, type: 'customer', link: '/customers' };
         return null;
       },
     ];
@@ -132,7 +132,7 @@ export const NotificationsProvider = ({ children }) => {
     const interval = setInterval(() => {
       const msgFn = liveMessages[Math.floor(Math.random() * liveMessages.length)];
       const msg = msgFn();
-      if (msg) addNotification(msg.text, msg.type);
+      if (msg) addNotification(msg.key, msg.args, msg.type, msg.link);
     }, intervalMs);
 
     return () => clearInterval(interval);
